@@ -1,0 +1,10 @@
+# Ignore everything
+*
+
+# But not these files/directories:
+!agent/
+!cellexpress/
+!.gitignore
+!*.png
+!README.md
+!Dockerfile
