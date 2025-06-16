@@ -147,7 +147,7 @@ LABEL maintainer="Nima Nouri <ni.nouri@gmail.com>" \
       description=""
 LABEL version="1.0.0"
 # ===================================
-ENV PYTHONPATH=/opt/cellatria
+ENV PYTHONPATH=/opt/cellatria/agent
 ENV ENV_PATH=/data
 CMD ["/usr/local/bin/cellatria"]
 # ===================================
