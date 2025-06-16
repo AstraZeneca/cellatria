@@ -1,7 +1,7 @@
 # Ignore everything
 *
 
-# But not these files/directories:
+# Allowlisted files/directories
 !agent/
 !agent/**
 !cellexpress/
@@ -10,3 +10,7 @@
 !*.png
 !README.md
 !Dockerfile
+
+# Exclude directories inside agent and cellexpress
+**/__pycache__/
+**/.gradio/
