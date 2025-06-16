@@ -1,0 +1,360 @@
+---
+title: "`r paste('&nbsp; ', params$opt$project)`"
+vignette: >
+  %\VignetteIndexEntry{CellExpress report}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+output:
+  html_document:
+    css: style.css
+    fig_caption: true
+    df_print: kable
+    toc: true
+    toc_float: true
+    number_sections: true
+params:
+    snapshot_file: "snapshot.json"
+    opt: NULL
+    disease_id: NULL
+    disease_label: NULL
+    tissue_id: NULL
+    tissue_label: NULL
+---
+
+<style> 
+  #header { 
+    background: -moz-linear-gradient(left, rgba(120,21,79,1) 0%, rgba(120,21,79,1) 75%); /* FF3.6-15 */
+    ackground: -webkit-linear-gradient(left, rgba(120,21,79,1) 0%,rgba(120,21,79,1) 75%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(120,21,79,1) 0%,rgba(120,21,79,1) 75%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6f13dd', endColorstr='#007db9e8',GradientType=1 ); /* IE6-9 */
+    color: white;
+    height: 110px;
+  }
+</style>
+
+<!-- create a tooltip that appears when a user hovers over a "Read me" text --> 
+<style>
+/* Tooltip container */
+.tooltip-custom {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltip-custom-label {
+  color: #1f77b4;
+}
+
+/* Tooltip text */
+.tooltip-custom::after {
+  content: attr(data-tooltip); 
+  visibility: hidden;
+  background-color: #FFB3E2;
+  color: #000000;
+  text-align: left;
+  padding: 5px 10px;
+  border-radius: 5px;
+  position: absolute;
+  width: max-content;
+  max-width: 500px;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  font-size: 12px;
+}
+
+/* Show the tooltip when hovering */
+.tooltip-custom:hover::after {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+
+<!-- *** --> 
+
+```{r html, echo=FALSE}
+htmltools::img(src = knitr::image_uri("cellexpress_logo_report.png"), 
+               alt = 'logo', 
+               style = 'position:absolute; top:22px; right:40px; width: 24%; height: 106px;'
+               )
+```
+
+```{r setup, include=FALSE}
+# Load required libraries
+packages <- c("jsonlite", "ggplot2", "dplyr", "gtools", "gridtext", "grid", "kableExtra", "DT", 
+              "scales","RColorBrewer", "plotly", "visNetwork", "ggrepel", "gtools", "viridis")
+lapply(packages, library, character.only = TRUE)
+
+# source helper functions
+source(file.path(params$opt$cellexpress_path, "report_helper.R"))
+
+# Read the snapshot data from the JSON file provided by Python
+rprt <- fromJSON(params$snapshot_file)
+
+# Extract summary data
+metadata_df <- dplyr::bind_rows(rprt$metadata_df)
+summary_df <- dplyr::bind_rows(rprt$summary_df)
+umi_per_cell <- dplyr::bind_rows(rprt$umi_per_cell)
+gene_per_cell <- dplyr::bind_rows(rprt$gene_per_cell)
+mt_per_cell <- dplyr::bind_rows(rprt$mt_per_cell)
+
+# Extract QC metric
+db_plots <- dplyr::bind_rows(rprt$db_plots)
+filters <- dplyr::bind_rows(rprt$filters)
+bc.qc.raw <- dplyr::bind_rows(rprt$bc_qc_raw) %>%
+    tibble::column_to_rownames("index")
+bc.qc.ji <- dplyr::bind_rows(rprt$bc_qc_ji) %>%
+    tibble::column_to_rownames("index")
+
+# get colors
+set.seed(123)  
+smpl_colrs <- color_helper(set.names=sort(unique(metadata_df$sample_id)), panel="Set1") 
+smpl_colrs <- setNames(as.vector(smpl_colrs)[sample(1:length(smpl_colrs), size = length(smpl_colrs), replace = FALSE,)], names(smpl_colrs))
+```
+
+# ExpressSummary 
+
+<u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressSummary** section presents key experimental context and QC numerical values: 
+Total number of cells (input data), displayed in grey, representing the initial number of cells before any filtering.
+Number of cells after QC, highlighted in green, indicating the number of cells retained post-quality control.
+Mean number of UMIs per cell, shown in orange, representing the average transcript counts per cell.
+Mean number of genes per cell, marked in blue, summarizing the average gene detection per cell.">Read me</u>
+
+## Sample & Experimental Context
+
+```{r test, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.height=1.0, fig.width=10.0, results='asis'}
+data.frame(`Species` = ifelse(params$opt$species == "hs", "human", "mouse"), 
+           `Disease` = params$disease_label, 
+           `Tissue`= params$tissue_label, 
+           check.names = FALSE) %>%
+  kableExtra::kable("html", align = "c", escape = FALSE, # escape = FALSE allows HTML rendering
+                    col.names = c("Species", "Disease", "Disease ID", "Tissue", "Tissue ID")) %>% 
+  kableExtra::kable_classic(full_width = TRUE, html_font = "Cambria") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                            full_width = TRUE, fixed_thead = TRUE, position = "center") %>%
+  kableExtra::row_spec(0, background = "#e7298a", color = "white", bold = TRUE, font_size = 18) %>%  # Header color
+  kableExtra::row_spec(1, background = "#fce5ec", color = "#333333", font_size = 17)  # Row color
+```
+
+- - -
+
+# ExpressQC
+
+<u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressQC** section provides a comprehensive 
+overview of sample-level quality metrics. It includes tabulated summaries of metadata, cell and gene counts 
+before QC, as well as quantiles of UMIs, genes, and mitochondrial content per cell. Interactive density plots show 
+the distribution of key QC metrics across cells. Barcode overlap metrics assess potential sample cross-contamination.">Read me</u>
+
+```{r liberal-filter-comment, echo=FALSE, results='asis'}
+cat("<div style='padding: 10px; background-color: #f9f9f9; border-left: 5px solid #007bff;'>")
+cat("<strong>Note:</strong> This analysis was run in <em>QC-only mode</em>. As such, minimal filtering thresholds were applied to retain as many cells and genes as possible while only removing entries with zero UMIs.")
+cat("</div>")
+```
+
+## Sample-level Characteristics and Quality Control Metrics {.tabset .tabset-fade .tabset-dropdown}
+
+### Metadata
+
+```{r metadata, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+metadata_df %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = sample_id[mixedorder(sample_id)], ordered = TRUE)) %>%
+  dplyr::arrange(sample_id) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+### Cells & Genes
+
+```{r cells_genes, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+summary_df %>%
+  dplyr::rename(pre_qc_cell = cells,
+                pre_qc_gene = genes) %>%
+  dplyr::mutate(pre_qc_cell = scales::comma(pre_qc_cell, accuracy = 1),
+         pre_qc_gene = scales::comma(pre_qc_gene, accuracy = 1)) %>%
+  dplyr::select(-type) %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = sample_id[mixedorder(sample_id)], ordered = TRUE)) %>%
+  dplyr::arrange(sample_id) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+### UMI per cell
+
+```{r umi, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+umi_per_cell %>%
+  dplyr::mutate(across(where(is.numeric), ~ scales::comma(., accuracy = 1))) %>%
+  kable() %>%
+  kable_classic(full_width = FALSE, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = FALSE, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+
+```
+
+### Gene per cell
+
+```{r gene, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+gene_per_cell %>%
+  dplyr::mutate(across(where(is.numeric), ~ scales::comma(., accuracy = 1))) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+### Mitochondrial (%)
+
+```{r mt, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+mt_per_cell %>%
+  dplyr::mutate(across(where(is.numeric), ~ sprintf("%.1f%%", .))) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+## {-}
+
+- - -
+
+```{r pt_density, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+  # ===================================
+  Q <- list()
+  for (tp in unique(db_plots$type)) {
+    p <- ggplot() +
+      getBaseTheme() +
+      theme(strip.text = element_text(size = 20, face = "bold"),
+            axis.title = element_text(size = 12, face = "bold"),
+            axis.text = element_text(size = 10, face = "bold"),
+            legend.title = element_text(size=13),
+            legend.text = element_text(size=11)) +
+      scale_x_continuous(trans = scales::log10_trans(),
+                         breaks = scales::trans_breaks("log10", function(x) 10^x),
+                         labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+      xlab("10^x") + ylab("Density") +
+      geom_density(data = filter(db_plots, type == tp),
+                   aes(x = feature, color = sample_id, feature = feature), 
+                   show.legend = FALSE, na.rm = TRUE) +
+      scale_color_manual(values = smpl_colrs) +
+      guides(fill = "none", color = "none")
+    Q[[length(Q) + 1]] <- p  
+  }
+  # ===================================
+  # Convert long-format db_plots into a wide-format dataframe (fobj)
+  df <- db_plots %>%
+    tidyr::pivot_wider(id_cols = c(barcode, sample_id), names_from = type, values_from = feature)
+  pqc <- ggplot(df,
+              aes(x = nFeature_RNA, y = nCount_RNA, color = sample_id)) +
+        getBaseTheme() +
+        theme(strip.text = element_text(size = 20, face = "bold"),
+              axis.title = element_text(size = 12, face = "bold"),
+              axis.text = element_text(size = 10, face = "bold"),
+              legend.title = element_blank(),
+              legend.position = "right",
+              legend.text = element_text(size=11)) +
+        # geom_point(alpha = 0.4, size = 1) +
+        geom_smooth(aes(group = sample_id), 
+                    method = "loess", se = FALSE, size = 0.5, fullrange = FALSE) +
+        geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray") +
+        scale_x_continuous(trans = scales::log10_trans(),
+                            breaks = scales::trans_breaks("log10", function(x) 10^x),
+                            labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+        scale_y_continuous(trans = scales::log10_trans(),
+                            breaks = scales::trans_breaks("log10", function(x) 10^x),
+                            labels = scales::trans_format("log10", scales::math_format(10^.x))) + 
+        xlab("Genes detected [10^x]") + ylab("UMI counts [10^x]") +
+        scale_color_manual(values = smpl_colrs) +
+        guides(fill = "none", color = "none")
+  # ===================================
+```
+
+## Distribution Plots for Quality Control Metrics {.tabset .tabset-fade .tabset-dropdown}
+
+### UMI per cell distribution
+
+<center>
+```{r q1, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
+ggplotly(Q[[1]], tooltip = c("sample_id", "feature"))
+```
+<center>
+
+### Gene per cell distribution
+
+<center>
+```{r q2, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
+ggplotly(Q[[2]], tooltip = c("sample_id", "feature"))
+```
+<center>
+
+### Mitochondrial (%) per cell distribution
+
+<center>
+```{r q3, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
+ggplotly(Q[[3]], tooltip = c("sample_id", "feature"))
+```
+<center>
+
+### Total UMI Counts vs. Genes Detected per cell
+
+The gray dashed line indicates the identity line (y = x)
+
+<center>
+```{r pqc, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.75, 4.5), fig.align = 'center'}
+# plot(pqc)
+ggplotly(pqc, tooltip = c("sample_id", "nFeature_RNA", "nCount_RNA"))
+```
+<center>
+
+## {-}
+
+- - -
+
+## Barcodes Contamination {.tabset}
+
+### Raw count
+
+Number of barcodes shared between pairs of samples post-QC.
+
+```{r bcn_raw, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (length(bc.qc.raw) != 0) {
+  bc.qc.raw %>%
+    kable() %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = F, fixed_thead = TRUE) %>%
+    scroll_box(width = "100%", height = "200px")  
+} else {
+  print("No overlaps among samples' barcodes.")
+}
+```
+
+### Jaccard Index
+
+Fraction (%) of barcodes shared between pairs of samples pre-QC.
+
+```{r bcn_pct, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (length(bc.qc.ji) != 0) {
+  bc.qc.ji %>%
+    kable() %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = F, fixed_thead = TRUE) %>%
+    scroll_box(width = "100%", height = "200px")  
+} else {
+  print("No overlaps among samples' barcodes.")
+}
+```
+
+## {-}
+
+- - -

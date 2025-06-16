@@ -1,0 +1,1429 @@
+---
+title: "`r paste('&nbsp; ', params$opt$project)`"
+author: "`r paste('&nbsp;&nbsp;&nbsp; Identifier:', params$ui)`"
+date: "`r paste('&nbsp;&nbsp;&nbsp; Date:', params$date, '| Runtime:', params$runtime_minute, 'min')`"
+vignette: >
+  %\VignetteIndexEntry{CellExpress report}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+output:
+  html_document:
+    css: style.css
+    fig_caption: true
+    df_print: kable
+    toc: true
+    toc_float: true
+    number_sections: true
+params:
+    snapshot_file: "snapshot.json"
+    opt: NULL
+    date: NULL
+    runtime_minute: NULL
+    ui: NULL
+    disease_id: NULL
+    disease_label: NULL
+    tissue_id: NULL
+    tissue_label: NULL
+---
+
+<style> 
+  #header { 
+    background: -moz-linear-gradient(left, rgba(120,21,79,1) 0%, rgba(120,21,79,1) 75%); /* FF3.6-15 */
+    ackground: -webkit-linear-gradient(left, rgba(120,21,79,1) 0%,rgba(120,21,79,1) 75%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(120,21,79,1) 0%,rgba(120,21,79,1) 75%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6f13dd', endColorstr='#007db9e8',GradientType=1 ); /* IE6-9 */
+    color: white;
+    height: 110px;
+  }
+</style>
+
+<!-- create a tooltip that appears when a user hovers over a "Read me" text --> 
+<style>
+/* Tooltip container */
+.tooltip-custom {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltip-custom-label {
+  color: #1f77b4;
+}
+
+/* Tooltip text */
+.tooltip-custom::after {
+  content: attr(data-tooltip); 
+  visibility: hidden;
+  background-color: #FFB3E2;
+  color: #000000;
+  text-align: left;
+  padding: 5px 10px;
+  border-radius: 5px;
+  position: absolute;
+  width: max-content;
+  max-width: 500px;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  font-size: 12px;
+}
+
+/* Show the tooltip when hovering */
+.tooltip-custom:hover::after {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+
+<!-- *** --> 
+
+```{r pandoc-check-v2, eval=FALSE, echo=FALSE, message=FALSE}
+cat("*** Pandoc args set via options():", paste(getOption("rmarkdown.pandoc.args"), collapse = " "), "\n")
+```
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri("cellexpress_logo_report.png"), 
+               alt = 'logo', 
+               style = 'position:absolute; top:22px; right:40px; width: 24%; height: 106px;'
+               )
+```
+
+```{r setup, include=FALSE}
+# Load required libraries
+packages <- c("jsonlite", "ggplot2", "dplyr", "gtools", "gridtext", "grid", "kableExtra", "DT", 
+              "scales","RColorBrewer", "plotly", "visNetwork", "ggrepel", "gtools", "viridis",
+              "gridExtra", "tidyr")
+lapply(packages, library, character.only = TRUE)
+
+# source helper functions
+source(file.path(params$opt$cellexpress_path, "report_helper.R"))
+
+# Read the snapshot data from the JSON file provided by Python
+rprt <- fromJSON(params$snapshot_file)
+
+# Extract summary data
+metadata_df <- dplyr::bind_rows(rprt$metadata_df)
+summary_df <- dplyr::bind_rows(rprt$summary_df)
+qc_summary_df <- dplyr::bind_rows(rprt$qc_summary_df)
+umi_per_cell <- dplyr::bind_rows(rprt$umi_per_cell)
+gene_per_cell <- dplyr::bind_rows(rprt$gene_per_cell)
+mt_per_cell <- dplyr::bind_rows(rprt$mt_per_cell)
+count_by_cell_f <- dplyr::bind_rows(rprt$count_by_cell_f) 
+gene_by_cell_f <- dplyr::bind_rows(rprt$gene_by_cell_f) 
+pct_mito_f <- dplyr::bind_rows(rprt$pct_mito_f)
+
+# Extract QC metric
+db_plots <- dplyr::bind_rows(rprt$db_plots)
+filters <- dplyr::bind_rows(rprt$filters)
+
+bc_raw <- dplyr::bind_rows(rprt$bc_raw) %>%
+    tibble::column_to_rownames("index")
+bc_ji <- dplyr::bind_rows(rprt$bc_ji) %>%
+    tibble::column_to_rownames("index")
+
+bc_raw_qc <- dplyr::bind_rows(rprt$bc_raw_qc) %>%
+    tibble::column_to_rownames("index")
+bc_ji_qc <- dplyr::bind_rows(rprt$bc_ji_qc) %>%
+    tibble::column_to_rownames("index")
+
+# Extract scrublet data object 
+if (params$opt$doublet_method == "scrublet") {
+  scrublet_data_obs <- dplyr::bind_rows(rprt$scrublet_data_obs)
+  scrublet_data_sim <- dplyr::bind_rows(rprt$scrublet_data_sim) 
+}  
+
+# Extract harmonized object
+fobj <- as.data.frame(rprt$fobj_data$umap)
+colnames(fobj) <- c("UMAP1", "UMAP2")
+fobj$cluster <- factor(rprt$fobj_data$cluster)
+fobj$sample <- rprt$fobj_data$sample
+fobj$sample_id <- rprt$fobj_data$sample_id
+fobj$total_counts <- rprt$fobj_data$total_counts
+fobj$n_genes_by_counts <- rprt$fobj_data$n_genes_by_counts
+
+# Optionally add if scimilarity present
+if (params$opt$annotation_method != "None") {
+  annot_mtds <- trimws(tolower(unlist(strsplit(params$opt$annotation_method, ","))))
+
+  if ("scimilarity" %in% annot_mtds) {
+    fobj$celltype_scimilarity <- rprt$fobj_data$celltype_scimilarity
+    fobj$cellstate_scimilarity <- rprt$fobj_data$cellstate_scimilarity
+    # Extract scimilarity nodes and edges data frames
+    scim_nodes <- dplyr::bind_rows(rprt$scimilarity_network$nodes)
+    scim_edges <- dplyr::bind_rows(rprt$scimilarity_network$edges)
+  }
+
+  if ("celltypist" %in% annot_mtds) {
+    fobj$celltype_celltypist <- rprt$fobj_data$celltype_celltypist
+    fobj$cellstate_celltypist <- rprt$fobj_data$cellstate_celltypist
+    # Extract celltypist nodes and edges data frames
+    sctp_nodes <- dplyr::bind_rows(rprt$celltypist_network$nodes)
+    sctp_edges <- dplyr::bind_rows(rprt$celltypist_network$edges)
+  }
+}
+
+# Identify Keys
+keyval_tsne <- FALSE 
+if (params$opt$compute_tsne == "yes") {
+    tsne_df <- as.data.frame(rprt$fobj_data$tsne)
+    colnames(tsne_df) <- c("TSNE1", "TSNE2")
+    fobj <- cbind(fobj, tsne_df)
+    keyval_tsne <- TRUE
+}
+keyval_scim <- FALSE 
+keyval_cltpst <- FALSE
+celltypes <- c()
+if (params$opt$annotation_method != "None") {
+    if ("scimilarity" %in% annot_mtds) {
+      keyval_scim <- TRUE
+      celltypes <- c(celltypes, unique(fobj$celltype_scimilarity))
+    }
+    if ("celltypist" %in% annot_mtds) {
+      keyval_cltpst <- TRUE
+      celltypes <- c(celltypes, unique(fobj$celltype_celltypist))
+    }
+}
+keyval_batch <- ifelse (params$opt$batch_correction != "None", TRUE, FALSE)
+keyval_leidn_mrkrs <- ifelse (params$opt$top_n_deg_leidn != 0, TRUE, FALSE)
+keyval_scim_mrkrs <- ifelse (params$opt$top_n_deg_scim != 0, TRUE, FALSE)
+keyval_cltpst_mrkrs <- ifelse (params$opt$top_n_deg_cltpst != 0, TRUE, FALSE)
+
+# Extract non-harmonized object
+if (keyval_batch) {
+  obj_noharm <- as.data.frame(rprt$non_hm_obj$umap)
+  colnames(obj_noharm) <- c("UMAP1", "UMAP2")
+  obj_noharm$cluster <- factor(rprt$non_hm_obj$cluster)
+  obj_noharm$sample <- rprt$non_hm_obj$sample
+  obj_noharm$sample_id <- rprt$non_hm_obj$sample_id
+
+  vars <- strsplit(params$opt$batch_vars, split = ",")[[1]]
+  vars <- gsub(" ", "", vars)
+  for (var in vars) {
+    fobj[[var]] <- rprt$fobj_data[[var]]
+    obj_noharm[[var]] <- rprt$non_hm_obj[[var]]
+  }
+  # Optionally add tSNE if present
+  if (keyval_tsne) {
+      tsne_df <- as.data.frame(rprt$non_hm_obj$tsne)
+      colnames(tsne_df) <- c("TSNE1", "TSNE2")
+      obj_noharm <- cbind(obj_noharm, tsne_df)
+  }
+}
+
+# Extract metadata description
+mtd_desc <- dplyr::bind_rows(rprt$metadata_description)
+
+# Extract qc impact data
+qc_impact <- dplyr::bind_rows(rprt$qc_impact)
+
+# Convert Python environment info to a data frame
+python_env <- dplyr::bind_rows(rprt$python_environment$packages)  # No need for do.call
+python_version <- rprt$python_environment$python_version
+
+# Convert JSON list into a data frame
+pipe_args <- dplyr::bind_rows(rprt$pipeline_arguments)
+
+# get colors
+set.seed(123)  
+smpl_colrs <- color_helper(set.names=sort(unique(metadata_df$sample_id)), panel="Set1") 
+smpl_colrs <- setNames(as.vector(smpl_colrs)[sample(1:length(smpl_colrs), size = length(smpl_colrs), replace = FALSE,)], names(smpl_colrs))
+
+set.seed(123)
+clstr_colrs <- color_helper(set.names=sort(unique(fobj$cluster)), panel="Set1") 
+clstr_colrs <- setNames(as.vector(clstr_colrs)[sample(1:length(clstr_colrs), size = length(clstr_colrs), replace = FALSE,)], names(clstr_colrs))
+
+if (any(c(keyval_scim, keyval_cltpst))) {
+  set.seed(123)
+  cltyp_colrs <- color_helper(set.names=sort(as.character(celltypes)), panel="Set1") 
+  cltyp_colrs <- setNames(as.vector(cltyp_colrs)[sample(1:length(cltyp_colrs), size = length(cltyp_colrs), replace = FALSE,)], names(cltyp_colrs))
+}
+
+if (keyval_batch){
+  set.seed(123)
+  clstr_colrs_btch <- color_helper(set.names=sort(unique(obj_noharm$cluster)), panel="Set1") 
+  clstr_colrs_btch <- setNames(as.vector(clstr_colrs_btch)[sample(1:length(clstr_colrs_btch), size = length(clstr_colrs_btch), replace = FALSE,)], names(clstr_colrs_btch))
+}
+```
+
+```{r, include=FALSE}
+options(width = 60)
+local({
+  hook_output <- knitr::knit_hooks$get('output')
+  knitr::knit_hooks$set(output = function(x, options) {
+    if (!is.null(options$max.height)) options$attr.output <- c(
+      options$attr.output,
+      sprintf('style="max-height: %s;"', options$max.height)
+    )
+    hook_output(x, options)
+  })
+})
+```
+
+- - -
+
+# ExpressSummary 
+
+<u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressSummary** section presents key experimental context and QC numerical values: 
+Total number of cells (input data), displayed in grey, representing the initial number of cells before any filtering.
+Number of cells after QC, highlighted in green, indicating the number of cells retained post-quality control.
+Mean number of UMIs per cell, shown in orange, representing the average transcript counts per cell.
+Mean number of genes per cell, marked in blue, summarizing the average gene detection per cell.">Read me</u>
+
+## Sample & Experimental Context
+
+```{r test, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.height=1.0, fig.width=10.0, results='asis'}
+data.frame(`Species` = ifelse(params$opt$species == "hs", "human", "mouse"), 
+           `Disease` = params$disease_label, 
+           `Tissue`= params$tissue_label, 
+           check.names = FALSE) %>%
+  kableExtra::kable("html", align = "c", escape = FALSE, # escape = FALSE allows HTML rendering
+                    col.names = c("Species", "Disease", "Disease ID", "Tissue", "Tissue ID")) %>% 
+  kableExtra::kable_classic(full_width = TRUE, html_font = "Cambria") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                            full_width = TRUE, fixed_thead = TRUE, position = "center") %>%
+  kableExtra::row_spec(0, background = "#e7298a", color = "white", bold = TRUE, font_size = 18) %>%  # Header color
+  kableExtra::row_spec(1, background = "#fce5ec", color = "#333333", font_size = 17)  # Row color
+```
+
+- - -
+
+## Cell Count & Expression Summary
+
+```{r cellbox, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.height=1.5, fig.width=10.0}
+summ1 <- sum(summary_df$cell)
+summ2 <- sum(qc_summary_df$cell)
+summ3 <- rprt$count_by_cell # UMI per cell
+summ4 <- rprt$gene_by_cell # Gene per cell
+
+text <- c(paste(scales::comma(summ1, accuracy = 1), "<br>Number of Cells<br>Input Data"),
+          paste(scales::comma(summ2, accuracy = 1), "<br>Number of Cells<br>After QC"),
+          paste(scales::comma(summ3, accuracy = 1), "<br>Number of UMIs<br>per Cell (mean)"),
+          paste(scales::comma(summ4, accuracy = 1), "<br>Number of Genes<br>per Cell (mean)")
+          )
+cols <- c("grey75", "#4daf4a", "#ff7f00", "#377eb8")
+# cols <- c("#c994c7", "#c994c7", "#c994c7", "#c994c7")
+x <- seq(0.125,0.875,length.out=4)
+y <- rep(0.5, 4)
+g <- richtext_grob(
+  text, x, y, 
+  halign = 0.5, hjust = 0.5,
+  gp = gpar(fontsize = 20),
+  r = unit(1, "pt"),
+  padding = unit(c(10, 10, 10, 10), "pt"),
+  margin = unit(c(0, 0, 0, 0), "pt"),
+  align_widths = TRUE,
+  box_gp = gpar(col = NA, fill = cols)
+)
+grid.newpage()
+grid.draw(g)
+```
+
+- - -
+
+# ExpressSettings
+
+<u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressSettings** section provides a structured summary of key 
+analysis parameters, detailing their descriptions and specified input values.">Read me</u>
+
+
+```{r table-1, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+# rm.mtdata <- c("metadata", "genesets", "docker", "help", "only_qc", "doc_url", "data_url", "sci_model_path")
+pipe_args %>%
+  # dplyr::filter(!Argument %in% rm.mtdata) %>%
+  kableExtra::kable(col.names = c("Argument", "Description", "Entered Value")) %>%
+  kableExtra::kable_classic(full_width = FALSE, html_font = "Cambria") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                            full_width = TRUE, fixed_thead = TRUE) %>%
+  kableExtra::scroll_box(width = "100%", height = "300px", 
+                         extra_css = "overflow-x: auto; overflow-y: auto; white-space: nowrap;")
+```
+
+- - -
+
+# ExpressQC
+
+<u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressQC** section provides a comprehensive 
+overview of sample-level quality metrics and filtering outcomes. It includes tabulated summaries of metadata, 
+cell and gene counts before and after QC, as well as post-QC quantiles of UMIs, genes, and mitochondrial 
+content per cell. Interactive density plots show the distribution of key QC metrics across cells. Barcode overlap 
+metrics assess potential sample cross-contamination, and - when enabled - doublet detection results are included to identify 
+multiplet events. Additional interactive visualizations highlight how QC influences gene and UMI abundance across samples, 
+supporting robust data quality assessment and downstream interpretability.">Read me</u>
+
+
+## Sample-level Characteristics and Quality Control Metrics {.tabset .tabset-fade .tabset-dropdown}
+
+### Metadata
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+metadata_df %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = sample_id[mixedorder(sample_id)], ordered = TRUE)) %>%
+  dplyr::arrange(sample_id) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+### Cells & Genes
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+summary_df %>%
+  dplyr::rename(pre_qc_cell = cells,
+                pre_qc_gene = genes) %>%
+  dplyr::mutate(pre_qc_cell = scales::comma(pre_qc_cell, accuracy = 1),
+         pre_qc_gene = scales::comma(pre_qc_gene, accuracy = 1)) %>%
+  dplyr::select(-type) %>%
+  base::merge(., qc_summary_df, by = c("sample", "sample_id")) %>%
+  dplyr::rename(post_qc_cell = cells,
+                post_qc_gene = genes) %>%
+  dplyr::mutate(post_qc_cell = scales::comma(post_qc_cell, accuracy = 1),
+                post_qc_gene = scales::comma(post_qc_gene, accuracy = 1)) %>%
+  dplyr::select(-type) %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = sample_id[mixedorder(sample_id)], ordered = TRUE)) %>%
+  dplyr::arrange(sample_id) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+### UMI per cell
+
+Vales are post-QC.
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+umi_per_cell %>%
+  dplyr::mutate(across(where(is.numeric), ~ scales::comma(., accuracy = 1))) %>%
+  kable() %>%
+  kable_classic(full_width = FALSE, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = FALSE, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+
+```
+
+### Gene per cell
+
+Vales are post-QC.
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+gene_per_cell %>%
+  dplyr::mutate(across(where(is.numeric), ~ scales::comma(., accuracy = 1))) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+### Mitochondrial (%)
+
+Vales are post-QC.
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+mt_per_cell %>%
+  dplyr::mutate(across(where(is.numeric), ~ sprintf("%.1f%%", .))) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+## {-}
+
+- - -
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+  # ===================================
+  Q <- list()
+  for (tp in unique(db_plots$type)) {
+    p <- ggplot() +
+      getBaseTheme() +
+      theme(strip.text = element_text(size = 20, face = "bold"),
+            axis.title = element_text(size = 12, face = "bold"),
+            axis.text = element_text(size = 10, face = "bold"),
+            legend.title = element_text(size=13),
+            legend.text = element_text(size=11)) +
+      scale_x_continuous(trans = scales::log10_trans(),
+                         breaks = scales::trans_breaks("log10", function(x) 10^x),
+                         labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+      xlab("10^x") + ylab("Density") +
+      geom_density(data = filter(db_plots, type == tp),
+                   aes(x = feature, color = sample_id, feature = feature), 
+                   show.legend = FALSE, na.rm = TRUE) +
+      geom_vline(data = filter(filters, type == tp),
+                 aes(xintercept = threshold),
+                 linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
+      scale_color_manual(values = smpl_colrs) +
+      guides(fill = "none", color = "none")
+    Q[[length(Q) + 1]] <- p  
+  }
+  # ===================================
+  # Convert long-format db_plots into a wide-format dataframe (fobj)
+  df <- db_plots %>%
+    tidyr::pivot_wider(id_cols = c(barcode, sample_id), names_from = type, values_from = feature)
+  pqc <- ggplot(df,
+              aes(x = nFeature_RNA, y = nCount_RNA, color = sample_id)) +
+        getBaseTheme() +
+        theme(strip.text = element_text(size = 20, face = "bold"),
+              axis.title = element_text(size = 12, face = "bold"),
+              axis.text = element_text(size = 10, face = "bold"),
+              legend.title = element_blank(),
+              legend.position = "right",
+              legend.text = element_text(size=11)) +
+        # geom_point(alpha = 0.4, size = 1) +
+        geom_smooth(aes(group = sample_id), 
+                    method = "loess", se = FALSE, size = 0.5, fullrange = FALSE) +
+        geom_vline(data = filter(filters, type == "nFeature_RNA", threshold != 0),
+                 aes(xintercept = threshold),
+                 linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
+        geom_hline(data = filter(filters, type == "nCount_RNA", threshold != 0),
+                 aes(yintercept = threshold),
+                 linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
+        geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray") +
+        scale_x_continuous(trans = scales::log10_trans(),
+                            breaks = scales::trans_breaks("log10", function(x) 10^x),
+                            labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+        scale_y_continuous(trans = scales::log10_trans(),
+                            breaks = scales::trans_breaks("log10", function(x) 10^x),
+                            labels = scales::trans_format("log10", scales::math_format(10^.x))) + 
+        xlab("Genes detected [10^x]") + ylab("UMI counts [10^x]") +
+        scale_color_manual(values = smpl_colrs) +
+        guides(fill = "none", color = "none")
+  # ===================================
+```
+
+## Distribution Plots for Quality Control Metrics {.tabset .tabset-fade .tabset-dropdown}
+
+Thresholds, represented by dark-red dashed lines, were implemented to filter the data and only retain cells of high quality.
+
+### UMI per cell distribution
+
+<center>
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
+ggplotly(Q[[1]], tooltip = c("sample_id", "feature"))
+```
+<center>
+
+### Gene per cell distribution
+
+<center>
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
+ggplotly(Q[[2]], tooltip = c("sample_id", "feature"))
+```
+<center>
+
+### Mitochondrial (%) per cell distribution
+
+<center>
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
+ggplotly(Q[[3]], tooltip = c("sample_id", "feature"))
+```
+<center>
+
+### Total UMI Counts vs. Genes Detected per cell
+
+The gray dashed line indicates the identity line (y = x)
+
+<center>
+```{r pqc, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.75, 4.5), fig.align = 'center'}
+# plot(pqc)
+ggplotly(pqc, tooltip = c("sample_id", "nFeature_RNA", "nCount_RNA"))
+```
+<center>
+
+## {-}
+
+- - -
+
+## Barcodes Contamination {.tabset}
+
+### Count - before QC
+
+Number of barcodes shared between pairs of samples pre-QC.
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (length(bc_raw) != 0) {
+  bc_raw %>%
+    kable() %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = F, fixed_thead = TRUE) %>%
+    scroll_box(width = "100%", height = "200px")  
+} else {
+  print("No overlaps among samples' barcodes.")
+}
+```
+
+### Count - post QC
+
+Number of barcodes shared between pairs of samples post-QC.
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (length(bc_raw_qc) != 0) {
+  bc_raw_qc %>%
+    kable() %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = F, fixed_thead = TRUE) %>%
+    scroll_box(width = "100%", height = "200px")  
+} else {
+  print("No overlaps among samples' barcodes.")
+}
+```
+
+### Jaccard Index - before QC
+
+Fraction (%) of barcodes shared between pairs of samples pre-QC.
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (length(bc_ji) != 0) {
+  bc_ji %>%
+    kable() %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = F, fixed_thead = TRUE) %>%
+    scroll_box(width = "100%", height = "200px")  
+} else {
+  print("No overlaps among samples' barcodes.")
+}
+```
+
+### Jaccard Index - post QC
+
+Fraction (%) of barcodes shared between pairs of samples post-QC.
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (length(bc_ji_qc) != 0) {
+  bc_ji_qc %>%
+    kable() %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = F, fixed_thead = TRUE) %>%
+    scroll_box(width = "100%", height = "200px")  
+} else {
+  print("No overlaps among samples' barcodes.")
+}
+```
+
+## {-}
+
+- - -
+
+`r keyval_scr <- params$opt$doublet_method == "scrublet"`
+
+`r if (keyval_scr) {"## Doublet Cell Detection using Scrublet Scoring System {.tabset}"}`
+
+`r if (keyval_scr) {"Observed scores are used for doublet classification. Dashed line indicates the threshold used to identify doublets."}`
+
+```{r scrublet, eval=keyval_scr, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+db_list <- list(scrublet_data_obs, scrublet_data_sim)
+Q <- list()
+for (i in 1:length(db_list)){
+  p <- ggplot(db_list[[i]], aes(x = score, group = sample_id, color = sample_id)) +
+    getBaseTheme() +
+    theme(strip.text = element_text(size = 14, face = "bold"),
+          axis.title = element_text(size = 14, face = "bold"),
+          axis.text = element_text(size = 12, face = "bold"),
+         legend.title = element_text(size = 9),
+         legend.text = element_text(size = 8)) +
+    xlab("Score") + ylab("Density") +
+    geom_density(show.legend = FALSE) +
+    scale_color_manual(values = smpl_colrs) +
+    geom_vline(xintercept=as.numeric(params$opt$scrublet_cutoff), linetype=2, color="firebrick", size=0.45) +
+    guides(fill = "none", color = "none")  
+  Q[[length(Q) + 1]] <- p 
+}
+```
+
+`r if(keyval_scr) {"### Observed scores"}`
+
+<center>
+```{r eval=keyval_scr, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
+ggplotly(Q[[1]], tooltip = c("sample_id"))
+```
+<center>
+
+`r if(keyval_scr) {"### Simulated scores"}`
+
+<center>
+```{r eval=keyval_scr, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
+ggplotly(Q[[2]], tooltip = c("sample_id"))
+```
+<center>
+
+`r if(keyval_scr) {"## {-}"}`
+
+`r if(keyval_scr) {"- - -"}`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+db_plot <- bind_rows(summary_df, qc_summary_df) %>%
+  dplyr::group_by(sample_id) %>%
+  dplyr::mutate(group = cur_group_id())
+p1 <- ggplot(db_plot, 
+            aes(x = genes/1e3, y = cells/1e3, 
+                sample_id = sample_id, cells = cells, genes = genes)) +
+  getBaseTheme() +
+  theme(axis.title = element_text(size = 12, face = "bold"),
+        axis.text = element_text(size = 10, face = "bold"),
+        legend.position = 'none') +
+  xlab("Gene [1e3]") + ylab("Cell [1e3]") +
+  geom_line(aes(group = group),
+            linetype = "dashed", size = 0.25, color = "grey50") +
+  geom_point(aes(fill = type, shape = type),
+             size = 3.0, color = "white", show.legend = FALSE) +
+  scale_fill_manual(name = "", 
+                    values = setNames(c("steelblue", "firebrick"),
+                                      c("pre-qc", "post-qc")),
+                    labels = c("Raw data", "Post QC")) +
+  scale_shape_manual(name="",
+                    values=setNames(c(21, 23),c("pre-qc", "post-qc"))) +
+  scale_x_reverse() +
+  guides(fill = "none", color = "none")  
+# ===================================
+db_plot <- merge(qc_impact, qc_summary_df, by = "sample_id", all = TRUE)
+p2 <- ggplot(db_plot, 
+            aes(x = avg_count_g/1000, y = avg_count_c/1000, label = sample_id,
+                cells = cells, genes = genes)) +
+  getBaseTheme() +
+  theme(axis.title = element_text(size = 12, face = "bold"),
+        axis.text = element_text(size = 10, face = "bold")) +
+  xlab("Gene per cell [1e3]") + ylab("UMI per cell [1e3]") +
+  geom_point(shape = 23, size = 2, color = "firebrick", fill = "firebrick") +
+  geom_errorbarh(aes(xmin = (avg_count_g-sd_count_g/2)/1000, 
+                     xmax = (avg_count_g+sd_count_g/2)/1000),
+                 height = 0.1, size = 0.2) +
+  geom_errorbar(aes(ymin = (avg_count_c-sd_count_c/2)/1000, 
+                    ymax = (avg_count_c+sd_count_c/2)/1000),
+                width = 0.1, size = 0.2) 
+```
+
+## Impact of Quality Control on Cell, Gene, and UMI Abundances {.tabset}
+
+### Number of cells and genes per sample
+
+<span style="color:steelblue">circle</span> and <span style="color:firebrick">diamonds</span> refer to before and after QC, respectively.
+
+<center>
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.0), fig.align = 'center'}
+ggplotly(p1, tooltip = c("sample_id", "cells", "genes"))
+```
+<center>
+
+### Average number of UMIs/cell and genes/cell per sample
+
+The error bars represent the standard deviation of the number of UMIs and genes across cells per sample.
+
+<center>
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.0), fig.align = 'center'}
+ggplotly(p2, tooltip = c("sample_id", "cells", "genes"))
+```
+<center>
+
+## {-}
+
+- - -
+
+# ExpressObject
+
+<u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressObject** section summarizes key quality control metrics and 
+visualizations for the merged single-cell dataset. It includes tables of post-QC values for UMIs, genes, and 
+mitochondrial content per cell, alongside a dictionary of computed metadata fields. Dimensionality reduction 
+projections —UMAP and t-SNE if enabled — depict sample distribution and potential batch effects, with batch correction outcomes 
+shown when enabled. Density overlays of cell-level QC metrics across these embeddings highlight spatial patterns 
+in data quality, supporting interpretation of cellular heterogeneity and technical variation.">Read me</u>
+
+
+## Key QC Metrics of Merged Object
+
+```{r final object metrics, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+# UMI per cell (formatted with comma for thousands separator)
+summ1 <- as.data.frame(t(count_by_cell_f$value))
+colnames(summ1) <- count_by_cell_f$metric
+summ1 <- dplyr::mutate_all(summ1, ~scales::comma(., accuracy = 1))
+
+# Gene per cell (formatted with comma for thousands separator)
+summ2 <- as.data.frame(t(gene_by_cell_f$value))
+colnames(summ2) <- gene_by_cell_f$metric
+summ2 <- dplyr::mutate_all(summ2, ~scales::comma(., accuracy = 1))
+
+# Mitochondrial (%) per cell (formatted with 2 decimal places)
+summ3 <- as.data.frame(t(pct_mito_f$value))
+colnames(summ3) <- pct_mito_f$metric
+summ3 <- dplyr::mutate_all(summ3, ~format(round(., 2), nsmall = 2))
+
+db <- dplyr::bind_rows(summ1, summ2, summ3)
+rownames(db) <- c("UMI per cell", "Gene per cell", "Mitochondrial (%)")
+db %>%
+  dplyr::select(-c("sample", "sample_id")) %>%
+  kableExtra::kable() %>%
+  kableExtra::kable_classic(full_width = F, html_font = "Cambria") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                            full_width = F, fixed_thead = TRUE) %>%
+  kableExtra::scroll_box(width = "100%", height = 6)
+```
+
+- - -
+
+## Dictionary of Computed Metadata Fields and their Descriptions
+
+```{r table-2, metadeata_desc, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+mtd_desc %>%
+  dplyr::mutate(field = paste0("`", field, "`")) %>%
+  kableExtra::kable(col.names = c("Metadata", "Description")) %>%
+  kableExtra::kable_classic(full_width = FALSE, html_font = "Cambria") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                            full_width = FALSE, fixed_thead = TRUE) %>%
+  kableExtra::scroll_box(width = "100%", height = "200px")
+```
+
+- - -
+
+## Visualization of Merged scRNA-Seq Object in 2D Space {.tabset .tabset-fade .tabset-dropdown}
+
+### UMAP Projection
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(fobj, "UMAP1", "UMAP2", "sample_id", smpl_colrs, geomLabelRepel = TRUE)
+```
+
+`r if (keyval_batch) { "### UMAP Projection (no-batch correction)" }`
+```{r, eval=keyval_batch, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(obj_noharm, "UMAP1", "UMAP2", "sample_id", smpl_colrs, geomLabelRepel = TRUE)
+```
+
+`r if (keyval_tsne) { "### TSNE Projection" }`
+```{r, eval=keyval_tsne, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(fobj, "TSNE1", "TSNE2", "sample_id", smpl_colrs, geomLabelRepel = TRUE)
+```
+
+`r if (keyval_tsne & keyval_batch) {"### TSNE Projection (no-batch correction)"}`
+```{r, eval=keyval_tsne & keyval_batch, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(obj_noharm, "TSNE1", "TSNE2", "sample_id", smpl_colrs, geomLabelRepel = TRUE)
+```
+
+## {-}
+
+- - - 
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+# Convert JSON-like list into a structured data frame
+density_df <- dplyr::bind_rows(rprt$density_plot_data)
+density_combos <- list(
+  list("nCount_RNA", "UMAP1", "UMAP2", "UMI per cell - UMAP Projection"),
+  list("nFeature_RNA", "UMAP1", "UMAP2", "Gene per cell - UMAP Projection"),
+  list("percent_mt", "UMAP1", "UMAP2", "Mitochondrial (%) per cell - UMAP Projection")
+)
+# Add TSNE if available
+if (keyval_tsne) {
+  keyval_tsne <- TRUE 
+  density_combos <- append(density_combos, list(
+    list("nCount_RNA", "TSNE1", "TSNE2", "UMI per cell - TSNE Projection"),
+    list("nFeature_RNA", "TSNE1", "TSNE2", "Gene per cell - TSNE Projection"),
+    list("percent_mt", "TSNE1", "TSNE2", "Mitochondrial (%) per cell - TSNE Projection")
+  ))
+}
+
+# Loop through each combo and generate plots
+Q <- list()
+for (combo in density_combos) {
+  feature <- combo[[1]]
+  x_col <- combo[[2]]
+  y_col <- combo[[3]]
+  title <- combo[[4]]
+
+  # Skip mitochondrial QC plot if percent_mt is zero
+  if (feature == "percent_mt" & max(density_df$percent_mt) == 0) {
+    message(paste("***", "maximum percent_mt = 0, no QC density plot."))
+    next
+  }
+
+  Q[[length(Q) + 1]] <- plot_density_ggplot(density_df, x_col, y_col, feature)
+  names(Q)[length(Q)] <- title
+}
+```
+
+## Visualizing Cell QC Metrics Using Dimensionality Reduction {.tabset .tabset-fade .tabset-dropdown}
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
+make_tab <- function(x) {
+  cat("\n")                     # Space
+  cat("###", names(x), "\n")    # Label the tab using list names
+  plot(x[[1]])                 # Display the plot
+  cat("\n")                     # Space
+}
+for(i in 1:length(Q)){
+  make_tab(Q[i])
+}
+```
+
+## {-}
+
+- - -
+
+# ExpressCluster
+
+<u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressCluster** section presents clustering results derived from 
+dimensionality reduction and unsupervised partitioning of single cells. Cells are visualized in UMAP and t-SNE space (if enabled), 
+colored by cluster identity, with optional views before batch correction (if enabled). Cluster composition is 
+further summarized through bar plots indicating absolute and relative cell abundance. Gini coefficient curves are 
+used to assess sample imbalance within each cluster, providing a proxy for batch effect artifacts. These visualizations 
+collectively support interpretation of cellular heterogeneity and clustering robustness.">Read me</u>
+
+## Visualizing Cell Populations with Dimensionality Reduction {.tabset .tabset-fade .tabset-dropdown}
+
+### UMAP Projection
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(fobj, "UMAP1", "UMAP2", "cluster", clstr_colrs, geomLabelRepel = TRUE)
+```
+
+`r if (keyval_batch) { "### UMAP Projection (no-batch correction)" }`
+```{r, eval=keyval_batch, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(obj_noharm, "UMAP1", "UMAP2", "cluster", clstr_colrs_btch, geomLabelRepel = TRUE)
+```
+
+`r if (keyval_tsne) { "### TSNE Projection" }`
+```{r, eval=keyval_tsne, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(fobj, "TSNE1", "TSNE2", "cluster", clstr_colrs, geomLabelRepel = TRUE)
+```
+
+`r if (keyval_tsne & keyval_batch) {"### TSNE Projection (no-batch correction)"}`
+```{r, eval=keyval_tsne && keyval_batch, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(obj_noharm, "TSNE1", "TSNE2", "cluster", clstr_colrs_btch, geomLabelRepel = TRUE)
+```
+
+## {-}
+
+- - -
+
+## Cell Composition and Abundance in Clusters {.tabset}
+
+Values at the top of each bar indicate the percentage of cells
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+df <- data.frame(table(fobj[["cluster"]]))
+names(df) <- c("cluster", "count")
+db_plot <- df %>%
+  dplyr::arrange(desc(count)) %>%
+  dplyr::mutate(pct = count/sum(count),
+                cluster = factor(cluster, levels = unique(cluster), ordered = T))
+p1 <- ggplot() +
+    getBaseTheme() +
+    theme(plot.title = element_blank(),
+          axis.title = element_text(size = 28, face = "bold"),
+          axis.text = element_text(size = 25, face = "bold")) +
+    xlab("Leiden Cluster") + ylab("Number of cells") + 
+    geom_bar(data = db_plot,
+             aes(x = cluster, y = count),
+             width = 0.65, stat = "identity", fill = "steelblue") +
+    geom_text(data = db_plot,
+              aes(x = cluster, y = count, label = paste0(round(100*count/sum(count), 1))),
+              size = 6, vjust = -0.5, angle = 0, fontface = "bold") + # , nudge_y = 0.25
+    geom_text(data = db_plot,
+              aes(x = cluster, y = count, label = scales::comma(count, accuracy = 1)),
+              size = 10, hjust = 1.2, angle = 90) + # , nudge_y = 0.25
+    scale_y_continuous(trans = scales::log10_trans(),
+                       breaks = scales::trans_breaks("log10", function(x) 10^x),
+                       labels = scales::trans_format("log10", scales::math_format(10^.x)))
+ 
+if (keyval_batch) {
+  df <- data.frame(table(obj_noharm[["cluster"]]))
+  names(df) <- c("cluster", "count")
+  db_plot <- df %>%
+    dplyr::arrange(desc(count)) %>%
+    dplyr::mutate(pct = count/sum(count),
+                  cluster = factor(cluster, levels = unique(cluster), ordered = T))
+  p2 <- ggplot() +
+      getBaseTheme() +
+      theme(plot.title = element_blank(),
+            axis.title = element_text(size = 28, face = "bold"),
+            axis.text = element_text(size = 25, face = "bold")) +
+      xlab("Leiden Cluster") + ylab("Number of cells") + 
+      geom_bar(data = db_plot,
+               aes(x = cluster, y = count),
+               width = 0.65, stat = "identity", fill = "steelblue") +
+      geom_text(data = db_plot,
+                aes(x = cluster, y = count, label = paste0(round(100*count/sum(count), 1))),
+                size = 6, vjust = -0.5, angle = 0, fontface = "bold") + # , nudge_y = 0.25
+      geom_text(data = db_plot,
+                aes(x = cluster, y = count, label = scales::comma(count, accuracy = 1)),
+                size = 10, hjust = 1.2, angle = 90) + # , nudge_y = 0.25
+      scale_y_continuous(trans = scales::log10_trans(),
+                         breaks = scales::trans_breaks("log10", function(x) 10^x),
+                         labels = scales::trans_format("log10", scales::math_format(10^.x)))
+} 
+```
+
+### Cluster Frequency
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
+plot(p1)
+```
+
+`r if (keyval_batch) "### Cluster Frequency (no-batch correction)"` 
+
+```{r eval=keyval_batch, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
+plot(p2)
+```
+
+## {-}
+
+- - -
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+gini <- table(fobj[["sample_id"]], fobj[["cluster"]])
+gini <- apply(gini, 2, DescTools::Gini)
+df <- data.frame(gini) %>%
+    tibble::rownames_to_column(var = "cluster") %>%
+    base::merge(., data.frame(cluster = names(table(fobj[["cluster"]])),
+                              count = as.vector(table(fobj[["cluster"]]))),
+                by = "cluster", all = TRUE) %>%
+    dplyr::arrange(desc(count)) %>%
+    dplyr::mutate(cluster = factor(cluster, levels = cluster, ordered = TRUE))
+p1 <- ggplot(df,
+            aes(x = cluster, y = gini, label = scales::comma(count, accuracy = 1))) +
+    getBaseTheme() +
+    theme(plot.title = element_blank(),
+          axis.title = element_text(size = 28, face = "bold"),
+          axis.text = element_text(size = 25, face = "bold")) +
+    xlab("Leiden Cluster") + ylab("Gini coefficient") + 
+    coord_cartesian(ylim = c(0,1)) +
+    geom_hline(yintercept = 0.5, linetype = 2, color = "firebrick", size = 0.5) +
+    geom_point(shape = 23, fill = "black", color = "black", size = 3) + 
+    geom_text_repel(size = 6, seed = 12345) +
+    geom_smooth(data = df, aes(x = as.numeric(cluster), y = gini), 
+                formula = 'y ~ x', method = 'loess', se = F,
+                size = 0.5, linetype = 1, color = "steelblue")
+
+if (keyval_batch) {
+  vars <- strsplit(params$opt$batch_vars, split = ",")[[1]]
+  vars <- gsub(" ", "", vars)
+
+  obj_noharm <- obj_noharm %>%
+      dplyr::mutate(batch_vars = paste(!!!rlang::syms(vars), sep =",")) 
+  gini <- table(obj_noharm[["batch_vars"]], obj_noharm[["cluster"]])
+  gini <- apply(gini, 2, DescTools::Gini)
+  df <- data.frame(gini) %>%
+      tibble::rownames_to_column(var = "cluster") %>%
+      base::merge(., data.frame(cluster = names(table(obj_noharm[["cluster"]])),
+                                count = as.vector(table(obj_noharm[["cluster"]]))),
+                  by = "cluster", all = TRUE) %>%
+      dplyr::arrange(desc(count)) %>%
+      dplyr::mutate(cluster = factor(cluster, levels = cluster, ordered = TRUE))
+
+  p2 <- ggplot(df,
+              aes(x = cluster, y = gini, label = scales::comma(count, accuracy = 1))) +
+      getBaseTheme() +
+      theme(plot.title = element_blank(),
+            axis.title = element_text(size = 28, face = "bold"),
+            axis.text = element_text(size = 25, face = "bold")) +
+      xlab("Leiden Cluster") + ylab("Gini coefficient") + 
+      coord_cartesian(ylim = c(0,1)) +
+      geom_hline(yintercept = 0.5, linetype = 2, color = "firebrick", size = 0.5) +
+      geom_point(shape = 23, fill = "black", color = "black", size = 3) + 
+      geom_text_repel(size = 6, seed = 12345) +
+      geom_smooth(data = df, aes(x = as.numeric(cluster), y = gini), 
+                  formula = 'y ~ x', method = 'loess', se = F,
+                  size = 0.5, linetype = 1, color = "steelblue")
+
+  fobj <- fobj %>%
+      dplyr::mutate(batch_vars = paste(!!!rlang::syms(vars), sep =",")) 
+  gini <- table(fobj[["batch_vars"]], fobj[["cluster"]])
+  gini <- apply(gini, 2, DescTools::Gini)  
+  df <- data.frame(gini) %>%
+      tibble::rownames_to_column(var = "cluster") %>%
+      base::merge(., data.frame(cluster = names(table(fobj[["cluster"]])),
+                                count = as.vector(table(fobj[["cluster"]]))),
+                  by = "cluster", all = TRUE) %>%
+      dplyr::arrange(desc(count)) %>%
+      dplyr::mutate(cluster = factor(cluster, levels = cluster, ordered = TRUE))
+      
+  p3 <- ggplot(df,
+              aes(x = cluster, y = gini, label = scales::comma(count, accuracy = 1))) +
+      getBaseTheme() +
+      theme(plot.title = element_blank(),
+            axis.title = element_text(size = 28, face = "bold"),
+            axis.text = element_text(size = 25, face = "bold")) +
+      xlab("Leiden Cluster") + ylab("Gini coefficient") + 
+      coord_cartesian(ylim = c(0,1)) +
+      geom_hline(yintercept = 0.5, linetype = 2, color = "firebrick", size = 0.5) +
+      geom_point(shape = 23, fill = "black", color = "black", size = 3) + 
+      geom_text_repel(size = 6, seed = 12345) +
+      geom_smooth(data = df, aes(x = as.numeric(cluster), y = gini), 
+                  formula = 'y ~ x', method = 'loess', se = F,
+                  size = 0.5, linetype = 1, color = "steelblue")
+}
+```
+
+## Sample Imbalance in Clusters Using Gini Indices {.tabset .tabset-fade .tabset-dropdown}
+
+The Gini coefficient is used to quantify sample-level or batch-level imbalance within each Leiden cluster. 
+Higher Gini values indicate skewed representation (e.g., one sample dominating a cluster), which may be 
+indicative of batch effects or sampling artifacts. Values next to each point reflect the number of cells per cluster.
+A horizontal red dashed line at Gini = 0.5 is provided as a visual threshold to aid interpretation.
+
+### Dispersion Curve by 'sample_id' (default plotting)
+Computed using batch-corrected data (if enabled)
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
+plot(p1)
+```
+
+`r if (keyval_batch) paste("### Dispersion Curve by", paste(vars, collapse=' and '), "(no batch correction)")` 
+
+```{r eval=keyval_batch, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
+plot(p2)
+```
+
+`r if (keyval_batch) paste("### Dispersion Curve by", paste(vars, collapse=' and '), "(after batch correction)")` 
+
+```{r eval=keyval_batch, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
+plot(p3)
+```
+
+## {-}
+
+- - -
+
+`r if (keyval_scim || keyval_cltpst) "# ExpressAnnotation"`
+
+`r if (keyval_scim || keyval_cltpst) '<u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressAnnotation** section presents 
+inferred cell type and cell state annotations derived from automated classification tools such as SCimilarity and 
+CellTypist (optional). Cells are projected in UMAP and t-SNE (if enabled) space, colored by annotation labels, enabling 
+visual assessment of population separation. Bar plots summarize the frequency of each annotated group, while interactive 
+networks illustrate the hierarchical relationships between curated cell types and their associated computationaly inferred cell states. 
+Together, these views provide biological context to clustering results and support downstream interpretation of cellular identities.">Read me</u>'`
+
+`r if (keyval_scim || keyval_cltpst) "## Visualizing Distinct Cell Type Populations with Dimensionality Reduction {.tabset .tabset-fade .tabset-dropdown}"`
+
+`r if (keyval_scim) "### scimilarity UMAP Projection"`
+
+```{r, eval=keyval_scim, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(8.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(fobj, "UMAP1", "UMAP2", "celltype_scimilarity", cltyp_colrs)
+```
+
+`r if (keyval_scim && keyval_tsne) { "### scimilarity TSNE Projection" }`
+```{r, eval=keyval_scim && keyval_tsne, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(8.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(fobj, "TSNE1", "TSNE2", "celltype_scimilarity", cltyp_colrs)
+```
+
+`r if (keyval_cltpst) "### Celltypist UMAP Projection"`
+
+```{r, eval=keyval_cltpst, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(8.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(fobj, "UMAP1", "UMAP2", "celltype_celltypist", cltyp_colrs)
+```
+
+`r if (keyval_cltpst && keyval_tsne) { "### Celltypist TSNE Projection" }`
+```{r, eval=keyval_cltpst && keyval_tsne, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(8.0, 5.0), fig.align = 'center', results='asis'}
+ plot_projection(fobj, "TSNE1", "TSNE2", "celltype_celltypist", cltyp_colrs)
+```
+
+`r if (keyval_scim || keyval_cltpst) "## {-}"`
+
+`r if (keyval_scim || keyval_cltpst) "- - -"`
+
+```{r, eval=any(c(keyval_scim, keyval_cltpst)), warning=FALSE, message=FALSE, echo=FALSE}
+celtype_vec <- c("celltype_scimilarity", "cellstate_scimilarity", "celltype_celltypist", "cellstate_celltypist")
+Q <- list()
+for (cltp in celtype_vec) {
+  
+  if (!cltp %in% colnames(fobj)) next()
+  axis_text_x <- ifelse(cltp %in% c("celltype_scimilarity", "celltype_celltypist"), 18, 14)
+  text_size_frac <- ifelse(cltp %in% c("celltype_scimilarity", "celltype_celltypist"), 6, 4)
+  text_size_count <- ifelse(cltp %in% c("celltype_scimilarity", "celltype_celltypist"), 10, 6)
+
+  df <- data.frame(table(fobj[[cltp]]))
+  names(df) <- c("celltype", "count")
+  db_plot <- df %>%
+    dplyr::arrange(desc(count)) %>%
+    dplyr::mutate(pct = count/sum(count),
+                  celltype = factor(celltype, levels = unique(celltype), ordered = T))
+  p <- ggplot() +
+      getBaseTheme() +
+      theme(plot.title = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_text(size=28, face="bold"),
+            axis.text.x = element_text(size=axis_text_x, face="bold", angle=45, hjust=1, vjust=1),
+            axis.text.y = element_text(size=25, face="bold")) + 
+      xlab("") + ylab("Number of cells") + 
+      geom_bar(data = db_plot,
+               aes(x = celltype, y = count),
+               width = 0.65, stat = "identity", fill = "steelblue") +
+      geom_text(data = db_plot,
+                aes(x = celltype, y = count, label = paste0(round(100*count/sum(count), 1))),
+                size = text_size_frac, vjust = -0.5, angle = 0, fontface = "bold") + # , nudge_y = 0.25
+      geom_text(data = db_plot,
+                aes(x = celltype, y = count, label = scales::comma(count, accuracy = 1)),
+                size = text_size_count, hjust = 1.2, angle = 90) + # , nudge_y = 0.25
+      scale_y_continuous(trans = scales::log10_trans(),
+                         breaks = scales::trans_breaks("log10", function(x) 10^x),
+                         labels = scales::trans_format("log10", scales::math_format(10^.x)))
+    Q[[length(Q) + 1]] <- p
+}
+```
+
+`r if (keyval_scim || keyval_cltpst) "## Cell Type Population Frequency {.tabset}"`
+
+`r if (keyval_scim || keyval_cltpst) "Values at the top of each bar indicate the percentage of cells"`
+
+`r if (keyval_scim) "### SCimilarity (cell type)"`
+
+```{r eval=keyval_scim, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center', results='asis'}
+ plot(Q[[1]])
+```
+
+`r if (keyval_scim) "### SCimilarity (cell state)"`
+
+```{r eval=keyval_scim, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center', results='asis'}
+ plot(Q[[2]])
+```
+
+`r if (keyval_cltpst) "### CellTypist (cell type)"`
+
+```{r eval=keyval_cltpst, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center', results='asis'}
+ plot(Q[[3]])
+```
+
+`r if (keyval_cltpst) "### CellTypist (cell state)"`
+
+```{r eval=keyval_cltpst, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center', results='asis'}
+ plot(Q[[4]])
+```
+
+`r if (keyval_scim || keyval_cltpst) "## {-}"`
+
+`r if (keyval_scim || keyval_cltpst) "- - -"`
+
+`r if (keyval_scim || keyval_cltpst) "## Cell Type Population Composition {.tabset}"`
+
+`r if (keyval_scim || keyval_cltpst) "The curated ontology (cell type) acts as a reference framework, while annotation methods refine classifications into more detailed (cell state) categories. The network visualizes hierarchical mapping from cellstate (real annotation) to celltype (curated)."`
+
+`r if (keyval_scim) "### SCimilarity"`
+
+<center>
+```{r visNetwork_1, eval=keyval_scim, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(6.0, 5.0), fig.align = 'center', results='asis'}
+# Example adata-like data frame
+scim_nodes <- scim_nodes[mixedorder(scim_nodes$id), ]
+visNetwork(scim_nodes, scim_edges, width = "100%") %>%
+  visIgraphLayout(layout = "layout_with_fr") %>%
+  visNodes(
+    shape = "dot",
+    scaling = list(min = 10, max = 75),
+    font = list(size = 22),
+    color = list(highlight = "red")
+  ) %>%
+  visEdges(arrows = "to", color = list(color = "black", highlight = "red")) %>%
+  visGroups(groupname = "celltype", color = list(background = "#1f78b4", border = "#1f78b4")) %>%
+  visGroups(groupname = "cellstate", color = list(background = "#e6ab02", border = "#e6ab02")) %>%
+  visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) %>%
+  visInteraction(dragNodes = TRUE, dragView = TRUE, zoomView = TRUE, navigationButtons = TRUE)
+```
+<center>
+
+`r if (keyval_cltpst) "### CellTypist"`
+
+<center>
+```{r visNetwork_2, eval=keyval_cltpst, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(6.0, 5.0), fig.align = 'center', results='asis'}
+# Ensure node IDs are sorted BEFORE passing to visNetwork
+sctp_nodes <- sctp_nodes[mixedorder(sctp_nodes$id), ]
+# Example adata-like data frame
+visNetwork(sctp_nodes, sctp_edges, width = "100%") %>%
+  visIgraphLayout(layout = "layout_with_fr") %>%
+  visNodes(
+    shape = "dot",
+    scaling = list(min = 10, max = 75),
+    font = list(size = 22),
+    color = list(highlight = "red")
+  ) %>%
+  visEdges(arrows = "to", color = list(color = "black", highlight = "red")) %>%
+  visGroups(groupname = "celltype", color = list(background = "#1f78b4", border = "#1f78b4")) %>%
+  visGroups(groupname = "cellstate", color = list(background = "#e6ab02", border = "#e6ab02")) %>%
+  visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) %>%
+  visInteraction(dragNodes = TRUE, dragView = TRUE, zoomView = TRUE, navigationButtons = TRUE)
+```
+<center>
+
+`r if (keyval_scim || keyval_cltpst) "## {-}"`
+
+`r if (keyval_scim || keyval_cltpst) "- - -"`
+
+`r if (any(c(keyval_leidn_mrkrs, keyval_scim_mrkrs, keyval_cltpst_mrkrs))) { "# ExpressMarkers" }`
+  
+`r if (any(c(keyval_leidn_mrkrs, keyval_scim_mrkrs, keyval_cltpst_mrkrs))) { 
+  '<u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressMarkers** section presents the 
+  expression signatures	identified across clusters or annotated cell groups. Marhers are displayed 
+  in interactive tables, stratified by Leiden clusters or automated annotation methods such as 
+  SCimilarity and CellTypist, if enabled. Within each group, genes are sorted by decreasing log fold change.
+  These tables highlight genes with significant adjusted p-values and sufficient expression prevalence, enabling 
+  biological interpretation of cellular identities and group-specific signatures.">Read me</u>'
+}`
+
+`r if (any(c(keyval_leidn_mrkrs, keyval_scim_mrkrs, keyval_cltpst_mrkrs))) { "## Expression Signatures Genes for Each Group {.tabset}" }`
+
+`r if (any(c(keyval_leidn_mrkrs, keyval_scim_mrkrs, keyval_cltpst_mrkrs))) {
+  paste("Top", params$opt$top_n_deg, "markers (p_val_adj < 0.05 and expressed in more than", params$opt$pts_threshold, "fraction of cells) for each group.")
+}`
+
+`r if (keyval_leidn_mrkrs) { "### Leiden Cluster "}`
+
+```{r eval=keyval_leidn_mrkrs, warning=FALSE, message=FALSE, echo=FALSE}
+# Convert JSON list to a structured data frame
+max_rows <- max(sapply(rprt$clusters_markers, length))  # Find the max number of genes in any group
+# Sort the group names numerically
+sorted_groups <- mixedsort(names(rprt$clusters_markers))
+# Create a data frame where each column represents a group and rows are genes
+mrkrs_df <- as.data.frame(do.call(cbind, lapply(sorted_groups, function(group) {
+  gene_list <- rprt$clusters_markers[[group]]
+  length(gene_list) <- max_rows  # Standardize column length by adding NA
+  return(gene_list)
+})))
+# Set column names as the sorted group labels
+colnames(mrkrs_df) <- sorted_groups
+# Display interactive DataTable
+datatable(mrkrs_df, class = "compact stripe hover",
+  rownames = TRUE,  # This will show the "Markers" title
+  colnames = c("Markers", sorted_groups),  # Add row title and column headers
+  options = list(pageLength = 5, scrollX = TRUE),
+  caption = htmltools::tags$caption(
+    style = "font-size: 16px; font-weight: bold; text-align: center; color: black;",
+    "Clusters"
+  )) %>%
+  formatStyle(
+    columns = colnames(mrkrs_df),  # Apply to all columns
+    fontSize = '11px'  # Change font size
+  )
+```
+
+`r if (keyval_scim & keyval_scim_mrkrs) { "### SCimilarity Group" }`
+
+```{r eval=keyval_scim & keyval_scim_mrkrs, warning=FALSE, message=FALSE, echo=FALSE}
+# Convert JSON list to a structured data frame
+max_rows <- max(sapply(rprt$scimilarity_markers, length))  # Find the max number of genes in any group
+# Sort the group names numerically
+sorted_groups <- mixedsort(names(rprt$scimilarity_markers))
+# Create a data frame where each column represents a group and rows are genes
+mrkrs_df <- as.data.frame(do.call(cbind, lapply(sorted_groups, function(group) {
+  gene_list <- rprt$scimilarity_markers[[group]]
+  length(gene_list) <- max_rows  # Standardize column length by adding NA
+  return(gene_list)
+})))
+# Set column names as the sorted group labels
+colnames(mrkrs_df) <- sorted_groups
+# Display interactive DataTable
+datatable(mrkrs_df, class = "compact stripe hover",
+  rownames = TRUE,  # This will show the "Markers" title
+  colnames = c("Markers", sorted_groups),  # Add row title and column headers
+  options = list(pageLength = 5, scrollX = TRUE),
+  caption = htmltools::tags$caption(
+    style = "font-size: 16px; font-weight: bold; text-align: center; color: black;",
+    "Cell States"
+  )) %>%
+  formatStyle(
+    columns = colnames(mrkrs_df),  # Apply to all columns
+    fontSize = '11px'  # Change font size
+  )
+```
+
+`r if (keyval_cltpst & keyval_cltpst_mrkrs) { "### CellTypist Group" }`
+
+```{r eval=keyval_cltpst & keyval_cltpst_mrkrs, warning=FALSE, message=FALSE, echo=FALSE}
+# Convert JSON list to a structured data frame
+max_rows <- max(sapply(rprt$celltypist_markers, length))  # Find the max number of genes in any group
+# Sort the group names numerically
+sorted_groups <- mixedsort(names(rprt$celltypist_markers))
+# Create a data frame where each column represents a group and rows are genes
+mrkrs_df <- as.data.frame(do.call(cbind, lapply(sorted_groups, function(group) {
+  gene_list <- rprt$celltypist_markers[[group]]
+  length(gene_list) <- max_rows  # Standardize column length by adding NA
+  return(gene_list)
+})))
+# Set column names as the sorted group labels
+colnames(mrkrs_df) <- sorted_groups
+# Display interactive DataTable
+datatable(mrkrs_df, class = "compact stripe hover",
+  rownames = TRUE,  # This will show the "Markers" title
+  colnames = c("Markers", sorted_groups),  # Add row title and column headers
+  options = list(pageLength = 5, scrollX = TRUE),
+  caption = htmltools::tags$caption(
+    style = "font-size: 16px; font-weight: bold; text-align: center; color: black;",
+    "Cell States"
+  )) %>%
+  formatStyle(
+    columns = colnames(mrkrs_df),  # Apply to all columns
+    fontSize = '11px'  # Change font size
+  )
+```
+
+`r if (any(c(keyval_leidn_mrkrs, keyval_scim_mrkrs, keyval_cltpst_mrkrs))) { "## {-}" }`
+
+`r if (any(c(keyval_leidn_mrkrs, keyval_scim_mrkrs, keyval_cltpst_mrkrs))) { "- - - " }`
+
+# ExpressRefs
+
+<u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressRefs** section provides direct access to external 
+resources related to the dataset or study. It includes links to the primary documentation and associated 
+data repository, if specified, supporting further exploration of the study context and findings.">Read me</u>
+
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, results='asis'}
+if (params$opt$doc_url != "None") {
+  cat(paste0("Documentation: [View Paper](", params$opt$doc_url,")", collapse="\n\n"), sep="\n")
+} else {
+  cat(paste0("Documentation: no referrence"), sep="\n")
+}
+```
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, results='asis'}
+if (params$opt$data_url != "None") {
+  cat(paste0("Data Availability: [Access Data](", params$opt$data_url,")", collapse="\n\n"), sep="\n")
+} else {
+  cat(paste0("Data Availability: no referrence"), sep="\n")
+}
+```
+
+- - -
+
+# ExpressWorkspace {.tabset}
+
+<u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressWorkspace** section documents the computing environment 
+used for analysis, including detailed specifications of the R, Python, and Domino execution environments. 
+These tables capture software versions, package dependencies, and runtime metadata, supporting reproducibility and 
+transparency of the **CellExpress** workflow.">Read me</u>
+
+Computing environment information
+
+## Python 
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, max.height='300px'}
+kableExtra::kable(python_env, caption = paste("Python Environment (Python", python_version, ")")) %>%
+    kableExtra::kable_classic(full_width = F, html_font = "Cambria") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                              full_width = F, fixed_thead = TRUE) %>%
+    kableExtra::scroll_box(width = "100%", height = "300px")
+```
+
+## R
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, max.height='300px'}
+# Extract R version (removing date part)
+r_version <- paste(R.version$major, R.version$minor, sep = ".")
+# Extract session info and convert to data frame
+session_packages <- as.data.frame(installed.packages()[, c("Package", "Version")])
+rownames(session_packages) <- NULL
+# Create a kable table for R session info with simplified caption
+kableExtra::kable(session_packages, caption = paste("R Environment (R", r_version, ")")) %>%
+    kableExtra::kable_classic(full_width = FALSE, html_font = "Cambria") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                              full_width = FALSE, fixed_thead = TRUE) %>%
+    kableExtra::scroll_box(width = "100%", height = "300px")
+```
+
+# {-}
+
+- - - 

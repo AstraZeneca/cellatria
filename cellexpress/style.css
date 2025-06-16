@@ -1,0 +1,19 @@
+/* Whole document: */
+/* Headers */
+h1.title {
+    font-size: 36px;
+}
+.author {
+    font-size: 14px;
+}
+.date {
+    font-size: 14px;
+}
+h1{font-size: 16pt;
+}
+h2{font-size: 14pt;
+}
+h3{font-size: 12pt;
+}
+h4{font-size: 11pt;
+}
