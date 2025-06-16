@@ -132,8 +132,8 @@ RUN apt clean && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /opt/cellatria
 WORKDIR /opt/cellatria
 COPY . /opt/cellatria/
-RUN chmod +x /agent/chatbot.py
-RUN ln /agent/chatbot.py /usr/local/bin/cellatria
+RUN chmod +x /opt/cellatria/agent/chatbot.py
+RUN ln /opt/cellatria/agent/chatbot.py /usr/local/bin/cellatria
 # ===================================
 # The VOLUME instruction and the -v option to docker run tell docker to store 
 VOLUME /data
