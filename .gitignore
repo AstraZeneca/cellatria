@@ -3,7 +3,9 @@
 
 # But not these files/directories:
 !agent/
+!agent/**
 !cellexpress/
+!cellexpress/**
 !.gitignore
 !*.png
 !README.md
