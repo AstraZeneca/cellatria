@@ -34,8 +34,7 @@ if args.help:
 
 # -------------------------------
 
-env_path = args.env_path
-graph, cellatria = create_cellatria(env_path)
+graph, cellatria = create_cellatria(args.env_path)
 cellatria.launch(server_name="0.0.0.0", server_port=7860, share=False)
 
 # -------------------------------

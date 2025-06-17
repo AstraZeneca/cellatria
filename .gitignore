@@ -1,7 +1,7 @@
 # Ignore everything
 *
 
-# Allowlisted files/directories
+# Allow listed files/directories
 !agent/
 !agent/**
 !cellexpress/
@@ -14,3 +14,7 @@
 # Exclude directories inside agent and cellexpress
 **/__pycache__/
 **/.gradio/
+
+# Ignore specific files in agent/
+agent/sandbox.py
+agent/sandbox.txt
