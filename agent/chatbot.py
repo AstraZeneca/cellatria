@@ -35,6 +35,8 @@ if args.help:
 # -------------------------------
 
 graph, cellatria = create_cellatria(args.env_path)
+print("\n✅ CellAtria agent successfully initialized.")
+print("👉 Copy and open the link below in your browser to interact with the agent.\n")
 cellatria.launch(server_name="0.0.0.0", server_port=7860, share=False)
 
 # -------------------------------
