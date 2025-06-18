@@ -191,9 +191,7 @@ def generate_report(adatas, raw_counts, qc_adatas, adata, adata_nohm, metadata_d
         f"date={r_sanitize(date)}, "
         f"runtime_minute={r_sanitize(runtime_minute)}, "
         f"ui={r_sanitize(ui)}, "
-        f"disease_id={r_sanitize(disease_id)}, "
         f"disease_label={r_sanitize(disease_label)}, "
-        f"tissue_id={r_sanitize(tissue_id)}, "
         f"tissue_label={r_sanitize(tissue_label)}"
     )
 
