@@ -3,18 +3,18 @@
 
 import os
 import sys
-sys.path.append("/mnt/work/projects/cellatria")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # -------------------------------
 
 import contextlib
 import io
 import shutil
-from cellexpress.checks import checks_args
-from cellexpress.readin import read_in
-from cellexpress.qcfilter import qc_filter
-from cellexpress.report_onlyqc_wrapper import generate_onlyqc_report
-from cellexpress.helper import total_unique_genes, qc_verbose_ls
+from checks import checks_args
+from readin import read_in
+from qcfilter import qc_filter
+from report_onlyqc_wrapper import generate_onlyqc_report
+from helper import total_unique_genes, qc_verbose_ls
 from datetime import datetime
 
 # -------------------------------
@@ -48,7 +48,7 @@ def control_onlyqc_pipe(args):
 
     # -------------------------------
     # Argument validation
-    args, disease_id, disease_label, tissue_id, tissue_label = checks_args(args)
+    args = checks_args(args)
 
     # -------------------------------
     # Load pre-QC data
@@ -89,7 +89,7 @@ def control_onlyqc_pipe(args):
     args.max_mt_percent = 100.0         # Allow up to 100% mitochondrial content
 
     print("*** 🔄 Removing empty cells and genes...")
-    qc_adatas, qc_summary_df = qc_filter(adatas, args)
+    qc_adatas, qc_summary_df = qc_filter(adatas, metadata_df, args)
     qc_verbose_ls(metadata_df, qc_adatas)
 
     # -------------------------------
@@ -100,10 +100,8 @@ def control_onlyqc_pipe(args):
                            summary_df = qc_summary_df,
                            rmd_file = os.path.join(args.cellexpress_path, "report_onlyqc.Rmd"), 
                            output_file = os.path.join(args.outputs_path, "report_onlyqc_cellexpress.html"), 
-                           disease_id = disease_id,
-                           disease_label = disease_label,
-                           tissue_id = tissue_id, 
-                           tissue_label = tissue_label,
+                           disease_label = args.disease,
+                           tissue_label = args.tissue,
                            args = args)
 
     # -------------------------------

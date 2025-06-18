@@ -3,8 +3,7 @@
 
 import os
 import sys
-sys.path.append("/mnt/work/projects/cellatria")
-
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # -------------------------------
 
@@ -13,16 +12,17 @@ import subprocess
 import tempfile
 import numpy as np
 import pandas as pd
-from cellexpress.helper import (compute_qc_stats_objs, generate_qc_plots_and_filters, compute_barcode_overlap_matrices, 
+from helper import (compute_qc_stats_objs, generate_qc_plots_and_filters, compute_barcode_overlap_matrices, 
                     scrublet_data, computed_metadata_description, qc_impact_data, compute_qc_stats_obj,
                     prepare_visNetwork, ontology_map, get_python_environment, pipeline_arguments, 
-                    extract_pipeline_arguments, prepare_qc_density_data, parse_vars, degs_json)
+                    extract_pipeline_arguments, prepare_qc_density_data, parse_vars, degs_json,
+                    r_sanitize, sanitize_inf)
 
 # -------------------------------
 
 def generate_report(adatas, raw_counts, qc_adatas, adata, adata_nohm, metadata_df, 
                     scrublet_scores, summary_df, qc_summary_df, rmd_file, output_file, 
-                    disease_id, disease_label, tissue_id, tissue_label,
+                    disease_label, tissue_label,
                     date, runtime_minute, ui, args):
     """
     Generate a full RMarkdown report by summarizing analysis results from the pipeline.
@@ -39,7 +39,7 @@ def generate_report(adatas, raw_counts, qc_adatas, adata, adata_nohm, metadata_d
         scrublet_scores: Doublet scores if applicable.
         rmd_file: Path to the RMarkdown template.
         output_file: Desired HTML output path.
-        disease_id, disease_label, tissue_id, tissue_label: Ontology metadata.
+        disease_label, tissue_label: Ontology metadata.
         date: Date of execution.
         runtime_minute: Total runtime of the pipeline in minutes.
         ui: Unique pipeline ID.
@@ -173,6 +173,7 @@ def generate_report(adatas, raw_counts, qc_adatas, adata, adata_nohm, metadata_d
     # -------------------------------
     # Prepare density plot data
     rprt["density_plot_data"] = prepare_qc_density_data(adata, include_tsne="X_tsne" in adata.obsm)
+    rprt = sanitize_inf(rprt)
 
     # -------------------------------
     # Write the JSON to a temp file (safer than passing huge JSON string directly via CLI)
@@ -182,32 +183,19 @@ def generate_report(adatas, raw_counts, qc_adatas, adata, adata_nohm, metadata_d
 
      # Convert args to dictionary from argparse.Namespace
     args_dict = vars(args)
+    opt_str = ", ".join(f"{k}={r_sanitize(v)}" for k, v in sorted(args_dict.items()))
 
-    # Build the params object for RMarkdown — include `snapshot_file`, `opt`, `ui`, and `date`
-    params = {
-        "snapshot_file": tmpfile_path,
-        "opt": args_dict,  # All pipeline args go into opt as a nested structure
-        "date": date,
-        "runtime_minute": runtime_minute,
-        "ui": ui,
-        "disease_id": disease_id, 
-        "disease_label": disease_label,
-        "tissue_id": tissue_id, 
-        "tissue_label": tissue_label
-    }
-
-    # Function to format params into R-compatible strings for rmarkdown::render
-    def format_param(key, value):
-        if isinstance(value, dict):
-            # Use single quotes around keys/values for R compatibility, but avoid backslashes
-            items = [f"{k}='{v}'" for k, v in value.items()]   # No backslashes needed
-            return f"{key}=list({', '.join(items)})"
-        elif isinstance(value, str):
-            return f"{key}='{value}'"   # Use single quotes here too
-        else:
-            return f"{key}={value}"    # Numbers and booleans directly
-
-    params_str = ", ".join(format_param(k, v) for k, v in params.items())
+    params_str = (
+        f"snapshot_file='{tmpfile_path}', "
+        f"opt=list({opt_str}), "
+        f"date={r_sanitize(date)}, "
+        f"runtime_minute={r_sanitize(runtime_minute)}, "
+        f"ui={r_sanitize(ui)}, "
+        f"disease_id={r_sanitize(disease_id)}, "
+        f"disease_label={r_sanitize(disease_label)}, "
+        f"tissue_id={r_sanitize(tissue_id)}, "
+        f"tissue_label={r_sanitize(tissue_label)}"
+    )
 
     # -------------------------------
     # Call RMarkdown to render report

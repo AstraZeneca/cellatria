@@ -3,13 +3,12 @@
 
 import os
 import sys
-sys.path.append("/mnt/work/projects/cellatria")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # -------------------------------
 import re
 import pandas as pd
-from cellexpress.helper import (convert_none, parse_vars, load_mondo_ontology, 
-                    resolve_mondo_disease, load_uberon_ontology, resolve_uberon_tissue)
+from helper import (convert_none, parse_vars)
 
 # -------------------------------
 
@@ -23,7 +22,6 @@ def checks_args(args):
     - Checks required metadata fields (e.g., 'sample').
     - Checks forbidden metadata fields (e.g., 'sample_id').
     - Validates species, doublet detection method, batch correction settings.
-    - Verifies MONDO and UBERON ontology matches for disease and tissue.
     - Ensures SCimilarity and CellTypist models are configured if selected.
     - Confirms valid TSNE setting.
 
@@ -31,7 +29,7 @@ def checks_args(args):
         args (Namespace): Parsed command-line arguments.
 
     Returns:
-        tuple: (args, disease_id, disease_label, tissue_id, tissue_label)
+        tuple: (args)
 
     Raises:
         FileNotFoundError: If input or metadata file is missing.
@@ -136,6 +134,6 @@ def checks_args(args):
     # -------------------------------
 
     print(f"*** ✅ All checks passed.")
-    return args, disease_id, disease_label, tissue_id, tissue_label
+    return args
 
     # -------------------------------

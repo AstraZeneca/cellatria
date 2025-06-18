@@ -3,7 +3,7 @@
 
 import os
 import sys
-sys.path.append("/mnt/work/projects/cellatria")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # -------------------------------
 
@@ -12,12 +12,13 @@ import subprocess
 import tempfile
 import numpy as np
 import pandas as pd
-from cellexpress.helper import (compute_qc_stats_objs, generate_qc_plots_and_filters, compute_barcode_overlap_matrices)
+from helper import (compute_qc_stats_objs, generate_qc_plots_and_filters, compute_barcode_overlap_matrices,
+                    r_sanitize, sanitize_inf)
 
 # -------------------------------
 
 def generate_onlyqc_report(adatas, metadata_df, summary_df, rmd_file, output_file, 
-                            disease_id, disease_label, tissue_id, tissue_label, args):
+                            disease_label, tissue_label, args):
     """
     Wrapper to generate an RMarkdown report, passing data from two AnnData objects
     (harmonized and non-harmonized) directly into the RMarkdown report via parameters.
@@ -55,6 +56,7 @@ def generate_onlyqc_report(adatas, metadata_df, summary_df, rmd_file, output_fil
         "bc_qc_raw": bc_qc_raw, 
         "bc_qc_ji": bc_qc_ji 
     }
+    rprt = sanitize_inf(rprt)
 
     # -------------------------------
     # Write the JSON to a temp file (safer than passing huge JSON string directly via CLI)
@@ -62,31 +64,17 @@ def generate_onlyqc_report(adatas, metadata_df, summary_df, rmd_file, output_fil
         json.dump(rprt, tmpfile)
         tmpfile_path = tmpfile.name
 
-     # Convert args to dictionary from argparse.Namespace
+    # Convert args to dictionary from argparse.Namespace
     args_dict = vars(args)
+    opt_str = ", ".join(f"{k}={r_sanitize(v)}" for k, v in sorted(args_dict.items()))
 
     # Build the params object for RMarkdown — include `snapshot_file` and `opt`
-    params = {
-        "snapshot_file": tmpfile_path,
-        "opt": args_dict,  # All pipeline args go into opt as a nested structure
-        "disease_id": disease_id, 
-        "disease_label": disease_label,
-        "tissue_id": tissue_id, 
-        "tissue_label": tissue_label
-    }
-
-    # Function to format params into R-compatible strings for rmarkdown::render
-    def format_param(key, value):
-        if isinstance(value, dict):
-            # Use single quotes around keys/values for R compatibility, but avoid backslashes
-            items = [f"{k}='{v}'" for k, v in value.items()]   # No backslashes needed
-            return f"{key}=list({', '.join(items)})"
-        elif isinstance(value, str):
-            return f"{key}='{value}'"   # Use single quotes here too
-        else:
-            return f"{key}={value}"    # Numbers and booleans directly
-
-    params_str = ", ".join(format_param(k, v) for k, v in params.items())
+    params_str = (
+        f"snapshot_file='{tmpfile_path}', "
+        f"opt=list({opt_str}), "
+        f"disease_label={r_sanitize(disease_label)}, "
+        f"tissue_label={r_sanitize(tissue_label)}"
+    )
 
     # -------------------------------
     # Call RMarkdown with all params

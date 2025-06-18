@@ -147,6 +147,37 @@ inputs
 | `--doublet_method` | `str` | `None` | Doublet detection method: currently supports [`scrublet`](https://github.com/swolock/scrublet). |
 | `--scrublet_cutoff` | `float` | 0.25 | Threshold above which cells are considered doublets (if using `scrublet`). |
 
+📍 **Sample-Based Quality Control (QC)**
+
+When sample-based QC is required, all QC thresholds can be overridden on a **per-sample basis** using the `metadata.csv` file.  
+In this case, the command-line values serve as **global defaults**, but will be **overwritten** by any per-sample values defined in the metadata.
+
+Each sample's thresholds can be specified using the following **optional columns**:
+
+| Column Name          | Description                                                              |
+|----------------------|--------------------------------------------------------------------------|
+| `min_umi_per_cell`   | Per-sample minimum UMI count.                                            |
+| `max_umi_per_cell`   | Per-sample maximum UMI count.                                            |
+| `min_genes_per_cell` | Per-sample minimum number of detected genes.                             |
+| `max_genes_per_cell` | Per-sample maximum number of detected genes.                             |
+| `min_cell`           | Minimum number of cells a gene must be expressed in.                     |
+| `max_mt_percent`     | Maximum allowed percentage of mitochondrial gene expression per cell.    |
+
+- Entries like `""`, `"NA"`, `"NaN"`, and `"N/A"` are **not allowed** and will raise an error.
+- All values must be **valid numbers** (e.g., `0`, `1000`, `0.05`).
+- Use `"None"` (case-insensitive) to indicate no value:
+  - For `max_` thresholds, `"None"` is interpreted as `Inf` (no upper limit).
+- `"None"` is **not allowed** for `min_` thresholds.
+
+Example metadata file with sample-based QC:
+
+```
+| sample   | tissue | disease | min_umi_per_cell | max_umi_per_cell | min_genes_per_cell | max_genes_per_cell | min_cell | max_mt_percent |
+|----------|--------|---------|------------------|------------------|--------------------|--------------------|----------|----------------|
+| sample_1 | lung   | asthma  | 1000             | 25000            | 300                | 7500               | 10       | 12.5           |
+| sample_2 | lung   | control | 1200             | None             | 250                | 5000               | 15       | 10.0           |
+```
+
 ---
 
 ### 🔬 Analysis Arguments

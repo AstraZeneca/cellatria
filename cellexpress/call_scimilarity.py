@@ -3,7 +3,7 @@
 
 import os
 import sys
-sys.path.append("/mnt/work/projects/cellatria")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # -------------------------------
 
@@ -11,7 +11,7 @@ import pandas as pd
 import scanpy as sc
 from scimilarity.utils import lognorm_counts, align_dataset
 from scimilarity import CellAnnotation
-from cellexpress.helper import ontology_map, summary_by_abundance
+from helper import ontology_map, summary_by_abundance
 
 # -------------------------------
 

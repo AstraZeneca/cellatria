@@ -3,13 +3,13 @@
 
 import os
 import sys
-sys.path.append("/mnt/work/projects/cellatria")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # -------------------------------
 
 import scanpy as sc
 import harmonypy as hm
-from cellexpress.helper import parse_vars, graph_pipeline
+from helper import parse_vars, graph_pipeline
 
 # -------------------------------
 

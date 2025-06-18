@@ -3,7 +3,7 @@
 
 import os
 import sys
-sys.path.append("/mnt/work/projects/cellatria")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # -------------------------------
 
@@ -12,17 +12,17 @@ import json
 import argparse
 import shutil
 from datetime import datetime
-from cellexpress.checks import checks_args
-from cellexpress.readin import read_in
-from cellexpress.qcfilter import qc_filter
-from cellexpress.doublets import doublets_id
-from cellexpress.merge_samples import merge_samples
-from cellexpress.stndrd_analysis import run_analysis
-from cellexpress.report_wrapper import generate_report
-from cellexpress.dea_analysis import compute_degs
-from cellexpress.call_celltypist import run_celltypist
-from cellexpress.call_scimilarity import run_scimilarity
-from cellexpress.helper import (create_unique_ids, total_unique_genes, parse_vars, qc_verbose, 
+from checks import checks_args
+from readin import read_in
+from qcfilter import qc_filter
+from doublets import doublets_id
+from merge_samples import merge_samples
+from stndrd_analysis import run_analysis
+from report_wrapper import generate_report
+from dea_analysis import compute_degs
+from call_celltypist import run_celltypist
+from call_scimilarity import run_scimilarity
+from helper import (create_unique_ids, total_unique_genes, parse_vars, qc_verbose, 
                     qc_verbose_ls, summarize_adata_structure)
 
 # -------------------------------
@@ -57,7 +57,7 @@ def control_pipe(args):
 
     # -------------------------------
     # Argument validation
-    args, disease_id, disease_label, tissue_id, tissue_label = checks_args(args)
+    args = checks_args(args)
 
     # -------------------------------
     # Generate unique run ID
@@ -86,7 +86,7 @@ def control_pipe(args):
     # -------------------------------
      # Apply QC filtering
     print("*** 🔄 Removing low quality cells and genes...")
-    qc_adatas, qc_summary_df = qc_filter(adatas, args)
+    qc_adatas, qc_summary_df = qc_filter(adatas, metadata_df, args)
     qc_verbose_ls(metadata_df, qc_adatas)
 
     # -------------------------------
@@ -171,10 +171,8 @@ def control_pipe(args):
                     qc_summary_df = qc_summary_df,
                     rmd_file = os.path.join(args.cellexpress_path, "report.Rmd"), 
                     output_file = os.path.join(args.outputs_path, f"report_{ui}_{datetime.today().date().isoformat()}.html"), 
-                    disease_id = disease_id,
-                    disease_label = disease_label,
-                    tissue_id = tissue_id, 
-                    tissue_label = tissue_label,
+                    disease_label = args.disease,
+                    tissue_label = args.tissue,
                     date = date,
                     runtime_minute = runtime_minute,
                     ui = ui,

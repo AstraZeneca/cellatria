@@ -436,23 +436,15 @@ def generate_qc_plots_and_filters(adatas, metadata_df, args):
     db_plots = db_plots.to_dict(orient="records")
 
     # Step 2: Create QC filter thresholds
-    filters = pd.DataFrame({
-        "threshold": [
-            float(args.min_umi_per_cell),
-            float(args.max_umi_per_cell) if args.max_umi_per_cell else 0,
-            float(args.min_genes_per_cell),
-            float(args.max_genes_per_cell) if args.max_genes_per_cell else 0,
-            float(args.max_mt_percent)
-        ],
-        "type": [
-            "nCount_RNA", "nCount_RNA",
-            "nFeature_RNA", "nFeature_RNA",
-            "percent_mt"
-        ]
-    })
-
-    # Convert to JSON-serializable list
-    filters = filters.to_dict(orient="records")
+    filters = []
+    for sample_id in metadata_df["sample_id"]:
+        filters.extend([
+            {"sample_id": sample_id, "type": "nCount_RNA", "threshold": float(args.min_umi_per_cell[sample_id])},
+            {"sample_id": sample_id, "type": "nCount_RNA", "threshold": float(args.max_umi_per_cell[sample_id])},
+            {"sample_id": sample_id, "type": "nFeature_RNA", "threshold": float(args.min_genes_per_cell[sample_id])},
+            {"sample_id": sample_id, "type": "nFeature_RNA", "threshold": float(args.max_genes_per_cell[sample_id])},
+            {"sample_id": sample_id, "type": "percent_mt", "threshold": float(args.max_mt_percent[sample_id])}
+        ])
 
     return db_plots, filters
 
@@ -743,7 +735,14 @@ def computed_metadata_description(adata):
         "cellstate_scimilarity": "Predicted cell state from scimilarity",
         "celltype_scimilarity": "Curated cell type using pipeline ontology",
         "cellstate_celltypist": "Predicted cell state from celltypist",
-        "celltype_celltypist": "Curated cell type using pipeline ontology"
+        "celltype_celltypist": "Curated cell type using pipeline ontology",
+        "scevan_class": "Indicates the tumor classification assigned by SCEVAN",
+        "min_cell": "Minimum number of cells in which a gene must be detected to be retained.",
+        "min_umi_per_cell": "Minimum UMI counts required per cell.",
+        "max_umi_per_cell": "Maximum UMI counts allowed per cell.",
+        "min_genes_per_cell": "Minimum number of detected genes per cell.",
+        "max_genes_per_cell": "Maximum number of detected genes per cell.",
+        "max_mt_percent": "Maximum allowed percentage of mitochondrial content per cell."
     }
 
     # Iterate over metadata columns and annotate with known descriptions
@@ -1643,5 +1642,96 @@ def read_study_metadata(path_to_json):
         }
     except KeyError as e:
         raise ValueError(f"*** 🚨 Missing key in JSON: {e}")
+
+# -------------------------------
+
+def clean_value(val, key):
+    # Treat all standard invalid entries + recognized nulls
+    invalid_values = {"", " ", "NA", "na", "NaN", "nan", "NAN", "N/A", "n/a"}
+    
+    if pd.isna(val) or str(val).strip().lower() in {"none"}:
+        return np.inf if key.startswith("max_") else None
+
+    if isinstance(val, str):
+        val = val.strip()
+    
+    val_str = str(val).strip().lower()
+
+    # Reject ambiguous placeholders
+    if val_str in {v.lower() for v in invalid_values}:
+        raise ValueError(f"*** 🚨 Invalid QC value for '{key}': '{val}' is not allowed. Provide a positive number or 'None' for upper limits.")
+
+    # Handle explicit Inf
+    if val_str in {"inf", "infinity"}:
+        return np.inf
+
+    # Try parsing and enforce > 0
+    try:
+        numeric_val = float(val) if "percent" in key else int(val)
+        if numeric_val <= 0:
+            raise ValueError(f"*** 🚨 Invalid QC value for '{key}': must be > 0. Got: {numeric_val}")
+        return numeric_val
+    except Exception:
+        raise ValueError(f"*** 🚨 Failed to parse QC value for '{key}': '{val}' is not a valid number.")
+
+
+# -------------------------------
+# Uniform per-sample QC dictionary builder
+def build_qc_dicts(args, metadata_df, qc_keys):
+    sample_ids = metadata_df["sample_id"].tolist()
+
+    for key in qc_keys:
+        if key in metadata_df.columns:
+            qc_dict = {
+                sample_id: clean_value(val, key)
+                for sample_id, val in zip(metadata_df["sample_id"], metadata_df[key])
+            }
+        else:
+            raw_default = getattr(args, key, None)
+            if isinstance(raw_default, dict):
+                qc_dict = raw_default  # already a valid dict
+            else:
+                cleaned_default = clean_value(raw_default, key)
+                qc_dict = {sample_id: cleaned_default for sample_id in sample_ids}
+
+        setattr(args, key, qc_dict)
+
+# -------------------------------
+
+def r_sanitize(value, key=None):
+    if isinstance(value, dict):
+        if key == "opt":
+            # opt will be handled separately
+            return value
+        items = []
+        for k, v in value.items():
+            v_str = (
+                "'Inf'" if isinstance(v, float) and np.isinf(v)
+                else "NULL" if v is None
+                else f"'{v}'" if isinstance(v, str)
+                else str(v)
+            )
+            items.append(f"{k}={v_str}")
+        return f"list({', '.join(items)})"
+    elif isinstance(value, str):
+        return f"'{value}'"
+    elif value is None:
+        return "NULL"
+    elif isinstance(value, float) and np.isinf(value):
+        return "'Inf'"
+    else:
+        return str(value)
+
+# -------------------------------
+
+def sanitize_inf(obj):
+    if isinstance(obj, dict):
+        return {k: sanitize_inf(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [sanitize_inf(x) for x in obj]
+    elif isinstance(obj, float) and np.isinf(obj):
+        return "Inf"  # JSON-safe string, will be handled in R
+    else:
+        return obj
 
 # -------------------------------

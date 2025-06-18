@@ -3,7 +3,7 @@
 
 import os
 import sys
-sys.path.append("/mnt/work/projects/cellatria")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # -------------------------------
 
@@ -29,7 +29,7 @@ print(f"*** 🔒 Thread limits applied: {n_threads} thread(s) per library.")
 # -------------------------------
 
 import argparse
-from cellexpress.helper import none_or_int, none_or_float, none_or_str
+from helper import none_or_int, none_or_float, none_or_str
 
 # -------------------------------
 
@@ -246,8 +246,8 @@ args = parser.parse_args()
 
 # -------------------------------
 
-from cellexpress.control import control_pipe
-from cellexpress.control_onlyqc import control_onlyqc_pipe
+from control import control_pipe
+from control_onlyqc import control_onlyqc_pipe
 
 # -------------------------------
 

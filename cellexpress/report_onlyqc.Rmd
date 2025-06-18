@@ -130,7 +130,7 @@ data.frame(`Species` = ifelse(params$opt$species == "hs", "human", "mouse"),
            `Tissue`= params$tissue_label, 
            check.names = FALSE) %>%
   kableExtra::kable("html", align = "c", escape = FALSE, # escape = FALSE allows HTML rendering
-                    col.names = c("Species", "Disease", "Disease ID", "Tissue", "Tissue ID")) %>% 
+                    col.names = c("Species", "Disease", "Tissue")) %>% 
   kableExtra::kable_classic(full_width = TRUE, html_font = "Cambria") %>%
   kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                             full_width = TRUE, fixed_thead = TRUE, position = "center") %>%

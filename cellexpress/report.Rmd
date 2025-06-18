@@ -129,7 +129,7 @@ bc_ji_qc <- dplyr::bind_rows(rprt$bc_ji_qc) %>%
     tibble::column_to_rownames("index")
 
 # Extract scrublet data object 
-if (params$opt$doublet_method == "scrublet") {
+if (!is.null(params$opt$doublet_method) && params$opt$doublet_method == "scrublet") {
   scrublet_data_obs <- dplyr::bind_rows(rprt$scrublet_data_obs)
   scrublet_data_sim <- dplyr::bind_rows(rprt$scrublet_data_sim) 
 }  
@@ -279,7 +279,7 @@ data.frame(`Species` = ifelse(params$opt$species == "hs", "human", "mouse"),
            `Tissue`= params$tissue_label, 
            check.names = FALSE) %>%
   kableExtra::kable("html", align = "c", escape = FALSE, # escape = FALSE allows HTML rendering
-                    col.names = c("Species", "Disease", "Disease ID", "Tissue", "Tissue ID")) %>% 
+                    col.names = c("Species", "Disease", "Tissue")) %>% 
   kableExtra::kable_classic(full_width = TRUE, html_font = "Cambria") %>%
   kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                             full_width = TRUE, fixed_thead = TRUE, position = "center") %>%
@@ -458,8 +458,8 @@ mt_per_cell %>%
                    aes(x = feature, color = sample_id, feature = feature), 
                    show.legend = FALSE, na.rm = TRUE) +
       geom_vline(data = filter(filters, type == tp),
-                 aes(xintercept = threshold),
-                 linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
+                   aes(xintercept = threshold, color = sample_id),
+                   linetype = 2, size = 0.45, na.rm = TRUE) +
       scale_color_manual(values = smpl_colrs) +
       guides(fill = "none", color = "none")
     Q[[length(Q) + 1]] <- p  
@@ -481,11 +481,11 @@ mt_per_cell %>%
         geom_smooth(aes(group = sample_id), 
                     method = "loess", se = FALSE, size = 0.5, fullrange = FALSE) +
         geom_vline(data = filter(filters, type == "nFeature_RNA", threshold != 0),
-                 aes(xintercept = threshold),
-                 linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
+                 aes(xintercept = threshold, color = sample_id),
+                 linetype = 2, size = 0.45, na.rm = TRUE) +
         geom_hline(data = filter(filters, type == "nCount_RNA", threshold != 0),
-                 aes(yintercept = threshold),
-                 linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
+                 aes(yintercept = threshold, color = sample_id),
+                 linetype = 2, size = 0.45, na.rm = TRUE) +
         geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray") +
         scale_x_continuous(trans = scales::log10_trans(),
                             breaks = scales::trans_breaks("log10", function(x) 10^x),
@@ -616,7 +616,7 @@ if (length(bc_ji_qc) != 0) {
 
 - - -
 
-`r keyval_scr <- params$opt$doublet_method == "scrublet"`
+`r keyval_scr <- if (!is.null(params$opt$doublet_method)) params$opt$doublet_method == "scrublet" else FALSE`
 
 `r if (keyval_scr) {"## Doublet Cell Detection using Scrublet Scoring System {.tabset}"}`
 

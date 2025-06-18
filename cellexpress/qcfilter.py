@@ -1,13 +1,20 @@
 # qcfilter.py
 # -------------------------------
 
-import scanpy as sc
-import numpy as np
-import pandas as pd
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # -------------------------------
 
-def qc_filter(adatas, args):
+import scanpy as sc
+import numpy as np
+import pandas as pd
+from helper import build_qc_dicts
+
+# -------------------------------
+
+def qc_filter(adatas, metadata_df, args):
     """
     Performs iterative quality control (QC) filtering on single-cell AnnData objects.
 
@@ -24,15 +31,12 @@ def qc_filter(adatas, args):
         qc_summary_df (pd.DataFrame): Summary DataFrame with the number of cells and genes retained.
     """
 
-    # Extract QC thresholds from args
-    min_cells = args.min_cell
-    min_genes_per_cell = args.min_genes_per_cell
-    max_genes_per_cell = np.inf if args.max_genes_per_cell is None else args.max_genes_per_cell
-    min_umi_per_cell = args.min_umi_per_cell
-    max_umi_per_cell = np.inf if args.max_umi_per_cell is None else args.max_umi_per_cell
-    max_mt_percent = args.max_mt_percent
-    species = args.species
+    # -------------------------------
+    # Dynamically build per-sample QC threshold dictionaries
+    qc_keys = ["min_cell", "min_genes_per_cell", "max_genes_per_cell", "min_umi_per_cell", "max_umi_per_cell", "max_mt_percent"]
+    build_qc_dicts(args, metadata_df, qc_keys)
 
+    # -------------------------------
     qc_adatas = {}
     qc_summary = []
 
@@ -43,6 +47,19 @@ def qc_filter(adatas, args):
         sample_id, adata = adatas_list[i]  # Unpack values
         sample_name = adata.obs['sample'].unique()[0]
         print(f"*** 🔄 Processing QC for: {sample_id}")
+
+        # Extract QC thresholds from args
+        min_cell = args.min_cell[sample_id]
+        min_genes_per_cell = args.min_genes_per_cell[sample_id]
+        max_genes_per_cell = args.max_genes_per_cell[sample_id]
+        min_umi_per_cell = args.min_umi_per_cell[sample_id]
+        max_umi_per_cell = args.max_umi_per_cell[sample_id]
+        max_mt_percent = args.max_mt_percent[sample_id]
+        species = args.species
+        print(f"*** 📌 QC thresholds for {sample_id} → \n"
+                f"*** *** min_cell: {min_cell}, max_mt_percent: {max_mt_percent}, \n"
+                f"*** *** min_genes_per_cell: {min_genes_per_cell}, max_genes_per_cell: {max_genes_per_cell}, \n"
+                f"*** *** min_umi_per_cell: {min_umi_per_cell}, max_umi_per_cell: {max_umi_per_cell}")
 
         # Pre-QC stats
         initial_cells = (adata.X.sum(axis=1) > 0).sum()  # Cells with non-zero UMI counts
@@ -56,7 +73,7 @@ def qc_filter(adatas, args):
         while True:
             # -------------------------------
             # Apply gene filtering
-            sc.pp.filter_genes(adata, min_cells=min_cells)
+            sc.pp.filter_genes(adata, min_cells=min_cell)
 
             # -------------------------------
             # Apply cell filtering based on gene count
