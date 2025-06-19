@@ -320,7 +320,7 @@ def create_cellatria(env_path):
         with gr.Row(equal_height=True, elem_id="fixed_top_row"):
             with gr.Column(scale=4):
                 user_input = gr.Textbox(placeholder="Give me a task...", label="Your Prompt", lines=1)
-            with gr.Column(scale=0.5):
+            with gr.Column(scale=1):
                 with gr.Row():  
                     pdf_upload = gr.File(file_types=[".pdf"], label=".pdf", show_label=True, interactive=True)
                     submit_btn = gr.Button("Submit Prompt/PDF", variant="primary")
