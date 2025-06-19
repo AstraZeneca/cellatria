@@ -42,20 +42,25 @@
 
 ## 📘 Getting Started
 <details>
+<summary>Expand for step-by-step instructions</summary>
+
+### 1️⃣ Prerequisites
+
+- **Docker**: Ensure [Docker](https://docs.docker.com/get-docker/) is installed and running on your system.
+- **Data Directory**: Prepare a directory containing your input data and a valid `.env` configuration file (see [Configuration](#configuration) for details).
+
+---
+
+### 2️⃣ Launch CellAtria via Docker
+
+Run the following command in your terminal, replacing `/Users/kjlg643/work/projects` with the path to your project directory:
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-org/cellatria.git
-cd cellatria
-
-# Launch the agent (with LangGraph or Gradio UI)
-python -m cellatria.app
-```
-To invoke the CLI-based CellExpress pipeline:
-
-```bash
-python -m cellexpress.main --input ./data --species human --batch_correct harmony --annotate scimilarity
-```
+docker run --platform=linux/amd64 -it --rm \
+  -p 7860:7860 \
+  -v $(pwd):/data \
+  -v /Users/kjlg643/work/projects:/envdir \
+  cellatria:v1.0.0 cellatria --env_path /envdir
 
 </details>
 
