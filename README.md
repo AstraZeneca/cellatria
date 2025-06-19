@@ -46,21 +46,74 @@
 
 ### 1️⃣ Prerequisites
 
-- **Docker**: Ensure [Docker](https://docs.docker.com/get-docker/) is installed and running on your system.
-- **Data Directory**: Prepare a directory containing your input data and a valid `.env` configuration file (see [Configuration](#configuration) for details).
+- **Docker**: Install [Docker](https://docs.docker.com/get-docker/) and ensure it is running.
+- **Data Directory**: Prepare a directory with your input data and a valid `.env` configuration file (see [Configuration](#configuration)).
 
 ---
 
 ### 2️⃣ Launch CellAtria via Docker
 
-Run the following command in your terminal, replacing `/Users/kjlg643/work/projects` with the path to your project directory:
+Run the following command in your terminal (replace `/path/to/your/project/directory` and `/path/to/your/env/directory` with your actual directories):
 
 ```bash
 docker run --platform=linux/amd64 -it --rm \
   -p 7860:7860 \
-  -v $(pwd):/data \
-  -v /Users/kjlg643/work/projects:/envdir \
+  -v /path/to/your/project/directory:/data \
+  -v /path/to/your/env/directory:/envdir \
   cellatria:v1.0.0 cellatria --env_path /envdir
+```
+
+**Command Breakdown:**
+- `-p 7860:7860` maps the app port to your host.
+- `-v /path/to/your/project/directory:/data` mounts your project directory as `/data` in the container.
+- `-v /path/to/your/env/directory:/envdir` mounts your environment directory (with `.env`) as `/envdir`.
+- `cellatria --env_path /envdir` launches the agent with your environment directory.
+
+</details>
+
+---
+
+## ⚙️ Environment File Setup
+<details>
+
+Before running CellAtria, you must provide a `.env` file containing your configuration and API keys.  
+This file tells CellAtria which LLM provider to use and how to connect to it.
+
+- **Download the `.env` template:**  
+  [CellAtria .env Template](./path/to/your/env_template.env)  
+  *(Replace with the actual path or link to your template file in the repository)*
+
+### Compatible LLM Providers
+
+CellAtria supports seamless integration with the following large language model (LLM) providers:
+
+- **Azure OpenAI**  
+  Use enterprise-grade Azure OpenAI endpoints for secure, scalable access to GPT models.
+- **OpenAI**  
+  Connect directly to OpenAI’s public API for models like GPT-4 and GPT-3.5.
+- **Anthropic**  
+  Leverage Claude models via the Anthropic API.
+- **Google Gemini / Vertex AI**  
+  Access Google’s Gemini models through the Google Cloud API.
+- **Local**  
+  Run local models (e.g., Llama.cpp, Ollama, Hugging Face) for private, offline inference.
+
+> **Note:**  
+> Only one provider can be active at a time. Set the `PROVIDER` variable in your `.env` to your desired backend.
+
+---
+
+### Instructions
+
+1. **Download or copy** the `.env` template from the link above into your environment directory (e.g., `/envdir/.env`).
+2. **Set** the `PROVIDER` variable to match your desired LLM backend (see list above).
+3. **Fill in** the required fields for your chosen provider (see comments in the template).
+4. **Keep your API keys secure**—do not share your `.env` file publicly.
+
+> **Tip:**  
+> You only need to fill in the section for your selected provider.
+
+For more details on each provider’s configuration, see the [Configuration Guide](#configuration-guide).
 
 </details>
 
