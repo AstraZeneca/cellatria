@@ -38,11 +38,11 @@ env_path = "/mnt/work/projects"
 # env_path = args.env_path
 graph, cellatria = create_cellatria(env_path)
 print("\n✅ CellAtria agent successfully initialized.")
-print("👉 Copy and open the link below in your browser to interact with the agent.\n")
+print("👉 Copy and paste the link below in your browser to interact with the agent:")
+print("📍 http://0.0.0.0:7860\n")
 
 # -------------------------------
 
-if __name__ == "__main__":
-  cellatria.launch(server_name="0.0.0.0", server_port=7860, share=True)
+cellatria.launch(server_name="0.0.0.0", server_port=7860, share=False, inbrowser=False, quiet=True)
 
 # -------------------------------
