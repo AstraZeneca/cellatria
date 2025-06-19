@@ -34,9 +34,15 @@ if args.help:
 
 # -------------------------------
 
-graph, cellatria = create_cellatria(args.env_path)
+env_path = "/mnt/work/projects"
+# env_path = args.env_path
+graph, cellatria = create_cellatria(env_path)
 print("\n✅ CellAtria agent successfully initialized.")
 print("👉 Copy and open the link below in your browser to interact with the agent.\n")
-cellatria.launch(server_name="0.0.0.0", server_port=7860, share=False)
+
+# -------------------------------
+
+if __name__ == "__main__":
+  cellatria.launch(server_name="0.0.0.0", server_port=7860, share=True)
 
 # -------------------------------
