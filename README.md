@@ -53,7 +53,6 @@
 
 ## 📘 Getting Started
 <details>
-<summary>Expand for step-by-step instructions</summary>
 
 ### 1️⃣ Prerequisites
 
