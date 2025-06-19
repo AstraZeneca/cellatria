@@ -7,12 +7,9 @@
 [![LangGraph](https://img.shields.io/badge/built%20with-LangGraph-6A5ACD?style=flat&logo=python&logoColor=white)](https://github.com/langchain-ai/langgraph)
 [![Agentic](https://img.shields.io/badge/agentic-AI%20Agent-FFB300?style=flat&logo=robotframework&logoColor=white)]()
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](CONTRIBUTING.md)
 
 <!-- Version Banner -->
 <img src="https://img.shields.io/badge/release-v1.0.1-blue.svg?style=for-the-badge" alt="Release v1.0.0"/>
-
-# CellAtria
 
 <p align="center" width="100%">
   <img width="70%" src="cellatria_git_logo.png"> 
