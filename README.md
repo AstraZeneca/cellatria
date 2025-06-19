@@ -12,15 +12,7 @@
 <!-- Version Banner -->
 <img src="https://img.shields.io/badge/release-v1.0.1-blue.svg?style=for-the-badge" alt="Release v1.0.0"/>
 
-
-
-<div align="center">
-
 # CellAtria
-
-**Agentic Triage of Regulated single-cell data Ingestion and Analysis**
-
-</div>
 
 <p align="center" width="100%">
   <img width="70%" src="cellatria_git_logo.png"> 
