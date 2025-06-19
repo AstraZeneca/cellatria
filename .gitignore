@@ -18,4 +18,4 @@
 # Ignore specific files in agent/
 agent/sandbox.py
 agent/sandbox.txt
-agent/toy_chatbot.py
+agent/app_chatbot.py
