@@ -22,6 +22,7 @@
 
 ## 📌 Key Features
 <details>
+<br>
 
 - Accepts primary research articles as **PDFs** or **URLs**.
 - Extracts structured metadata such as sample annotations, organism, tissue type, and GEO accession identifiers.
@@ -68,7 +69,8 @@ docker run --platform=linux/amd64 -it --rm \
   --env_path /envdir
 ```
 
-**Command Breakdown:**
+Command Breakdown:
+
 - `-p 7860:7860`: Exposes the Gradio UI on port 7860.
 - `-v /path/to/your/project/directory:/data`: Mounts your project directory into the container.
 - `-v /path/to/your/env/directory:/envdir`: Mounts your `.env` directory for configuration.
