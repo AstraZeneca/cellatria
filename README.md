@@ -20,7 +20,7 @@
 
 ---
 
-## 📌 Key Features
+## 📘 Key Features
 <details>
 <br>
 
@@ -36,7 +36,7 @@
 
 ---
 
-## 📘 Getting Started
+## 🚀 Getting Started
 <details>
 
 ### 1️⃣ Prerequisites
@@ -77,8 +77,7 @@ Command Breakdown:
 - `cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
 - `--env_path /envdir`: Tells cellAtria where to find the `.env` file for provider setup.
 
-> Once launched, the agent will initialize and provide a local or proxied URL for interaction.  
-> Simply open the link printed in your terminal to begin using cellAtria through your browser.
+> 📍 Once launched, the agent will initialize and provide a local or proxied URL for interaction.  Simply open the link printed in your terminal to begin using cellAtria through your browser.
 
 </details>
 
@@ -103,7 +102,7 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 - `google`: Gemini models via Google Cloud / Vertex AI
 - `local`: Offline models (e.g., Llama.cpp, Ollama, Hugging Face)
 
-> **Note:** Set the `PROVIDER` variable in your `.env` file to one of the supported values above. Only one provider can be active at a time.
+> 📍 Set the `PROVIDER` variable in your `.env` file to one of the supported values above. Only one provider can be active at a time.
 
 ### Instructions
 
@@ -111,7 +110,7 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 2. Set `PROVIDER=your_choice` in the file.
 3. Fill in the required fields for your selected provider.
 
-> **Tip:** You only need to configure the block for the provider you're using. The rest can remain commented.
+> 📍 You only need to configure the block for the provider you're using. The rest can remain commented.
 
 </details>
 
