@@ -98,8 +98,6 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 > **Note:** Set the `PROVIDER` variable in your `.env` file to one of the supported values above. Only one provider can be active at a time.
 
----
-
 ### Instructions
 
 1. Copy the `.env` template into your environment directory (e.g., `/envdir/.env`).
