@@ -12,7 +12,7 @@
 <img src="https://img.shields.io/badge/release-v1.0.1-blue.svg?style=for-the-badge" alt="Release v1.0.0"/>
 
 <p align="center" width="100%">
-  <img width="70%" src="cellatria_git_logo.png"> 
+  <img width="55%" src="cellatria_git_logo.png"> 
 </p>
 
 **CellAtria** is a modular, agent-driven platform designed to automate the end-to-end ingestion, curation, and analysis of single-cell RNA sequencing (scRNA-seq) datasets. By integrating large language models (LLMs) with domain-specific bioinformatics toolchains, CellAtria streamlines the full lifecycle of single-cell studies — from literature parsing and metadata extraction to data acquisition and pipeline execution — all accessible through a natural language interface.
