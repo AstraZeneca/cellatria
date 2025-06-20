@@ -42,7 +42,7 @@
 
 - **Docker**: Install [Docker](https://docs.docker.com/get-docker/) and ensure the Docker daemon is running.
 - **Data Directory**: Prepare a local directory serving as your working directory. 
-- **Environment File (`.env`)**: Create a valid `.env` configuration file with required paths and keys. See the [Environment File Setup](#env-setup) section for details on required variables and example templates.
+- **Environment File (`.env`)**: Create a valid `.env` configuration file with required paths and keys. See the [Environment File Setup](#env_setup) section for details on required variables and example templates.
 
 ---
 
