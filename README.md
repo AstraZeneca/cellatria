@@ -22,30 +22,14 @@
 ## 📌 Key Features
 <details>
 
-### 🔍 Literature-Guided Initialization
 - Accepts a **URL** or **PDF** of a primary article.
 - Extracts structured metadata (e.g., sample annotations, GEO accessions) from manuscripts.
-- Enables **zero-shot** dataset discovery and processing through document parsing.
-
-### 📂 Metadata-Aware Data Acquisition
 - Supports **GSE-level (study-wide)** and **GSM-level (sample-specific)** retrieval from public repositories.
-- Automatically resolves GEO relationships and organizes files in compliant directory schemas.
-- Prepares `metadata.csv` aligned with pipeline requirements.
-
-### 🧬 Integrated Analysis with CellExpress
-- Executes the co-developed **CellExpress** pipeline—an end-to-end, containerized scRNA-seq analysis framework.
-- Performs normalization, HVG selection, batch correction, clustering, marker gene detection, and cell type annotation.
-- Supports tissue-agnostic (SCimilarity) and tissue-specific (CellTypist) annotations.
-
-### 🧠 Conversational Workflow Orchestration
-- Facilitates **multi-turn, context-aware reasoning** to walk users through dataset processing.
-- Automatically executes validated commands, logging each step for reproducibility.
+- Automatically resolves GEO (Gene Expression Omnibus) relationships and organizes files in compliant directory schemas.
+- Executes the co-developed **CellExpress** pipeline - an end-to-end, containerized scRNA-seq analysis framework.
 - Offers fine-grained control over tool behavior through structured dialogue.
-
-### 🔧 Tool-Driven Modular Architecture
 - Tools are embedded as graph nodes and accessed via natural language.
 - Supports metadata inspection, file downloads, directory traversal, report summarization, and more.
-- Agent actions are both **traceable** and **auditable**, supporting regulatory workflows.
 
 </details>
 
@@ -56,12 +40,23 @@
 
 ### 1️⃣ Prerequisites
 
-- **Docker**: Install [Docker](https://docs.docker.com/get-docker/) and ensure it is running.
-- **Data Directory**: Prepare a directory with your input data and a valid `.env` configuration file (see [Configuration](#configuration)).
+- **Docker**: Install [Docker](https://docs.docker.com/get-docker/) and ensure the Docker daemon is running.
+- **Data Directory**: Prepare a local directory serving as your working directory. 
+- **Environment File (`.env`)**: Create a valid `.env` configuration file with required paths and keys. See the [Environment File Setup](#env-setup) section for details on required variables and example templates.
 
 ---
 
-### 2️⃣ Launch CellAtria via Docker
+### 2️⃣ Docker Images
+
+The pre-built images are available in the Docker Hub repository. They can be seamlessly pulled by:
+
+```
+docker pull nimanouri/cellatria
+```
+
+---
+
+### 3️⃣  Launch CellAtria via Docker
 
 Run the following command in your terminal (replace `/path/to/your/project/directory` and `/path/to/your/env/directory` with your actual directories):
 
@@ -83,7 +78,9 @@ docker run --platform=linux/amd64 -it --rm \
 
 ---
 
+<a name="env_setup"></a>
 ## ⚙️ Environment File Setup
+
 <details>
 
 Before running CellAtria, you must provide a `.env` file containing your configuration and API keys.  
