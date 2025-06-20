@@ -68,10 +68,10 @@ docker run --platform=linux/amd64 -it --rm \
 ```
 
 **Command Breakdown:**
-`-p 7860:7860`: Exposes the Gradio UI on port 7860.
-`-v /path/to/your/project/directory:/data`: Mounts your project directory into the container.
-`-v /path/to/your/env/directory:/envdir`: Mounts your .env directory for configuration.
-`--env_path /envdir`: Tells CellAtria where to find the .env file for provider setup.
+- `-p 7860:7860`: Exposes the Gradio UI on port 7860.
+- `-v /path/to/your/project/directory:/data`: Mounts your project directory into the container.
+- `-v /path/to/your/env/directory:/envdir`: Mounts your .env directory for configuration.
+- `--env_path /envdir`: Tells CellAtria where to find the .env file for provider setup.
 
 </details>
 
