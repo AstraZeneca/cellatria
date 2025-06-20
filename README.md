@@ -15,21 +15,21 @@
   <img width="70%" src="cellatria_git_logo.png"> 
 </p>
 
-**CellAtria** is an intelligent, agent-driven platform for automating the end-to-end ingestion, preparation, and analysis of single-cell RNA-seq (scRNA-seq) datasets. It integrates large language models (LLMs) with domain-specific computational toolchains to streamline single-cell workflows - from literature parsing and metadata extraction to data acquisition and pipeline execution - via a natural language interface.
+**CellAtria** is a modular, agent-driven platform designed to automate the end-to-end ingestion, curation, and analysis of single-cell RNA sequencing (scRNA-seq) datasets. By integrating large language models (LLMs) with domain-specific bioinformatics toolchains, CellAtria streamlines the full lifecycle of single-cell studies — from literature parsing and metadata extraction to data acquisition and pipeline execution — all accessible through a natural language interface.
+
 
 ---
 
 ## 📌 Key Features
 <details>
 
-- Accepts a **URL** or **PDF** of a primary article.
-- Extracts structured metadata (e.g., sample annotations, GEO accessions) from manuscripts.
-- Supports **GSE-level (study-wide)** and **GSM-level (sample-specific)** retrieval from public repositories.
-- Automatically resolves GEO (Gene Expression Omnibus) relationships and organizes files in compliant directory schemas.
-- Executes the co-developed **CellExpress** pipeline - an end-to-end, containerized scRNA-seq analysis framework.
-- Offers fine-grained control over tool behavior through structured dialogue.
-- Tools are embedded as graph nodes and accessed via natural language.
-- Supports metadata inspection, file downloads, directory traversal, report summarization, and more.
+- Accepts primary research articles as **PDFs** or **URLs**.
+- Extracts structured metadata such as sample annotations, organism, tissue type, and GEO accession identifiers.
+- Resolves **GSE (study-level)** and **GSM (sample-level)** dependencies across GEO and organizes raw data accordingly.
+- Orchestrates full ingestion pipelines and triggers **CellExpress** — an integrated, containerized scRNA-seq analysis framework.
+- Empowers users to interact with data and tools via natural language, abstracting away scripting complexity.
+- Supports metadata introspection, file transfers, directory traversal, and summarization tools.
+- All actions are composed into reusable graph-based tools that operate as callable agent nodes.
 
 </details>
 
@@ -41,38 +41,37 @@
 ### 1️⃣ Prerequisites
 
 - **Docker**: Install [Docker](https://docs.docker.com/get-docker/) and ensure the Docker daemon is running.
-- **Data Directory**: Prepare a local directory serving as your working directory. 
-- **Environment File (`.env`)**: Create a valid `.env` configuration file with required paths and keys. See the [Environment File Setup](#env_setup) section for details on required variables and example templates.
+- **Data Directory**: Prepare a working directory to store your datasets and outputs.
+- **Environment Configuration**: Provide a `.env` file with credentials and runtime configuration (see [Environment File Setup](#env_setup)).
 
 ---
 
 ### 2️⃣ Docker Images
 
-The pre-built images are available in the Docker Hub repository. They can be seamlessly pulled by:
+Pull the latest CellAtria Docker image from Docker Hub:
 
-```
+```bash
 docker pull nimanouri/cellatria
 ```
 
 ---
 
-### 3️⃣  Launch CellAtria via Docker
-
-Run the following command in your terminal (replace `/path/to/your/project/directory` and `/path/to/your/env/directory` with your actual directories):
+### 3️⃣  Launching CellAtria
+Start the agent with the following command (replace paths with your actual directories)::
 
 ```bash
 docker run --platform=linux/amd64 -it --rm \
   -p 7860:7860 \
   -v /path/to/your/project/directory:/data \
   -v /path/to/your/env/directory:/envdir \
-  cellatria:v1.0.0 cellatria --env_path /envdir
+  nimanouri/cellatria:v1.0.0 cellatria --env_path /envdir
 ```
 
 **Command Breakdown:**
-- `-p 7860:7860` maps the app port to your host.
-- `-v /path/to/your/project/directory:/data` mounts your project directory as `/data` in the container.
-- `-v /path/to/your/env/directory:/envdir` mounts your environment directory (with `.env`) as `/envdir`.
-- `cellatria --env_path /envdir` launches the agent with your environment directory.
+`-p 7860:7860`: Exposes the Gradio UI on port 7860.
+`-v /path/to/your/project/directory:/data`: Mounts your project directory into the container.
+`-v /path/to/your/env/directory:/envdir`: Mounts your .env directory for configuration.
+`--env_path /envdir`: Tells CellAtria where to find the .env file for provider setup.
 
 </details>
 
@@ -83,44 +82,40 @@ docker run --platform=linux/amd64 -it --rm \
 
 <details>
 
-Before running CellAtria, you must provide a `.env` file containing your configuration and API keys.  
-This file tells CellAtria which LLM provider to use and how to connect to it.
-
-- **Download the `.env` template:**  
-  [CellAtria .env Template](./path/to/your/env_template.env)  
-  *(Replace with the actual path or link to your template file in the repository)*
-
-### Compatible LLM Providers
-
-CellAtria supports seamless integration with the following large language model (LLM) providers:
-
-- **Azure OpenAI**  
-  Use enterprise-grade Azure OpenAI endpoints for secure, scalable access to GPT models.
-- **OpenAI**  
-  Connect directly to OpenAI’s public API for models like GPT-4 and GPT-3.5.
-- **Anthropic**  
-  Leverage Claude models via the Anthropic API.
-- **Google Gemini / Vertex AI**  
-  Access Google’s Gemini models through the Google Cloud API.
-- **Local**  
-  Run local models (e.g., Llama.cpp, Ollama, Hugging Face) for private, offline inference.
-
-> **Note:**  
-> Only one provider can be active at a time. Set the `PROVIDER` variable in your `.env` to your desired backend.
+CellAtria requires a `.env` file to configure access to your chosen LLM provider and local runtime paths.
 
 ---
 
-### Instructions
+### ✅ Quick Start
 
-1. **Download or copy** the `.env` template from the link above into your environment directory (e.g., `/envdir/.env`).
-2. **Set** the `PROVIDER` variable to match your desired LLM backend (see list above).
-3. **Fill in** the required fields for your chosen provider (see comments in the template).
-4. **Keep your API keys secure**—do not share your `.env` file publicly.
+📥 **Download the template**:  
+[Download `.env` Template](./path/to/env_template.env)  
+*Replace this with the actual path to your `.env` template in the repository.*
 
-> **Tip:**  
-> You only need to fill in the section for your selected provider.
+---
 
-For more details on each provider’s configuration, see the [Configuration Guide](#configuration-guide).
+### 🛠️ Supported LLM Backends
+
+- `azure`: Azure OpenAI (enterprise-grade access to GPT models)
+- `openai`: Standard OpenAI API (e.g., GPT-4, GPT-3.5)
+- `anthropic`: Claude models via the Anthropic API
+- `google`: Gemini models via Google Cloud / Vertex AI
+- `local`: Offline models (e.g., Llama.cpp, Ollama, Hugging Face)
+
+> **Note:** Set the `PROVIDER` variable in your `.env` file to one of the supported values above. Only one provider can be active at a time.
+
+---
+
+### 📝 Instructions
+
+1. Copy the `.env` template into your environment directory (e.g., `/envdir/.env`).
+2. Set `PROVIDER=your_choice` in the file.
+3. Fill in the required fields for your selected provider.
+4. **Never commit or share your `.env` file publicly.**
+
+> 💡 **Tip:** You only need to configure the block for the provider you're using. The rest can remain commented.
+
+For more details on each provider’s fields, see the [Configuration Guide](#configuration-guide).
 
 </details>
 
