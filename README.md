@@ -1,7 +1,6 @@
 [![Project Status](http://www.repostatus.org/badges/latest/active.svg)]()
 [![Lifecycle](https://img.shields.io/badge/lifecycle-Stable-brightgreen.svg)]()
 [![Docs](https://img.shields.io/badge/docs-latest-brightgreen)](https://langchain-ai.github.io/langgraph/)
-
 [![Made with Python](https://img.shields.io/badge/made%20with-Python-830051?style=flat&logo=python&logoColor=white)]()
 [![Docker](https://img.shields.io/badge/container-Docker-830051?style=flat&logo=docker&logoColor=white)]()
 [![Platform](https://img.shields.io/badge/platform-GitHub-830051?style=flat&logo=github&logoColor=white)]()
