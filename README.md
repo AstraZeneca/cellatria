@@ -75,6 +75,9 @@ docker run --platform=linux/amd64 -it --rm \
 - `cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
 - `--env_path /envdir`: Tells cellAtria where to find the `.env` file for provider setup.
 
+> Once launched, the agent will initialize and provide a local or proxied URL for interaction.  
+> Simply open the link printed in your terminal to begin using cellAtria through your browser.
+
 </details>
 
 ---
