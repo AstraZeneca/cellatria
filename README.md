@@ -64,14 +64,16 @@ docker run --platform=linux/amd64 -it --rm \
   -p 7860:7860 \
   -v /path/to/your/project/directory:/data \
   -v /path/to/your/env/directory:/envdir \
-  nimanouri/cellatria:v1.0.0 cellatria --env_path /envdir
+  cellatria:v1.0.0 cellatria \
+  --env_path /envdir
 ```
 
 **Command Breakdown:**
 - `-p 7860:7860`: Exposes the Gradio UI on port 7860.
 - `-v /path/to/your/project/directory:/data`: Mounts your project directory into the container.
-- `-v /path/to/your/env/directory:/envdir`: Mounts your .env directory for configuration.
-- `--env_path /envdir`: Tells CellAtria where to find the .env file for provider setup.
+- `-v /path/to/your/env/directory:/envdir`: Mounts your `.env` directory for configuration.
+- `cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
+- `--env_path /envdir`: Tells cellAtria where to find the `.env` file for provider setup.
 
 </details>
 
