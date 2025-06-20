@@ -92,7 +92,7 @@ Command Breakdown:
 
 CellAtria requires a `.env` file to configure access to your chosen LLM provider and local runtime paths.
 
-> Download the template [`.env`](./path/to/env_template.env) and replace it with the actual path to your `.env` in the repository.
+> 📍 Download the template [`.env`](./path/to/env_template.env) and replace it with the actual path to your `.env` in the repository.
 
 ### Supported LLM Backends
 
