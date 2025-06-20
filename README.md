@@ -1,15 +1,15 @@
 [![Project Status](http://www.repostatus.org/badges/latest/active.svg)]()
 [![Lifecycle](https://img.shields.io/badge/lifecycle-Stable-brightgreen.svg)]()
-[![Made with Python](https://img.shields.io/badge/made%20with-Python-3776AB?style=flat&logo=python&logoColor=white)]()
-[![Docker](https://img.shields.io/badge/container-Docker-2496ED?style=flat&logo=docker&logoColor=white)]()
-[![Platform](https://img.shields.io/badge/platform-GitHub-black?style=flat&logo=github&logoColor=white)]()
-[![Docs](https://img.shields.io/badge/docs-latest-blue)](https://langchain-ai.github.io/langgraph/)
-[![LangGraph](https://img.shields.io/badge/built%20with-LangGraph-6A5ACD?style=flat&logo=python&logoColor=white)](https://github.com/langchain-ai/langgraph)
-[![Agentic](https://img.shields.io/badge/agentic-AI%20Agent-FFB300?style=flat&logo=robotframework&logoColor=white)]()
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Made with Python](https://img.shields.io/badge/made%20with-Python-830051?style=flat&logo=python&logoColor=white)]()
+[![Docker](https://img.shields.io/badge/container-Docker-830051?style=flat&logo=docker&logoColor=white)]()
+[![Platform](https://img.shields.io/badge/platform-GitHub-830051?style=flat&logo=github&logoColor=white)]()
+[![Docs](https://img.shields.io/badge/docs-latest-830051)](https://langchain-ai.github.io/langgraph/)
+[![LangGraph](https://img.shields.io/badge/built%20with-LangGraph-830051?style=flat&logo=python&logoColor=white)](https://github.com/langchain-ai/langgraph)
+[![Agentic](https://img.shields.io/badge/agentic-AI%20Agent-830051?style=flat&logo=robotframework&logoColor=white)]()
+[![License](https://img.shields.io/badge/license-MIT-830051.svg)](LICENSE)
 
 <!-- Version Banner -->
-<img src="https://img.shields.io/badge/release-v1.0.1-blue.svg?style=for-the-badge" alt="Release v1.0.0"/>
+<img src="https://img.shields.io/badge/release-v1.0.1-830051.svg?style=for-the-badge" alt="Release v1.0.0"/>
 
 <p align="center" width="100%">
   <img width="55%" src="cellatria_git_logo.png"> 
