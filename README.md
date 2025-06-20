@@ -86,15 +86,15 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 ---
 
-### ✅ Quick Start
+### Quick Start
 
-📥 **Download the template**:  
+**Download the template**:  
 [Download `.env` Template](./path/to/env_template.env)  
 *Replace this with the actual path to your `.env` template in the repository.*
 
 ---
 
-### 🛠️ Supported LLM Backends
+### Supported LLM Backends
 
 - `azure`: Azure OpenAI (enterprise-grade access to GPT models)
 - `openai`: Standard OpenAI API (e.g., GPT-4, GPT-3.5)
@@ -106,14 +106,14 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 ---
 
-### 📝 Instructions
+### Instructions
 
 1. Copy the `.env` template into your environment directory (e.g., `/envdir/.env`).
 2. Set `PROVIDER=your_choice` in the file.
 3. Fill in the required fields for your selected provider.
 4. **Never commit or share your `.env` file publicly.**
 
-> 💡 **Tip:** You only need to configure the block for the provider you're using. The rest can remain commented.
+> **Tip:** You only need to configure the block for the provider you're using. The rest can remain commented.
 
 For more details on each provider’s fields, see the [Configuration Guide](#configuration-guide).
 
