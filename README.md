@@ -82,17 +82,11 @@ docker run --platform=linux/amd64 -it --rm \
 
 <details>
 
-CellAtria requires a `.env` file to configure access to your chosen LLM provider and local runtime paths.
-
----
-
 ### Quick Start
 
-**Download the template**:  
-[Download `.env` Template](./path/to/env_template.env)  
-*Replace this with the actual path to your `.env` template in the repository.*
+CellAtria requires a `.env` file to configure access to your chosen LLM provider and local runtime paths.
 
----
+> Download the template [`.env`](./path/to/env_template.env) and replace it with the actual path to your `.env` in the repository.
 
 ### Supported LLM Backends
 
