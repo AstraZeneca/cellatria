@@ -9,8 +9,9 @@
 [![License](https://img.shields.io/badge/license-MIT-830051.svg)](LICENSE)
 
 <!-- Version Banner -->
-<img src="https://img.shields.io/badge/release-v1.0.1-brightgreen.svg?style=for-the-badge" alt="Release v1.0.0"/>
-
+<p align="center" width="100%">
+<img width="10%" src="https://img.shields.io/badge/release-v1.0.1-brightgreen.svg?style=for-the-badge" alt="Release v1.0.0"/>
+</p>
 <p align="center" width="100%">
   <img width="55%" src="cellatria_git_logo.png"> 
 </p>
