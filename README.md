@@ -117,3 +117,14 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 </details>
 
 ---
+
+## 📬 Contact
+
+<details>
+<br>
+
+For help and questions please contact the [cellatria's maintenance team](mailto:ni.nouri@gmail.com).
+
+</details>
+
+---
