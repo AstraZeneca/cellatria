@@ -1,12 +1,14 @@
-[![Project Status](http://www.repostatus.org/badges/latest/active.svg)]()
-[![Lifecycle](https://img.shields.io/badge/lifecycle-Stable-brightgreen.svg)]()
-[![Docs](https://img.shields.io/badge/docs-latest-brightgreen)](https://langchain-ai.github.io/langgraph/)
-[![Made with Python](https://img.shields.io/badge/made%20with-Python-830051?style=flat&logo=python&logoColor=white)]()
-[![Docker](https://img.shields.io/badge/container-Docker-830051?style=flat&logo=docker&logoColor=white)]()
-[![Platform](https://img.shields.io/badge/platform-GitHub-830051?style=flat&logo=github&logoColor=white)]()
-[![LangGraph](https://img.shields.io/badge/built%20with-LangGraph-830051?style=flat&logo=python&logoColor=white)](https://github.com/langchain-ai/langgraph)
-[![Agentic](https://img.shields.io/badge/agentic-AI%20Agent-830051?style=flat&logo=robotframework&logoColor=white)]()
-[![License](https://img.shields.io/badge/license-MIT-830051.svg)](LICENSE)
+<p align="center">
+  <a href="#"><img src="http://www.repostatus.org/badges/latest/active.svg" alt="Project Status"/></a>
+  <a href="#"><img src="https://img.shields.io/badge/lifecycle-Stable-brightgreen.svg" alt="Lifecycle"/></a>
+  <a href="https://langchain-ai.github.io/langgraph/"><img src="https://img.shields.io/badge/docs-latest-brightgreen" alt="Docs"/></a>
+    <a href="#"><img src="https://img.shields.io/badge/made%20with-Python-830051?style=flat&logo=python&logoColor=white" alt="Made with Python"/></a>
+  <a href="#"><img src="https://img.shields.io/badge/container-Docker-830051?style=flat&logo=docker&logoColor=white" alt="Docker"/></a>
+  <a href="#"><img src="https://img.shields.io/badge/platform-GitHub-830051?style=flat&logo=github&logoColor=white" alt="Platform"/></a>
+  <a href="https://github.com/langchain-ai/langgraph"><img src="https://img.shields.io/badge/built%20with-LangGraph-830051?style=flat&logo=python&logoColor=white" alt="LangGraph"/></a>
+  <a href="#"><img src="https://img.shields.io/badge/agentic-AI%20Agent-830051?style=flat&logo=robotframework&logoColor=white" alt="Agentic"/></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-830051.svg" alt="License"/></a>
+</p>
 
 <!-- Version Banner -->
 <p align="center" width="100%">
