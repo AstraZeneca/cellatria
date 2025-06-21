@@ -6,7 +6,7 @@ name: cellatria image
 on:
   push:
     # branches: [main]
-    workflow_dispatch:  # Only runs when manually triggered from the UI
+  workflow_dispatch:  # Only runs when manually triggered from the UI
 
 # Concurrency Control
 concurrency:
