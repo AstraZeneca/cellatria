@@ -22,5 +22,5 @@
 # Ignore specific files in agent/
 agent/sandbox.py
 agent/sandbox.txt
-agent/app_chatbot.py
+agent/cellatria_app.py
 agent/toy_chatbot.py

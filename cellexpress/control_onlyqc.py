@@ -48,15 +48,6 @@ def control_onlyqc_pipe(args):
     # -------------------------------
     # Argument validation
     args = checks_args(args)
-
-    # -------------------------------
-    # Load pre-QC data
-    if hasattr(args, "vault_id"):
-        print("*** 🔄 Accessing QuartzBio for downloading data...")
-        data_path = run_quartzbio(args)
-        setattr(args, "vault_path", args.input)  # retrive new data path
-        setattr(args, "input", data_path)  # retrive new data path
-        delattr(args, "qb_token")
     
     # -------------------------------
     # Create outputs directory for saving results
@@ -102,13 +93,6 @@ def control_onlyqc_pipe(args):
                            disease_label = args.disease,
                            tissue_label = args.tissue,
                            args = args)
-
-    # -------------------------------
-    if hasattr(args, "vault_id"):
-        print(f"*** 🧹 Removing {len(metadata_df)} samples downloaded from QuartzBio project: {args.vault_project}")
-        for sample in metadata_df["sample"]:
-            shutil.rmtree(os.path.join(args.input, sample))
-            print(f"*** ✅ Removed: {sample}")
     
     # -------------------------------
     print("*** 🎯 QC pipeline execution completed successfully.")  
