@@ -49,7 +49,7 @@
 
 - **Docker**: Install [Docker](https://docs.docker.com/get-docker/) and ensure the Docker daemon is running.
 - **Data Directory**: Prepare a working directory to store your datasets and outputs.
-- **Environment Configuration**: Provide a `.env` file with credentials and runtime configuration (see [Environment File Setup](#env_setup)).
+- **Environment Configuration**: Provide a `.env` file with credentials and runtime configuration (see [LLM Environment Configuration](#env_setup)).
 
 ---
 
@@ -92,7 +92,7 @@ Command Breakdown:
 ---
 
 <a name="env_setup"></a>
-## ⚙️ Environment File Setup
+## ⚙️ LLM Environment Configuration
 
 <details>
 
@@ -100,7 +100,8 @@ Command Breakdown:
 
 CellAtria requires a `.env` file to configure access to your chosen LLM provider and local runtime paths.
 
-> 💡 Download the template [`.env`](./path/to/env_template.env) and replace it with the actual path to your `.env` in the repository.
+> 💡 You can download the template [`.env`](https://github.com/nourin-nn/cellatria/blob/main/.env), fill in the necessary credentials and parameters.
+> 💡 Ensure the directory containing the `.env` file is mounted into the container.
 
 ### Supported LLM Backends
 
@@ -125,6 +126,7 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 ---
 
 ## 🧠 Recommended Usage Pattern
+<details>
 
 While **cellAtria** supports flexible, user-driven interactions, its functionality is governed by an underlying **execution narrative** — a structured flow of modular actions that define how tasks are interpreted, routed, and executed. Users may invoke any module independently; however, for optimal results and seamless orchestration, we recommend following the intended workflow trajectory below.
 
@@ -139,6 +141,8 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 7. **Analysis-Ready Output** — Produces annotated, batch-corrected, and harmonized datasets for downstream interpretation.
 
 > 💡 This modular, agent-guided framework allows users to begin at any point while preserving logical consistency across steps.
+
+</details>
 
 ---
 
