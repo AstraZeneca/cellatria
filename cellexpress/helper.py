@@ -1267,7 +1267,7 @@ def extract_pipeline_arguments(args, argument_dict):
     SKIP_ARGS = {
         "project", "metadata", "genesets", "docker", "input", "help", "ui", "pipe_version", "date", "outputs_path",  
         "only_qc", "paper_url", "data_url", "package_path", "runtime_minute", "pre_qc_cells", "post_qc_cells", 
-        "num_samples", "resources_path", "database_path"
+        "num_samples", "database_path"
     }
 
     used_args = []
