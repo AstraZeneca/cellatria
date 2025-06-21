@@ -1,26 +1,27 @@
+# GitHub Actions workflow
 name: Build and Push Docker image to GHCR
 
+# Trigger workflow on push to main branch
 on:
   push:
     branches: [main]
-    paths:
-      - 'Dockerfile'
-      - '**/*.py'
-      - '.github/workflows/docker-publish.yml'
 
 jobs:
   build-and-push:
-    if: false  # Prevents job execution
+    if: false  # Remove or set to 'true' to activate.
     runs-on: ubuntu-latest
 
+    # Required permissions for pushing to GitHub Container Registry (GHCR)
     permissions:
       packages: write
       contents: read
 
     steps:
+      # Step 1: Checkout the repository code
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Authenticate Docker to GHCR using GitHub Actions token
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -28,11 +29,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Step 3: Set the Docker image tag as an environment variable
       - name: Set up Docker image tag
         run: echo "IMAGE_TAG=ghcr.io/${{ github.repository }}:v1.0.0" >> $GITHUB_ENV
 
+      # Step 4: Build the Docker image with the specified tag
       - name: Build Docker image
         run: docker build -t $IMAGE_TAG .
 
+      # Step 5: Push the Docker image to GitHub Container Registry
       - name: Push Docker image
         run: docker push $IMAGE_TAG
