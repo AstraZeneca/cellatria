@@ -55,10 +55,10 @@
 
 ### 2️⃣ Docker Images
 
-Pull the latest CellAtria Docker image from Docker Hub:
+Pull the latest cellAtria Docker image from **GitHub Container Registry (GHCR)**:
 
 ```bash
-docker pull nimanouri/cellatria
+docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
 ```
 
 ---
