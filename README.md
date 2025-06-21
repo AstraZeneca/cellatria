@@ -55,7 +55,7 @@
 
 ### 2️⃣ Docker Images
 
-The `cellatria` GitHub repository is equipped with a GitHub Actions workflow that automatically builds and publishes a Docker image to the **GitHub Container Registry (GHCR)** upon each successful release or update.
+The `cellatria` GitHub repository is equipped with a GitHub Actions workflow that automatically builds and publishes a Docker image to the **GitHub Container Registry** [GHCR](https://github.com/nourin-nn/cellatria/actions) upon each successful release or update.
 
 Pull the latest cellAtria Docker image using:
 
