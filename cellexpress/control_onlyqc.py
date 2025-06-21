@@ -44,7 +44,6 @@ def control_onlyqc_pipe(args):
     setattr(args, "pipe_version", "1-0-0") # add pipeline version
     setattr(args, "package_path", "/mnt/work/projects/cellatria")  # add package path
     setattr(args, "cellexpress_path", os.path.join(args.package_path, "cellexpress"))  # add package path
-    setattr(args, "resources_path", os.path.join(args.package_path, "resources"))
 
     # -------------------------------
     # Argument validation

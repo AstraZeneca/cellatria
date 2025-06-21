@@ -25,7 +25,7 @@ Example:
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument("--help", "-h", action="store_true")
-parser.add_argument("--env_path", type=str, default=None)
+parser.add_argument("--env_path", type=str, default="/mnt/work/projects")
 args, unknown = parser.parse_known_args()
 
 if args.help:
@@ -34,8 +34,7 @@ if args.help:
 
 # -------------------------------
 
-env_path = args.env_path or "/mnt/work/projects"
-graph, cellatria = create_cellatria(env_path)
+graph, cellatria = create_cellatria(args.env_path)
 
 # -------------------------------
 

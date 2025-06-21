@@ -17,7 +17,6 @@ from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
 # -------------------------------
 
 base_path = os.path.dirname(os.path.abspath(__file__))
-resources_path = os.path.join(base_path, "resources")
 
 # -------------------------------
 
