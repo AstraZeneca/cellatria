@@ -770,7 +770,7 @@ def get_cellexpress_info() -> str:
     """
     Use this for an overview of the CellExpress pipeline capabilities.
     """
-    with open(os.path.join(base_path, "cellexpress_prompts.md"), "r") as f:
+    with open(os.path.abspath(os.path.join(base_path, "..", "cellexpress", "README.md")), "r") as f:
         return f.read()
 
 # -------------------------------
