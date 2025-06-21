@@ -34,13 +34,13 @@ if args.help:
 
 # -------------------------------
 
-env_path = "/mnt/work/projects"
-# env_path = args.env_path
+env_path = args.env_path or "/mnt/work/projects"
 graph, cellatria = create_cellatria(env_path)
 
 # -------------------------------
 
-print("\n✅ CellAtria agent successfully initialized.")
+print("\n")
+print("✅ CellAtria agent successfully initialized.")
 print("📍 Copy and paste the link below in your browser to interact with the agent:")
 print("👉 http://0.0.0.0:7860\n")
 
