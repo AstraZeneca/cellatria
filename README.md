@@ -110,15 +110,7 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 - `google`: Gemini models via Google Cloud / Vertex AI
 - `local`: Offline models (e.g., Llama.cpp, Ollama, Hugging Face)
 
-> 💡 Set the `PROVIDER` variable in your `.env` file to one of the supported values above. Only one provider can be active at a time.
-
-### Instructions
-
-1. Copy the `.env` template into your environment directory (e.g., `/envdir/.env`).
-2. Set `PROVIDER=your_choice` in the file.
-3. Fill in the required fields for your selected provider.
-
-> 💡 You only need to configure the block for the provider you're using. The rest can remain commented.
+> 💡 Set the `PROVIDER` variable in your `.env` file to one of the supported values above. Only one provider can be active at a time. You only need to configure the block for the provider you're using. The rest can remain commented.
 
 </details>
 
