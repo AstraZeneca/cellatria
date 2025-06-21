@@ -1,11 +1,4 @@
 
-[![Project Status](http://www.repostatus.org/badges/latest/active.svg)]()
-[![Lifecycle](https://img.shields.io/badge/lifecycle-Stable-brightgreen.svg)]()
-[![Made with Python](https://img.shields.io/badge/made%20with-Python-3776AB?style=flat&logo=python&logoColor=white)]()
-[![R Markdown](https://img.shields.io/badge/supports-RMarkdown-b22222?style=flat&logo=r&logoColor=white)]()
-[![Docker](https://img.shields.io/badge/container-Docker-2496ED?style=flat&logo=docker&logoColor=white)]()
-[![Platform](https://img.shields.io/badge/platform-GitHub-black?style=flat&logo=github&logoColor=white)]()
-
 # CellExpress
 
 <p align="center" width="100%">
