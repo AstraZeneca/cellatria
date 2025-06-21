@@ -126,9 +126,6 @@ ARG R_DEPS="c('ggplot2', 'dplyr', 'gtools', 'grid', 'gridtext', \
                 'gridExtra', 'tidyr')"	
 RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(${R_DEPS}, clean=TRUE)"
 # =====================================================
-# Clean up to reduce image size #
-RUN apt clean && rm -rf /var/lib/apt/lists/*
-# =====================================================
 RUN mkdir -p /opt/cellatria
 WORKDIR /opt/cellatria
 COPY . /opt/cellatria/
