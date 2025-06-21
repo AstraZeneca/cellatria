@@ -84,6 +84,7 @@ Command Breakdown:
 - `--env_path /envdir`: Tells cellAtria where to find the `.env` file for provider setup.
 
 > 💡 Once launched, the agent will initialize and provide a local URL for interaction.  Simply open the link printed in your terminal to begin using cellAtria through your browser.
+
 > 💡 macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container.
 
 </details>
@@ -100,6 +101,7 @@ Command Breakdown:
 CellAtria requires a `.env` file to configure access to your chosen LLM provider and local runtime paths.
 
 > 💡 You can download the template [`.env`](https://github.com/nourin-nn/cellatria/blob/main/.env), fill in the necessary credentials and parameters.
+
 > 💡 Ensure the directory containing the `.env` file is mounted into the container.
 
 ### Supported LLM Backends
