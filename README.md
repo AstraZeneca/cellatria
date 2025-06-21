@@ -55,11 +55,15 @@
 
 ### 2️⃣ Docker Images
 
-Pull the latest cellAtria Docker image from **GitHub Container Registry (GHCR)**:
+The `cellatria` GitHub repository is equipped with a GitHub Actions workflow that automatically builds and publishes a Docker image to the **GitHub Container Registry (GHCR)** upon each successful release or update.
+
+Pull the latest cellAtria Docker image using:
 
 ```bash
 docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
 ```
+
+> 💡 This container includes all necessary dependencies to launch the **cellAtria** agent.
 
 ---
 
@@ -83,9 +87,9 @@ Command Breakdown:
 - `ghcr.io/nourin-nn/cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
 - `--env_path /envdir`: Tells cellAtria where to find the `.env` file for provider setup.
 
-> 💡 Once launched, the agent will initialize and provide a local URL for interaction.  Simply open the link printed in your terminal to begin using cellAtria through your browser.
+> 💡 macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container. 
 
-> 💡 macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container.
+> 💡 Once launched, the agent will initialize and provide a local URL for interaction. Simply open the link printed in your terminal to begin using cellAtria through your browser.
 
 </details>
 
