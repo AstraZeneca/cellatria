@@ -63,7 +63,7 @@ docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
 
 ---
 
-### 3️⃣  Launching CellAtria
+### 3️⃣  Launching Agent
 Start the agent with the following command (replace paths with your actual directories)::
 
 ```bash
