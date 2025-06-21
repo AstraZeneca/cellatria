@@ -127,6 +127,7 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 ## 🧠 Recommended Usage Pattern
 <details>
+<br>
 
 While **cellAtria** supports flexible, user-driven interactions, its functionality is governed by an underlying **execution narrative** — a structured flow of modular actions that define how tasks are interpreted, routed, and executed. Users may invoke any module independently; however, for optimal results and seamless orchestration, we recommend following the intended workflow trajectory below.
 
