@@ -4,8 +4,6 @@ name: cellatria image
 
 # Trigger workflow on push to main branch
 on:
-  push:
-    # branches: [main]
   workflow_dispatch:  # Only runs when manually triggered from the UI
 
 # Concurrency Control
@@ -15,7 +13,7 @@ concurrency:
 
 jobs:
   build-and-push:
-    if: false  # Remove or set to 'true' to activate.
+    if: true  # Remove or set to 'true' to activate.
     runs-on: ubuntu-latest
 
     # Required permissions for pushing to GitHub Container Registry (GHCR)
