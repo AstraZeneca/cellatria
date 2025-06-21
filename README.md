@@ -29,7 +29,7 @@
 <br>
 
 - Accepts primary research articles as **PDFs** or **URLs**.
-- Extracts structured metadata such as sample annotations, organism, tissue type, and GEO accession identifiers.
+- Extracts structured metadata such as sample annotations, organism, tissue type, and GEO (Gene Expression Omnibus) accession identifiers.
 - Resolves **GSE (study-level)** and **GSM (sample-level)** dependencies across GEO and organizes raw data accordingly.
 - Orchestrates full ingestion pipelines and triggers **CellExpress** — an integrated, containerized scRNA-seq analysis framework.
 - Empowers users to interact with data and tools via natural language, abstracting away scripting complexity.
@@ -134,7 +134,7 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 **cellAtria's internal logic integrates:**
 
 1. **Document Parsing** — Extracts structured metadata from publications or supplementary files.  
-2. **Accession Resolution** — Identifies relevant GEO/SRA accession IDs from parsed metadata.  
+2. **Accession Resolution** — Identifies relevant GEO (Gene Expression Omnibus) accession IDs from parsed metadata.  
 3. **Dataset Retrieval** — Downloads raw datasets directly from public repositories.  
 4. **File & Data Organization** — Structures downloaded content into a consistent directory schema.  
 5. **Pipeline Configuration** — Prepares CellExpress arguments and environmental parameters for execution.  
@@ -142,6 +142,18 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 7. **Analysis-Ready Output** — Produces annotated, batch-corrected, and harmonized datasets for downstream interpretation.
 
 > 💡 This modular, agent-guided framework allows users to begin at any point while preserving logical consistency across steps.
+
+</details>
+
+---
+
+<details>
+
+## 📊 CellExpress: Standardized Single-Cell Analysis Engine
+
+**CellExpress** is a companion pipeline embedded within the **cellAtria** framework. It delivers a reproducible and automated workflow for processing single-cell RNA-seq datasets — from raw count matrices to comprehensive cell type annotations and report generation.
+
+> 💡 For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/nourin-nn/cellatria/blob/main/cellexpress/README.md).
 
 </details>
 
