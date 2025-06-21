@@ -1,14 +1,19 @@
 # GitHub Actions workflow
-name: Build and Push Docker image to GHCR
+name: Build and Push cellatria image to GHCR
 
 # Trigger workflow on push to main branch
 on:
   push:
     branches: [main]
 
+# Concurrency Control
+concurrency:
+  group: docker-build
+  cancel-in-progress: true
+
 jobs:
   build-and-push:
-    if: true  # Remove or set to 'true' to activate.
+    if: false  # Remove or set to 'true' to activate.
     runs-on: ubuntu-latest
 
     # Required permissions for pushing to GitHub Container Registry (GHCR)

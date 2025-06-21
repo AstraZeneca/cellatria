@@ -8,6 +8,7 @@
   <a href="https://github.com/langchain-ai/langgraph"><img src="https://img.shields.io/badge/built%20with-LangGraph-830051?style=flat&logo=python&logoColor=white" alt="LangGraph"/></a>
   <a href="#"><img src="https://img.shields.io/badge/agentic-AI%20Agent-830051?style=flat&logo=robotframework&logoColor=white" alt="Agentic"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-830051.svg" alt="License"/></a>
+  <a href="https://github.com/nourin-nn/cellatria/actions/workflows/docker.yml"><img src="https://github.com/nourin-nn/cellatria/actions/workflows/docker.yml/badge.svg" alt="Docker Build Status"/></a>
 </p>
 
 <!-- Version Banner -->
