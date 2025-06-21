@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   build-and-push:
-    if: false  # Remove or set to 'true' to activate.
+    if: true  # Remove or set to 'true' to activate.
     runs-on: ubuntu-latest
 
     # Required permissions for pushing to GitHub Container Registry (GHCR)
