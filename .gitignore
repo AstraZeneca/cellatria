@@ -10,6 +10,7 @@
 !.github/**
 !.gitignore
 !*.png
+!*.env
 !README.md
 !Dockerfile
 

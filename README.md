@@ -36,7 +36,7 @@
 - Supports metadata introspection, file transfers, directory traversal, and summarization tools.
 - All actions are composed into reusable graph-based tools that operate as callable agent nodes.
 
-> 📍 Additional details on the underlying toolkits and LLM initialization logic can be found in the [system prompts reference](https://github.com/nourin-nn/cellatria/blob/main/agent/system_prompts.md)
+> 💡 Additional details on the underlying toolkits and LLM initialization logic can be found in the [system prompts reference](https://github.com/nourin-nn/cellatria/blob/main/agent/system_prompts.md)
 
 </details>
 
@@ -121,6 +121,24 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 > 💡 You only need to configure the block for the provider you're using. The rest can remain commented.
 
 </details>
+
+---
+
+## 🧠 Recommended Usage Pattern
+
+While **cellAtria** supports flexible, user-driven interactions, its functionality is governed by an underlying **execution narrative** — a structured flow of modular actions that define how tasks are interpreted, routed, and executed. Users may invoke any module independently; however, for optimal results and seamless orchestration, we recommend following the intended workflow trajectory below.
+
+**cellAtria's internal logic integrates:**
+
+1. **Document Parsing** — Extracts structured metadata from publications or supplementary files.  
+2. **Accession Resolution** — Identifies relevant GEO/SRA accession IDs from parsed metadata.  
+3. **Dataset Retrieval** — Downloads raw datasets directly from public repositories.  
+4. **File & Data Organization** — Structures downloaded content into a consistent directory schema.  
+5. **Pipeline Configuration** — Prepares CellExpress arguments and environmental parameters for execution.  
+6. **CellExpress Execution** — Launches the standardized single-cell analysis pipeline.  
+7. **Analysis-Ready Output** — Produces annotated, batch-corrected, and harmonized datasets for downstream interpretation.
+
+> 💡 This modular, agent-guided framework allows users to begin at any point while preserving logical consistency across steps.
 
 ---
 
