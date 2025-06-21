@@ -9,7 +9,7 @@
 # CellExpress
 
 <p align="center" width="100%">
-  <img width="100%" src="cellexpress_logo_github.png"> 
+  <img width="100%" src="cellexpress_git_logo.png"> 
 </p>
 
 ---
