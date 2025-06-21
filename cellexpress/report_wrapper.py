@@ -70,7 +70,7 @@ def generate_report(adatas, raw_counts, qc_adatas, adata, adata_nohm, metadata_d
 
     # -------------------------------
     # Initialize report object
-    metadata_df = metadata_df.fillna("") # in case these is NaN from QuartzBio
+    metadata_df = metadata_df.fillna("")
     rprt = {
         "fobj_data": {
             "umap": adata.obsm["X_umap"].tolist(),

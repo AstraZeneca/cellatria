@@ -18,10 +18,7 @@ eliminating the need for specialized bioinformatics expertise. It encompasses
 various crucial steps in scRNA-seq analysis, starting from the aligned count matrices, 
 followed by quality control, doublet removal, normalization, batch correction, dimensionality 
 reduction, clustering, identification of cell markers, and cell type annotation. 
-
-- CellExpress enhances automation by supporting seamless end-to-end integration—from secure data retrieval via QuartzBio vaults to 
-interactive exploration in Bioturing’s BBrowserX — without requiring any manual intervention.
-- In addition, CellExpress Docker-based framework ensures reproducibility of results across diverse computing environments.
+CellExpress Docker-based framework ensures reproducibility of results across diverse computing environments.
 
 </details>
 
@@ -367,8 +364,7 @@ suggest enhancements.
 
 | Role         | Name               | Contact                                     |
 |--------------|--------------------|---------------------------------------------|
-| Maintainer   | Nima Nouri         | [ni.nouri@gmail.com](mailto:ni.nouri@gmail.com) |
-| Sponsor      | Virginia Savova    | [virginia.savova@astrazeneca.com](mailto:virginia.savova@astrazeneca.com) |   
+| Maintainer   | Nima Nouri         | [ni.nouri@gmail.com](mailto:ni.nouri@gmail.com) | 
 
 </details>
 

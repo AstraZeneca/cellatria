@@ -874,7 +874,6 @@ def validate_cellexpress_config() -> str:
 
 class CellExpressArgs(BaseModel):
     # General arguments
-    input: str = Field(..., description="Path to input data directory or, a QuartzBio vault reference.")
     project: str = Field(..., description="Project name.")
     species: str = Field(..., description="Species: 'hs' for human, 'mm' for mouse.")
     tissue: str = Field(..., description="Tissue name or UBERON ID.")

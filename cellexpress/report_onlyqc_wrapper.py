@@ -44,7 +44,7 @@ def generate_onlyqc_report(adatas, metadata_df, summary_df, rmd_file, output_fil
 
     # -------------------------------
     # Initialize report object
-    metadata_df = metadata_df.fillna("") # in case these is NaN from QuartzBio
+    metadata_df = metadata_df.fillna("")
     rprt = {
         "metadata_df": metadata_df.to_dict(orient="records"),
         "summary_df": summary_df.to_dict(orient="records"),
