@@ -100,9 +100,7 @@ Command Breakdown:
 
 CellAtria requires a `.env` file to configure access to your chosen LLM provider and local runtime paths.
 
-> 💡 You can download the template [`.env`](https://github.com/nourin-nn/cellatria/blob/main/.env), fill in the necessary credentials and parameters.
-
-> 💡 Ensure the directory containing the `.env` file is mounted into the container.
+> 💡 You can download the template [`.env`](https://github.com/nourin-nn/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
 
 ### Supported LLM Backends
 
