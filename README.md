@@ -21,10 +21,9 @@
 
 **CellAtria** is a modular, agent-driven platform designed to automate the end-to-end metadata curation, data ingestion, and single-cell RNA sequencing (scRNA-seq) analysis. By integrating large language models (LLMs) with domain-specific bioinformatics toolchains, CellAtria streamlines the full lifecycle of single-cell studies — from literature parsing and metadata extraction to data acquisition and pipeline execution — all accessible through a natural language interface.
 
-
 ---
 
-## 📘 Key Features
+## Key Features
 <details>
 <br>
 
@@ -36,16 +35,16 @@
 - Supports metadata introspection, file transfers, directory traversal, and summarization tools.
 - All actions are composed into reusable graph-based tools that operate as callable agent nodes.
 
-> 💡 Additional details on the underlying toolkits and LLM initialization logic can be found in the [system prompts reference](https://github.com/nourin-nn/cellatria/blob/main/agent/system_prompts.md)
+> Additional details on the underlying toolkits and LLM initialization logic can be found in the [system prompts reference](https://github.com/nourin-nn/cellatria/blob/main/agent/system_prompts.md)
 
 </details>
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 <details>
 
-### 1️⃣ Prerequisites
+### (1) Prerequisites
 
 - **Docker**: Install [Docker](https://docs.docker.com/get-docker/) and ensure the Docker daemon is running.
 - **Data Directory**: Prepare a working directory to store your datasets and outputs.
@@ -53,7 +52,7 @@
 
 ---
 
-### 2️⃣ Docker Images
+### (2) Docker Images
 
 The `cellatria` GitHub repository is equipped with a GitHub Actions workflow that automatically builds and publishes a Docker image to the **GitHub Container Registry** [GHCR](https://github.com/nourin-nn/cellatria/actions) upon each successful release or update.
 
@@ -63,11 +62,11 @@ Pull the latest cellAtria Docker image using:
 docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
 ```
 
-> 💡 This container includes all necessary dependencies to launch the **cellAtria** agent.
+> This container includes all necessary dependencies to launch the **cellAtria** agent.
 
 ---
 
-### 3️⃣  Launching Agent
+### (3)  Launching Agent
 Start the agent with the following command (replace paths with your actual directories)::
 
 ```bash
@@ -87,16 +86,16 @@ Command Breakdown:
 - `ghcr.io/nourin-nn/cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
 - `--env_path /envdir`: Tells agent where to find the `.env` file for provider setup.
 
-> 💡 macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container. 
+> macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container. 
 
-> 💡 Once launched, the agent will initialize and provide a local URL for interaction. Simply open the link printed in your terminal to begin using cellAtria through your browser.
+> Once launched, the agent will initialize and provide a local URL for interaction. Simply open the link printed in your terminal to begin using cellAtria through your browser.
 
 </details>
 
 ---
 
 <a name="env_setup"></a>
-## ⚙️ LLM Environment Configuration
+## LLM Environment Configuration
 
 <details>
 
@@ -104,7 +103,7 @@ Command Breakdown:
 
 CellAtria requires a `.env` file to configure access to your chosen LLM provider and local runtime paths.
 
-> 💡 You can download the template [`.env`](https://github.com/nourin-nn/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
+> You can download the template [`.env`](https://github.com/nourin-nn/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
 
 ### Supported LLM Backends
 
@@ -114,13 +113,13 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 - `google`: Gemini models via Google Cloud / Vertex AI
 - `local`: Offline models (e.g., Llama.cpp, Ollama, Hugging Face)
 
-> 💡 Set the `PROVIDER` variable in your `.env` file to one of the supported values above. Only one provider can be active at a time. You only need to configure the block for the provider you're using. The rest can remain commented.
+> Set the `PROVIDER` variable in your `.env` file to one of the supported values above. Only one provider can be active at a time. You only need to configure the block for the provider you're using. The rest can remain commented.
 
 </details>
 
 ---
 
-## 🧠 Recommended Usage Pattern
+## Recommended Usage Pattern
 <details>
 <br>
 
@@ -136,24 +135,24 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 6. **CellExpress Execution** — Launches the standardized single-cell analysis pipeline.  
 7. **Analysis-Ready Output** — Produces annotated, batch-corrected, and harmonized datasets for downstream interpretation.
 
-> 💡 This modular, agent-guided framework allows users to begin at any point while preserving logical consistency across steps.
+> This modular, agent-guided framework allows users to begin at any point while preserving logical consistency across steps.
 
 </details>
 
 ---
 
-## 📊 Standardized Single-Cell Analysis Engine
+## Standardized Single-Cell Analysis Engine
 <details>
 
 **CellExpress** is a companion pipeline embedded within the **cellAtria** framework. It delivers a reproducible and automated workflow for processing single-cell RNA-seq datasets — from raw count matrices to comprehensive cell type annotations and report generation.
 
-> 💡 For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/nourin-nn/cellatria/blob/main/cellexpress/README.md).
+> For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/nourin-nn/cellatria/blob/main/cellexpress/README.md).
 
 </details>
 
 ---
 
-## 📬 Contact
+## Contact
 
 <details>
 <br>
