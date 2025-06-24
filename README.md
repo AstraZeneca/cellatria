@@ -92,6 +92,18 @@ Command Breakdown:
 
 > Once launched, the agent will initialize and provide a local URL for interaction. Simply open the link printed in your terminal to begin using cellAtria through your browser.
 
+**Mounting a Working Directory:**
+When running the container, any path you wish to access from inside the container must be explicitly mounted using Docker’s `-v` (volume) flag.
+Inside the container, you only have access to the paths you've mounted. For example, mounting a host directory like so:
+
+```bash
+-v /absolute/path/on/host:/data
+```
+
+means that only subdirectories under `/absolute/path/on/host` will be accessible inside the container via the `/data` path.
+If you set a working directory inside the container (e.g., `/data/project_X`), make sure that `project_X` exists under the host path you mounted.
+Accessing paths outside the mounted directory will not be possible inside the container.
+
 </details>
 
 ---
