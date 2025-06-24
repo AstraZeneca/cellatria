@@ -94,17 +94,19 @@ Command Breakdown:
 
 **Mounting a Working Directory:**
 
-When running the container, any path you wish to access from inside the container must be explicitly mounted using Docker’s `-v` (volume) flag.
-Inside the container, you only have access to the paths you've mounted. For example, mounting a host directory like so:
+When running the container, any host directory you want to access must be explicitly mounted using Docker’s `-v` (volume) flag. The container only has access to the paths you specify during mounting.
+
+For example, the following command:
 
 ```bash
 -v /absolute/path/on/host:/data
 ```
 
-means that only subdirectories under `/absolute/path/on/host` will be accessible inside the container via the `/data` path.
-- If you set a working directory inside the container (e.g., `/data/project_X`), make sure that `project_X` exists under the host path you mounted.
+makes the contents of `/absolute/path/on/host` on your host machine available inside the container at `/data`.
 
-> Accessing paths outside the mounted directory will not be possible inside the container.
+- If you set a working directory inside the container (e.g., `my_project`), make sure to reference it using its mounted path, such as `/data/my_project`.
+
+> Accessing paths outside the mounted host directory will not be possible from within the container.
 
 </details>
 
