@@ -101,8 +101,8 @@ Inside the container, you only have access to the paths you've mounted. For exam
 ```
 
 means that only subdirectories under `/absolute/path/on/host` will be accessible inside the container via the `/data` path.
-If you set a working directory inside the container (e.g., `/data/project_X`), make sure that `project_X` exists under the host path you mounted.
-Accessing paths outside the mounted directory will not be possible inside the container.
+- If you set a working directory inside the container (e.g., `/data/project_X`), make sure that `project_X` exists under the host path you mounted.
+- Accessing paths outside the mounted directory will not be possible inside the container.
 
 </details>
 
