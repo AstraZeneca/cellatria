@@ -104,7 +104,7 @@ For example, the following command:
 
 makes the contents of `/absolute/path/on/host` on your host machine available inside the container at `/data`.
 
-- If you set a working directory inside the container (e.g., `my_project`), make sure to reference it using its mounted path, such as `/data/my_project`.
+- If you set a working directory inside the container (e.g., `my_project`), ensure that all command-line flags referencing it use the container's path, i.e., `/data/my_project`.
 
 > Accessing paths outside the mounted host directory will not be possible from within the container.
 
