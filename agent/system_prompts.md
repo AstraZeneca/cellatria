@@ -664,6 +664,7 @@ Clears all arguments in the internal `cellexpress_cache`.
   - `quality control`
   - `batch correction`
   - `doublet detection`
+  - `scanpy`
 - Only answer based on the returned content.
 - If a detail is missing, respond::
   * “That detail is not described in the CellExpress overview.”
