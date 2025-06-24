@@ -232,8 +232,8 @@ Example metadata file with sample-based QC:
 
 <details> 
 
-## Downloading Pretrained SCimilarity Models  
-SCimilarity supports automated cell type annotation using pretrained models available from Zenodo. You can download them manually from [Zenodo repository](https://zenodo.org/records/10685499) or via command line:
+### Downloading Pretrained SCimilarity Models  
+SCimilarity supports automated cell type annotation using pretrained models. You can download them manually from [Zenodo repository](https://zenodo.org/records/10685499) or via command line:
 
 ```bash
 # Download the ZIP archive of SCimilarity pretrained models
@@ -256,21 +256,20 @@ Afterward, use the `--scim_model_path /path/to/your/scimilarity_models` flag whe
 
 <details>
 
-### Downloading CellTypist Models
+### Downloading Pretrained CellTypist Models
 
-`CellTypist` is required for tissue-specific automated cell type annotation in the **CellExpress** pipeline. You can install it using either `pip` or `conda`:
+`CellTypist` is required for tissue-specific automated cell type annotation in the **CellExpress** pipeline. You can manually download `.pkl` model files from the [CellTypist Models](https://www.celltypist.org/models). 
+
+You can also download models programmatically using Python. First, install `CellTypist` using either `pip` or `conda`:
 
 ```bash
 # Using pip (from PyPI)
 pip install celltypist
-```
-
-```bash
 # Using conda (via bioconda and conda-forge)
 conda install -c bioconda -c conda-forge celltypist
 ```
 
-Once installed, the reference models must be downloaded before `CellTypist` can be used. Set the target download directory via the `CELLTYPIST_FOLDER` environment variable and run the following:
+Then, in Python:
 
 ```python
 import os
@@ -280,11 +279,9 @@ from celltypist import models
 models.download_models()
 ```
 
-After downloading, provide the model directory to CellExpress using the `--cty_model_path` argument.
+The `CELLTYPIST_FOLDER` environment variable defines where the downloaded models are stored. After downloading, provide the model directory to CellExpress using the `--cty_model_path` argument.
 
-### Downloading CellTypist Models Using the cellAtria Container  
-
-`CellTypist` is pre-installed in the **cellAtria** Docker image. To download models without installing `CellTypist` locally:
+If you're using the **cellAtria** container (which includes `CellTypist` preinstalled), you can download the models directly into a mounted local directory:
 
 First, pull the latest cellAtria Docker image using:
 ```bash
