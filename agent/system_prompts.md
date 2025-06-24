@@ -655,11 +655,19 @@ Clears all arguments in the internal `cellexpress_cache`.
 
 ### Rules:
 
-- Always call this tool first for CellExpress questions or before argument collection.
+- Always call `get_cellexpress_info` before answering any CellExpress-related question.
+- Any prompt containing the following keywords **must** trigger `get_cellexpress_info` tool:
+  - `scrublet`
+  - `harmony`
+  - `celltypist`
+  - `scimilarity`
+  - `quality control`
+  - `batch correction`
+  - `doublet detection`
 - Only answer based on the returned content.
 - If a detail is missing, respond::
   * “That detail is not described in the CellExpress overview.”
-- TNever hallucinate steps or arguments not in the prompt.
+- Never hallucinate steps or arguments not in the prompt.
 - Inject the prompt as a `SystemMessage` for session alignment.
 
 </details>
