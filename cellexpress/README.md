@@ -262,12 +262,13 @@ Afterward, use the `--scim_model_path /path/to/your/scimilarity_models` flag whe
 
 You can also download models programmatically using Python. First, install `CellTypist` using either `pip` or `conda`:
 
-Using pip (from PyPI):
 ```bash
+# Using pip 
 pip install celltypist
 ```
-Using conda (via bioconda and conda-forge):
+
 ```bash
+# Using conda 
 conda install -c bioconda -c conda-forge celltypist
 ```
 
