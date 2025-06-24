@@ -51,8 +51,7 @@ def control_pipe(args):
     # -------------------------------
     # Set pipeline constants
     setattr(args, "pipe_version", "1-0-0") # add pipeline version
-    setattr(args, "package_path", "/mnt/work/projects/cellatria")  # add package path
-    setattr(args, "cellexpress_path", os.path.join(args.package_path, "cellexpress"))  # add package path
+    setattr(args, "cellexpress_path", os.path.dirname(os.path.abspath(__file__)))  # add package path
 
     # -------------------------------
     # Argument validation
