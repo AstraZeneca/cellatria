@@ -92,7 +92,12 @@ Command Breakdown:
 
 > Once launched, the agent will initialize and provide a local URL for interaction. Simply open the link printed in your terminal to begin using cellAtria through your browser.
 
-**Mounting a Working Directory:**
+</details>
+
+---
+
+### Mounting a Working Directory:
+<details>
 
 When running the container, any host directory you want to access must be explicitly mounted using Docker’s `-v` (volume) flag. The container only has access to the paths you specify during mounting.
 
