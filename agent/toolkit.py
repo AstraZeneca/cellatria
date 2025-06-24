@@ -874,6 +874,7 @@ def validate_cellexpress_config() -> str:
 
 class CellExpressArgs(BaseModel):
     # General arguments
+    input: str = Field(..., description="Input directory containing the sample folders and metadata.csv.")
     project: str = Field(..., description="Project name.")
     species: str = Field(..., description="Species: 'hs' for human, 'mm' for mouse.")
     tissue: str = Field(..., description="Tissue name or UBERON ID.")
@@ -947,8 +948,8 @@ def run_cellexpress(**kwargs) -> str:
         raise ValueError(f"❌ The specified input path does not exist: {input_path}")
 
     env = os.environ.copy()
-    env["PYTHONPATH"] = base_path
-    base_cmd = ["python", "-m", "cellexpress.main"]
+    env["PYTHONPATH"] = os.path.abspath(os.path.join(base_path, "..", "cellexpress"))
+    base_cmd = ["python", "-m", "main"]
 
     for key, val in args_dict.items():
         if val is not None:

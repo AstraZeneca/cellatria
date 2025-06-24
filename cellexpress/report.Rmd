@@ -144,7 +144,7 @@ fobj$total_counts <- rprt$fobj_data$total_counts
 fobj$n_genes_by_counts <- rprt$fobj_data$n_genes_by_counts
 
 # Optionally add if scimilarity present
-if (params$opt$annotation_method != "None") {
+if (!is.null(params$opt$annotation_method)) {
   annot_mtds <- trimws(tolower(unlist(strsplit(params$opt$annotation_method, ","))))
 
   if ("scimilarity" %in% annot_mtds) {
@@ -175,7 +175,7 @@ if (params$opt$compute_tsne == "yes") {
 keyval_scim <- FALSE 
 keyval_cltpst <- FALSE
 celltypes <- c()
-if (params$opt$annotation_method != "None") {
+if (!is.null(params$opt$annotation_method)) {
     if ("scimilarity" %in% annot_mtds) {
       keyval_scim <- TRUE
       celltypes <- c(celltypes, unique(fobj$celltype_scimilarity))
@@ -185,7 +185,7 @@ if (params$opt$annotation_method != "None") {
       celltypes <- c(celltypes, unique(fobj$celltype_celltypist))
     }
 }
-keyval_batch <- ifelse (params$opt$batch_correction != "None", TRUE, FALSE)
+keyval_batch <- !is.null(params$opt$batch_correction)
 keyval_leidn_mrkrs <- ifelse (params$opt$top_n_deg_leidn != 0, TRUE, FALSE)
 keyval_scim_mrkrs <- ifelse (params$opt$top_n_deg_scim != 0, TRUE, FALSE)
 keyval_cltpst_mrkrs <- ifelse (params$opt$top_n_deg_cltpst != 0, TRUE, FALSE)
@@ -1372,7 +1372,7 @@ data repository, if specified, supporting further exploration of the study conte
 
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, results='asis'}
-if (params$opt$doc_url != "None") {
+if (!is.null(params$opt$doc_url)) {
   cat(paste0("Documentation: [View Paper](", params$opt$doc_url,")", collapse="\n\n"), sep="\n")
 } else {
   cat(paste0("Documentation: no referrence"), sep="\n")
@@ -1380,7 +1380,7 @@ if (params$opt$doc_url != "None") {
 ```
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, results='asis'}
-if (params$opt$data_url != "None") {
+if (!is.null(params$opt$data_url)) {
   cat(paste0("Data Availability: [Access Data](", params$opt$data_url,")", collapse="\n\n"), sep="\n")
 } else {
   cat(paste0("Data Availability: no referrence"), sep="\n")
