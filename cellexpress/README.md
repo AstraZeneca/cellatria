@@ -228,6 +228,30 @@ Example metadata file with sample-based QC:
 
 ---
 
+## 📦 SCimilarity Configuration
+
+<details> 
+
+## Downloading Pretrained SCimilarity Models  
+SCimilarity supports automated cell type annotation using pretrained models available from Zenodo. You can download them manually from [Zenodo repository](https://zenodo.org/records/10685499) or via command line:
+
+```bash
+# Download the ZIP archive of SCimilarity pretrained models
+curl -L -o model_v1.1.tar.gz "https://zenodo.org/records/10685499/files/model_v1.1.tar.gz?download=1"
+
+# Unzip the archive to your desired location 
+tar -xzvf model_v1.1.tar.gz -C /path/to/your/scimilarity_models
+```
+
+This will save the models directly to your local machine at `/path/to/your/scimilarity_models` (Customize this path).
+Afterward, use the `--scim_model_path /path/to/your/scimilarity_models` flag when running **CellExpress**.
+
+> For additional details, refer to the [`SCimilarity`](https://github.com/Genentech/scimilarity) GitHub page.
+
+</details>
+
+---
+
 ## 📦 CellTypist Configuration
 
 <details>
@@ -250,7 +274,7 @@ Once installed, the reference models must be downloaded before `CellTypist` can 
 
 ```python
 import os
-os.environ["CELLTYPIST_FOLDER"] = "/path/to/your/models"  # Customize this path
+os.environ["CELLTYPIST_FOLDER"] = "/path/to/your/celltypist_models"  # Customize this path
 import celltypist
 from celltypist import models
 models.download_models()
@@ -270,7 +294,7 @@ docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
 Then, run the following one-liner, which uses the containerized environment:
 ```bash
 docker run --rm -it \
-  -v /path/to/your/models:/data \  
+  -v /path/to/your/celltypist_models:/data \  
   ghcr.io/nourin-nn/cellatria:v1.0.0 \
   python -c "
 import os
@@ -280,8 +304,8 @@ models.download_models()
 "
 ```
 
-This will save the models directly to your local machine at `/path/to/your/models` (Customize this path).
-Afterward, use the `--cty_model_path /path/to/your/models` flag when running **CellExpress**.
+This will save the models directly to your local machine at `/path/to/your/celltypist_models` (Customize this path).
+Afterward, use the `--cty_model_path /path/to/your/celltypist_models` flag when running **CellExpress**.
 
 > For additional details, refer to the [`CellTypist`](https://github.com/Teichlab/celltypist) GitHub page.
 
