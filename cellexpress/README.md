@@ -231,7 +231,6 @@ Example metadata file with sample-based QC:
 ## 📦 CellTypist Configuration
 
 <details>
-<br>
 
 ### Downloading CellTypist Models
 
@@ -261,8 +260,14 @@ After downloading, provide the model directory to CellExpress using the `--cty_m
 
 ### Downloading CellTypist Models Using the cellAtria Container  
 
-`CellTypist` is pre-installed in the **cellAtria** Docker image. To download models without installing `CellTypist` locally, you can run the following one-liner, which uses the containerized environment:
+`CellTypist` is pre-installed in the **cellAtria** Docker image. To download models without installing `CellTypist` locally:
 
+First, pull the latest cellAtria Docker image using:
+```bash
+docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
+```
+
+Then, run the following one-liner, which uses the containerized environment:
 ```bash
 docker run --rm -it \
   -v /path/to/your/models:/data \  
@@ -278,7 +283,7 @@ models.download_models()
 This will save the models directly to your local machine at `/path/to/your/models` (Customize this path).
 Afterward, use the `--cty_model_path /path/to/your/models` flag when running **CellExpress**.
 
-Check [`CellTypist`](https://github.com/Teichlab/celltypist) for more information.
+> For additional details, refer to the [`CellTypist`](https://github.com/Teichlab/celltypist) GitHub page.
 
 </details>
 
