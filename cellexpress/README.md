@@ -228,6 +228,62 @@ Example metadata file with sample-based QC:
 
 ---
 
+## 📦 CellTypist Configuration
+
+<details>
+<br>
+
+### Downloading CellTypist Models
+
+`CellTypist` is required for tissue-specific automated cell type annotation in the **CellExpress** pipeline. You can install it using either `pip` or `conda`:
+
+```bash
+# Using pip (from PyPI)
+pip install celltypist
+```
+
+```bash
+# Using conda (via bioconda and conda-forge)
+conda install -c bioconda -c conda-forge celltypist
+```
+
+Once installed, the reference models must be downloaded before `CellTypist` can be used. Set the target download directory via the `CELLTYPIST_FOLDER` environment variable and run the following:
+
+```python
+import os
+os.environ["CELLTYPIST_FOLDER"] = "/path/to/your/models"  # Customize this path
+import celltypist
+from celltypist import models
+models.download_models()
+```
+
+After downloading, provide the model directory to CellExpress using the `--cty_model_path` argument.
+
+### Downloading CellTypist Models Using the cellAtria Container  
+
+`CellTypist` is pre-installed in the **cellAtria** Docker image. To download models without installing `CellTypist` locally, you can run the following one-liner, which uses the containerized environment:
+
+```bash
+docker run --rm -it \
+  -v /path/to/your/models:/data \  
+  ghcr.io/nourin-nn/cellatria:v1.0.0 \
+  python -c "
+import os
+os.environ['CELLTYPIST_FOLDER'] = '/data'
+from celltypist import models
+models.download_models()
+"
+```
+
+This will save the models directly to your local machine at `/path/to/your/models` (Customize this path).
+Afterward, use the `--cty_model_path /path/to/your/models` flag when running **CellExpress**.
+
+Check [`CellTypist`](https://github.com/Teichlab/celltypist) for more information.
+
+</details>
+
+---
+
 ## 🧪 Perform QC
 
 <details>
