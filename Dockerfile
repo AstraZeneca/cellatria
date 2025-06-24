@@ -73,6 +73,9 @@ RUN apt-get update --fix-missing && \
         apt-get clean && \
         rm -rf /var/lib/apt/lists/*
 # -----------------------------------
+# Install pandoc (required for rmarkdown)
+RUN apt-get update && apt-get install -y pandoc
+# -----------------------------------
 # Checking python installation
 RUN echo "Python3 version:" && python3 --version && \
     echo "Pip3 version:" && pip3 --version && \

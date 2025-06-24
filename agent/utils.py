@@ -255,15 +255,11 @@ def checks_args(args):
     - Checks required metadata fields (e.g., 'sample').
     - Checks forbidden metadata fields (e.g., 'sample_id').
     - Validates species, doublet detection method, batch correction settings.
-    - Verifies MONDO and UBERON ontology matches for disease and tissue.
     - Ensures SCimilarity and CellTypist models are configured if selected.
     - Confirms valid TSNE setting.
 
     Args:
         args (Namespace): Parsed command-line arguments.
-
-    Returns:
-        tuple: (args, disease_id, disease_label, tissue_id, tissue_label)
 
     Raises:
         FileNotFoundError: If input or metadata file is missing.
