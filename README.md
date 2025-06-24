@@ -59,6 +59,7 @@ The `cellatria` GitHub repository is equipped with a GitHub Actions workflow tha
 Pull the latest cellAtria Docker image using:
 
 ```bash
+# Run this command in your terminal
 docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
 ```
 
@@ -70,6 +71,7 @@ docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
 Start the agent with the following command (replace paths with your actual directories)::
 
 ```bash
+# Run this command in your terminal
 docker run -it --rm \
   -p 7860:7860 \
   -v /path/to/your/project/directory:/data \
