@@ -282,11 +282,11 @@ from celltypist import models
 models.download_models()
 ```
 
-The `CELLTYPIST_FOLDER` environment variable defines where the downloaded models are stored. After downloading, provide the model directory to CellExpress using the `--cty_model_path` argument.
+The `CELLTYPIST_FOLDER` environment variable defines where the downloaded models are stored. After downloading, provide the model directory to **CellExpress** using the `--cty_model_path` argument.
 
 If you're using the **cellAtria** container (which includes `CellTypist` preinstalled), you can download the models directly into a mounted local directory:
 
-First, pull the latest cellAtria Docker image using:
+First, pull the latest **cellAtria** Docker image using:
 ```bash
 docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
 ```
