@@ -1184,7 +1184,7 @@ ontology_map = {
 pipeline_arguments = {
     "species": "Species type used in the analysis.",
     "tissue": "Tissue type for the dataset.",
-    "disease": "Disease name or MONDO ID",
+    "disease": "Disease name",
     "only_qc": "If enabled, the pipeline only runs quality control steps without further analysis.",
     "input": "Path to the input directory containing raw data for processing.",
     "project": "Project name identifier for the analysis run.",
