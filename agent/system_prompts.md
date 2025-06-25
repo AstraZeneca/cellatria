@@ -657,6 +657,9 @@ Clears all arguments in the internal `cellexpress_cache`.
 
 - Always call `get_cellexpress_info` before answering any CellExpress-related question.
 - Any prompt containing the following keywords **must** trigger `get_cellexpress_info` tool:
+  - `scRNA-seq`
+  - `single cell`
+  - `cellexpress`
   - `scrublet`
   - `harmony`
   - `celltypist`
