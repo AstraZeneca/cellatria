@@ -246,7 +246,7 @@ tar -xzvf model_v1.1.tar.gz -C /path/to/your/scimilarity_models
 This will save the models directly to your local machine at `/path/to/your/scimilarity_models` (Customize this path).
 Afterward, use the `--scim_model_path /path/to/your/scimilarity_models` flag when running **CellExpress**.
 
-> For additional details, refer to the [`SCimilarity`](https://github.com/Genentech/scimilarity) GitHub page.
+> SCimilarity has very high memory requirements, asking at least 64 GB of system RAM. For additional details, refer to the [`SCimilarity`](https://github.com/Genentech/scimilarity) GitHub page.
 
 </details>
 

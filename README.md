@@ -21,6 +21,8 @@
 
 **CellAtria** is a modular, agent-driven platform designed to automate the end-to-end metadata curation, data ingestion, and single-cell RNA sequencing (scRNA-seq) analysis. By integrating large language models (LLMs) with domain-specific bioinformatics toolchains, CellAtria streamlines the full lifecycle of single-cell studies — from literature parsing and metadata extraction to data acquisition and pipeline execution — all accessible through a natural language interface.
 
+> **CellAtria** empowers users to interact with data and tools via natural language, abstracting away scripting complexity.
+
 ---
 
 ## Key Features
@@ -31,7 +33,6 @@
 - Extracts structured metadata such as sample annotations, organism, tissue type, and GEO (Gene Expression Omnibus) accession identifiers.
 - Resolves **GSE (study-level)** and **GSM (sample-level)** dependencies across GEO and organizes raw data accordingly.
 - Orchestrates full ingestion pipelines and triggers **CellExpress** — an integrated, containerized scRNA-seq analysis framework.
-- Empowers users to interact with data and tools via natural language, abstracting away scripting complexity.
 - Supports metadata introspection, file transfers, directory traversal, and summarization tools.
 - All actions are composed into reusable graph-based tools that operate as callable agent nodes.
 
@@ -47,16 +48,15 @@
 ### (1) Prerequisites
 
 - **Docker**: Install [Docker](https://docs.docker.com/get-docker/) and ensure the Docker daemon is running.
-- **Data Directory**: Prepare a working directory to store your datasets and outputs.
 - **Environment Configuration**: Provide a `.env` file with credentials and parameters (see [LLM Environment Configuration](#env_setup)).
 
 ---
 
 ### (2) Docker Images
 
-The `cellatria` GitHub repository is equipped with a GitHub Actions workflow that automatically builds and publishes a Docker image to the [GitHub Container Registry](https://github.com/nourin-nn/cellatria/pkgs/container/cellatria) upon each successful release or update.
+The **CellAtria** GitHub repository is equipped with a GitHub Actions workflow that automatically builds and publishes a Docker image to the [GitHub Container Registry](https://github.com/nourin-nn/cellatria/pkgs/container/cellatria) upon each successful release or update.
 
-Pull the latest cellAtria Docker image using:
+Pull the latest **cellAtria** Docker image using:
 
 ```bash
 # Run this command in your terminal
@@ -121,7 +121,7 @@ makes the contents of `/absolute/path/on/host` on your host machine available in
 
 ### Quick Start
 
-CellAtria requires a `.env` file to configure access to your chosen LLM provider and local runtime paths.
+CellAtria requires a `.env` file to configure access to your chosen LLM provider.
 
 > You can download the template [`.env`](https://github.com/nourin-nn/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
 
@@ -139,7 +139,7 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 ---
 
-## Recommended Usage Pattern
+## Usage Intuition
 <details>
 <br>
 
@@ -147,13 +147,12 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 
 **cellAtria's internal logic integrates:**
 
-1. **Document Parsing** — Extracts structured metadata from publications or supplementary files.  
+1. **Document Parsing** — Extracts structured metadata from narrative-formatted scientific documents (article URL or PDF).  
 2. **Accession Resolution** — Identifies relevant GEO (Gene Expression Omnibus) accession IDs from parsed metadata.  
-3. **Dataset Retrieval** — Downloads raw datasets directly from public repositories.  
+3. **Dataset Retrieval** — Downloads datasets directly from public repositories.  
 4. **File & Data Organization** — Structures downloaded content into a consistent directory schema.  
-5. **Pipeline Configuration** — Prepares CellExpress arguments and environmental parameters for execution.  
+5. **Pipeline Configuration** — Prepares **CellExpress** arguments and environmental parameters for execution.  
 6. **CellExpress Execution** — Launches the standardized single-cell analysis pipeline.  
-7. **Analysis-Ready Output** — Produces annotated, batch-corrected, and harmonized datasets for downstream interpretation.
 
 > This modular, agent-guided framework allows users to begin at any point while preserving logical consistency across steps.
 
@@ -161,7 +160,7 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 
 ---
 
-## Standardized Single-Cell Analysis Engine
+## Single-Cell Analysis Engine
 <details>
 
 **CellExpress** is a companion pipeline embedded within the **cellAtria** framework. It delivers a reproducible and automated workflow for processing single-cell RNA-seq datasets — from raw count matrices to comprehensive cell type annotations and report generation.
