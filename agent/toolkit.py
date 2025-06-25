@@ -25,36 +25,7 @@ import subprocess
 from utils import (csv_filename, json_filename, txt_filename, base_path, checks_args)
 
 # -------------------------------
-
-# === Tool schemas ===
-class MathInput(BaseModel):
-    x: float
-    y: float
-
-class ManualMetadataInput(BaseModel):
-    text: str = Field(..., description="Pasted full text or metadata block to analyze")
-
-# -------------------------------
-
-@tool(args_schema=MathInput)
-def multiply_xy(x: float, y: float) -> float:
-    """Multiply two floats together."""
-    return x * y
-
-# -------------------------------
-
-@tool(args_schema=MathInput)
-def add_xy(x: float, y: float) -> float:
-    """Add two floats together."""
-    return x + y
-
-# -------------------------------
-
-@tool(args_schema=MathInput)
-def exponentiate_xy(x: float, y: float) -> float:
-    """Exponentiate base x to power y."""
-    return x ** y
-
+# Extracts structured metadata from a scientific article at a given URL.
 # -------------------------------
 
 class ArticleURL(BaseModel):
@@ -76,14 +47,13 @@ def fetch_article_metadata_url(url: str) -> List[str]:
         texts = soup.findAll(string=True)
         visible = filter(visible_texts, texts)
         lines = [t.strip() for t in visible if t.strip()]
-
         return lines
 
     except requests.exceptions.HTTPError as http_err:
         if response.status_code == 403:
             return [
-                f"This site does not allow automated access (HTTP 403).",
-                f"Please upload the PDF."
+                "This site does not allow automated access (HTTP 403).",
+                "Please upload the PDF."
             ]
         return [f"❌ HTTP error {response.status_code}: {str(http_err)}"]
 
@@ -91,7 +61,10 @@ def fetch_article_metadata_url(url: str) -> List[str]:
         return [f"❌ Failed to fetch article: {str(e)}"]
 
 # -------------------------------
+# Holds article metadata for review and edits before saving.
+# -------------------------------
 
+# Define schema
 class ArticleMetadataSchema(BaseModel):
     Project: str
     Title: str
@@ -104,8 +77,10 @@ class ArticleMetadataSchema(BaseModel):
     Publication_Date: str
     Publisher: str
     Conflicts_of_Interest: str
-    
+
+# Cache for metadata
 art_metadata_cache = {}
+
 @tool(args_schema=ArticleMetadataSchema)
 def refine_article_metadata(**kwargs) -> str:
     """
@@ -115,6 +90,10 @@ def refine_article_metadata(**kwargs) -> str:
     art_metadata_cache.clear()
     art_metadata_cache.update(kwargs)  # `kwargs` is already a dict
     return "✅ Metadata prepared for review. Awaiting user confirmation to store."
+
+# -------------------------------
+# Saves extracted article metadata to a file (JSON or TXT).
+# -------------------------------
 
 class MetadataStorageInput(BaseModel):
     art_metadata_cache: ArticleMetadataSchema
@@ -156,6 +135,8 @@ def store_article_metadata_file(art_metadata_cache: ArticleMetadataSchema, path:
     except Exception as e:
         return f"❌ Failed to save cached metadata: {str(e)}"
 
+# -------------------------------  
+# Extracts structured metadata from an uploaded scientific article PDF
 # -------------------------------   
 
 class ArticlePDF(BaseModel):
@@ -181,6 +162,8 @@ def fetch_article_metadata_pdf(path: str) -> List[str]:
     except Exception as e:
         return [f"❌ Failed to extract text from PDF: {str(e)}"]
 
+# -------------------------------   
+# Retrieves metadata for a GEO accession (e.g., GSE123456).
 # -------------------------------   
 
 class GEOInput(BaseModel):
@@ -253,6 +236,9 @@ def fetch_geo_metadata(gse_id: str) -> dict:
     except Exception as e:
         return {"error": str(e)}
 
+# ------------------------------- 
+# Holds GEO metadata for review and edits before saving
+# -------------------------------   
 
 class GeoSampleMetadata(BaseModel):
     sample: str
@@ -276,6 +262,10 @@ def refine_geo_metadata(**kwargs) -> str:
     geo_metadata_cache.clear()
     geo_metadata_cache.update(kwargs)  # `kwargs` is already a dict
     return "✅ Metadata prepared for review. Awaiting user confirmation to store."
+
+# -------------------------------  
+# Saves extracted GEO metadata to a file (JSON or CSV).
+# -------------------------------   
 
 class MetadataStorageInput(BaseModel):
     geo_metadata_cache: GeoMetadataSchema
@@ -320,6 +310,8 @@ def store_geo_metadata_file(geo_metadata_cache: GeoMetadataSchema, path: str, fi
         return f"❌ Failed to save cached metadata: {str(e)}"
 
 # -------------------------------
+# Downloads all supplementary files for a GEO dataset.
+# -------------------------------
 
 class DownloadDatasetArgs(BaseModel):
     gse_id: str = Field(..., description="GEO accession ID (e.g., GSE204716)")
@@ -362,6 +354,8 @@ def download_geo(gse_id: str, path: str) -> str:
     except Exception as e:
         return f"❌ Download failed: {str(e)}"
 
+# -------------------------------
+# Downloads supplementary files for a list of GSM accessions.
 # -------------------------------
 
 class DownloadSamplesArgs(BaseModel):
@@ -417,6 +411,8 @@ def download_gsm(gsm_ids: list[str], path: str) -> str:
     return "\n".join(results)
 
 # -------------------------------
+# Downloads a file from a direct URL to your project folder.
+# -------------------------------
 
 class DownloadFilesToPathArgs(BaseModel):
     urls: List[str] = Field(..., description="List of direct URLs to files to download.")
@@ -447,6 +443,8 @@ def download_file(urls: List[str], path: str) -> str:
 
     return "\n".join(results)
 
+# -------------------------------  
+# Creates a new directory at the specified path.
 # -------------------------------       
 
 class MakeDirectoryArgs(BaseModel):
@@ -464,6 +462,8 @@ def make_directory(path: str) -> str:
         return f"❌ Failed to create directory: {str(e)}"
 
 # -------------------------------   
+# Moves a file from one location to another.
+# -------------------------------   
 
 class MoveFileArgs(BaseModel):
     src: str
@@ -480,6 +480,8 @@ def move_file(src: str, dest: str) -> str:
     except Exception as e:
         return f"❌ Failed to move file: {str(e)}"
 
+# -------------------------------  
+# Renames a file or moves it to a new name/location.
 # -------------------------------  
 
 class RenameFileArgs(BaseModel):
@@ -500,6 +502,8 @@ def rename_file(src: str, dest: str) -> str:
         return f"❌ Failed to rename file: {str(e)}" 
 
 # -------------------------------   
+# Shows the contents of a directory in tree format.
+# -------------------------------  
 
 class ListDirectoryArgs(BaseModel):
     path: str
@@ -534,6 +538,8 @@ def list_directory(path: str) -> List[str]:
         return [f"❌ Failed to list directory: {str(e)}"]
 
 # -------------------------------   
+# Deletes a file or directory (recursively if needed).
+# -------------------------------   
 
 class RemovePathArgs(BaseModel):
     path: str
@@ -553,6 +559,8 @@ def remove_file_or_dir(path: str) -> str:
         return f"❌ Failed to remove: {str(e)}"
 
 # -------------------------------  
+# Shows the size of a file in megabytes.
+# -------------------------------  
 
 class FileSizeArgs(BaseModel):
     path: str
@@ -568,6 +576,8 @@ def get_file_size(path: str) -> str:
     except Exception as e:
         return f"❌ Failed to get file size: {str(e)}"
 
+# -------------------------------  
+# Creates and saves a CSV file from tabular data.
 # -------------------------------  
 
 # Define the schema
@@ -599,6 +609,8 @@ def create_custom_csv(data: List[Dict[str, str]], path: Optional[str] = None, fi
         return f"❌ Failed to save custom sample metadata: {str(e)}"
 
 # -------------------------------
+# Creates and saves a JSON file from structured data.
+# -------------------------------
 
 class CustomJsonArgs(BaseModel):
     data: List[Dict[str, str]] = Field(..., description="A list of dictionaries to be saved as JSON.")
@@ -620,6 +632,8 @@ def create_custom_json(data: List[Dict[str, str]], path: Optional[str] = None, f
     except Exception as e:
         return f"❌ Failed to save custom sample metadata: {str(e)}"
 
+# -------------------------------
+# Creates and saves a plain text file from a string.
 # -------------------------------
 
 class CustomTxtArgs(BaseModel):
@@ -643,6 +657,8 @@ def create_custom_txt(data: str, path: Optional[str] = None, filename: Optional[
         return f"❌ Failed to save custom sample metadata: {str(e)}"
 
 # -------------------------------
+# Displays the contents of a CSV, JSON, or TXT file.
+# -------------------------------
 
 class FileCache(BaseModel):
     raw: Union[pd.DataFrame, dict, str]
@@ -650,7 +666,6 @@ class FileCache(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-# -------------------------------
 class InspectFileArgs(BaseModel):
     path: str = Field(..., description="Directory containing the metadata file.")
     filename: str = Field(..., description="Name of the file to inspect.")
@@ -683,6 +698,8 @@ def inspect_file(path: str, filename: str, suffix: Optional[str] = None) -> File
     except Exception as e:
         raise RuntimeError(f"❌ Failed to read file: {str(e)}")
 
+# -------------------------------  
+# Displays your current working directory.
 # -------------------------------   
 
 class gwdArgs(BaseModel):
@@ -695,6 +712,8 @@ def get_working_directory() -> str:
     """
     return os.getcwd()  
 
+# -------------------------------    
+# Sets or changes your working directory.
 # -------------------------------     
 
 wd_cache = {"path": None}
@@ -717,6 +736,8 @@ def set_working_directory(path: str) -> str:
     except Exception as e:
         return f"❌ Failed to set working directory: {str(e)}"
 
+# -------------------------------
+# Standardizes 10X Genomics filenames in a directory.
 # -------------------------------
 
 class Fix3gz10xArgs(BaseModel):
@@ -761,6 +782,8 @@ def fix_10x_file_format(path: str) -> str:
     return f"✅ Validation and renaming complete under `{path}`."
 
 # -------------------------------
+# Shows an overview of CellExpress pipeline capabilities.
+# -------------------------------
 
 class cellExpressDesc(BaseModel):
     pass
@@ -773,6 +796,8 @@ def get_cellexpress_info() -> str:
     with open(os.path.abspath(os.path.join(base_path, "..", "cellexpress", "README.md")), "r") as f:
         return f.read()
 
+# -------------------------------
+# Sets or updates a CellExpress pipeline argument.
 # -------------------------------
 
 class CellExpressCache:
@@ -814,6 +839,8 @@ def configure_cellexpress(key: str, value: str) -> str:
         return f"✅ `{key}` set. Still missing or invalid: {missing}\nValidation errors:\n{e}"
 
 # -------------------------------
+# Previews the current CellExpress CLI configuration.
+# -------------------------------
 
 class EmptyInput(BaseModel):
     pass
@@ -836,6 +863,8 @@ def preview_cellexpress_config() -> str:
     return f"📋 Current CellExpress CLI configuration:\n```bash\n{formatted}\n```"
 
 # -------------------------------
+# Clears all cached CellExpress configuration arguments.
+# -------------------------------
 
 class EmptyInput(BaseModel):
     pass
@@ -848,6 +877,8 @@ def reset_cellexpress_config() -> str:
     cellexpress_cache.clear()
     return "🧹 Cleared all cached CellExpress arguments."
 
+# -------------------------------
+# Validates the current CellExpress configuration.
 # -------------------------------
 
 class EmptyInput(BaseModel):
@@ -929,6 +960,8 @@ class CellExpressArgs(BaseModel):
     limit_threads: Optional[int] = Field(1, description="Apply thread limits to avoid OpenBLAS/OMP crashes (default: 1).")
 
 # -------------------------------
+# Launches the CellExpress pipeline with current settings.
+# -------------------------------
 
 @tool(args_schema=CellExpressArgs)
 def run_cellexpress(**kwargs) -> str:
@@ -975,6 +1008,8 @@ def run_cellexpress(**kwargs) -> str:
         return f"❌ Failed to launch CellExpress: {str(e)}"
 
 # -------------------------------
+# Checks the status of a CellExpress job by PID.
+# -------------------------------
 
 class PIDInput(BaseModel):
     pid: int = Field(..., description="Process ID (PID) of the CellExpress job to check")
@@ -1002,6 +1037,8 @@ def check_cellexpress_status(pid: int) -> str:
         return f"❌ Failed to check status for PID `{pid}`: {str(e)}"
 
 # -------------------------------
+# Stops a running CellExpress job by its PID.
+# -------------------------------
 
 class TerminateJobArgs(BaseModel):
     pid: int = Field(..., description="Process ID (PID) of the running CellExpress job to terminate.")
@@ -1021,6 +1058,8 @@ def terminate_cellexpress_job(pid: int) -> str:
     except Exception as e:
         return f"❌ Failed to terminate process {pid}: {str(e)}"
 
+# -------------------------------
+# Shows the latest lines from a CellExpress log file.
 # -------------------------------
 
 class ReviewLogInput(BaseModel):
@@ -1053,6 +1092,27 @@ def review_cellexpress_log(path: str, filename: str = None, n_lines: int = 30) -
 
     except Exception as e:
         return f"❌ Failed to read log file: {str(e)}"
+
+# -------------------------------
+
+class MathInput(BaseModel):
+    x: float
+    y: float
+
+@tool(args_schema=MathInput)
+def multiply_xy(x: float, y: float) -> float:
+    """Multiply two floats together."""
+    return x * y
+
+@tool(args_schema=MathInput)
+def add_xy(x: float, y: float) -> float:
+    """Add two floats together."""
+    return x + y
+
+@tool(args_schema=MathInput)
+def exponentiate_xy(x: float, y: float) -> float:
+    """Exponentiate base x to power y."""
+    return x ** y
 
 # -------------------------------
 

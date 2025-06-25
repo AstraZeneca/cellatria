@@ -120,7 +120,7 @@ RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(c('p
 ARG R_DEPS="c('ggplot2', 'dplyr', 'gtools', 'grid', 'gridtext', \
                 'jsonlite', 'kableExtra', 'DT', 'scales','RColorBrewer', \
                 'plotly', 'visNetwork', 'ggrepel', 'gtools', 'viridis', \
-                'gridExtra', 'tidyr')"	
+                'gridExtra', 'tidyr', 'DescTools')"	
 RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(${R_DEPS}, clean=TRUE)"
 # -----------------------------------
 RUN mkdir -p /opt/cellatria
