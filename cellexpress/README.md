@@ -440,8 +440,6 @@ pipeline execution. It is optimized for use on Domino platforms.
 <details>
 <br>
 
-We thank all contributors who support the development, maintenance, and enhancement of **CellExpress**.
-
 We welcome community contributions! If you'd like to help improve **CellExpress**, please feel free to 
 suggest enhancements.
 
