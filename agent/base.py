@@ -1,3 +1,6 @@
+# base.py
+# -------------------------------
+
 import os
 import re
 import uuid
@@ -69,10 +72,12 @@ def create_cellatria(env_path):
     graph_builder.set_entry_point("chatbot")
     graph = graph_builder.compile(checkpointer=MemorySaver())
 
-    # -------------- Configuration --------------
+    # -------------------------------
+    # Configuration
     LOG_PATH = "/tmp/cellatria_log.txt"
 
-    # -------------- Logging --------------------
+    # -------------------------------
+    # Logging
     def log_status(message: str):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(LOG_PATH, "a") as f:
@@ -86,7 +91,8 @@ def create_cellatria(env_path):
         except FileNotFoundError:
             return "📁 No logs yet."
 
-    # -------------- Terminal Session -----------
+    # -------------------------------
+    # Terminal Session
     class TerminalSession:
         def __init__(self):
             self.process = subprocess.Popen(
@@ -99,7 +105,7 @@ def create_cellatria(env_path):
             )
             self.lock = threading.Lock()
             self.latest_output = ""
-            self.history = ""  # <- Store entire output history
+            self.history = ""  
 
             # Start thread to continuously read output
             threading.Thread(target=self._read_output, daemon=True).start()
@@ -119,22 +125,24 @@ def create_cellatria(env_path):
             self.process.stdin.write(cmd + "\n")
             self.process.stdin.flush()
             
-            # Wait a short time for output to gather
             time.sleep(0.3)
             
             with self.lock:
                 result = self.latest_output.strip()
             return result
 
+    # -------------------------------
     # Initialize the terminal session
     terminal = TerminalSession()
 
+    # -------------------------------
     # Strip ANSI codes before displaying
     ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 
     def clean_ansi(text):
         return ansi_escape.sub('', text)
 
+    # -------------------------------
     # Define the function used in Gradio UI
     def terminal_interface(cmd):
         global terminal_transcript
@@ -182,11 +190,13 @@ def create_cellatria(env_path):
 
         return terminal_transcript.strip(), ""  # keep input cleared
 
-    # -------------- Chat Handler ---------------
+    # -------------------------------
+    # Chat Handler
     # Persistent thread ID for LangGraph
     chat_thread_id = str(uuid.uuid4())
     def gr_block_fn(user_input, pdf_file, history):
         messages = []
+
         # Ensure initial message is included only once
         if not history:
             history = [initial_message]
@@ -253,7 +263,8 @@ def create_cellatria(env_path):
             ]
         )
 
-    # -------------- Chat Export Feature --------------
+    # -------------------------------
+    # Chat Export Feature
     def export_chat_history(state_data):
         uid = uuid.uuid4().hex[:8]
         filename = f"chat_{uid}.json"
@@ -262,7 +273,8 @@ def create_cellatria(env_path):
             json.dump(state_data, f, indent=2)
         return filepath
 
-    # -------------- UI --------------
+    # -------------------------------
+    # Initial message
     initial_message = {
         "role": "assistant",
         "content": (
@@ -280,11 +292,12 @@ def create_cellatria(env_path):
         )
     }
 
+    # -------------------------------
     # Clear the log file when app starts
     open("/tmp/cellatria_log.txt", "w").close()  # clears the log file
 
+    # -------------------------------
     # Interface
-    # gr.themes.Citrus(text_size='md',)
     with gr.Blocks(theme=chatbot_theme, css=gr_css) as cellatria:
         gr.HTML("""
             <div style='text-align: center; margin-bottom: 0;'>
@@ -300,10 +313,10 @@ def create_cellatria(env_path):
             show_download_button=False,
             container=True,
             show_fullscreen_button=False,
-            height=125, # width=900
+            height=125, 
         )
 
-        # --- Chat Interface ---
+        # Chat Interface
         chatbot = gr.Chatbot(
             value=[initial_message],
             label="cellAtria Agent",
@@ -312,9 +325,7 @@ def create_cellatria(env_path):
             height=500,
             show_copy_button=False,
             autoscroll=True,
-            resizable=True# ,
-            # elem_classes=["chat-font"]
-            #elem_id="chatbot_aes"
+            resizable=True
         )
 
         with gr.Row(equal_height=True, elem_id="fixed_top_row"):
@@ -328,10 +339,10 @@ def create_cellatria(env_path):
                 log_viewer = gr.Textbox(label="Live Logs", lines=12, interactive=False, elem_id="log_viewer_aes")
 
 
-        # --- Hidden state to maintain chat memory ---
+        # Hidden state to maintain chat memory
         state = gr.State([initial_message])
         
-        # --- Bind inputs to gr_block_fn ---
+        # Bind inputs to gr_block_fn
         user_input.submit(
             fn=gr_block_fn,
             inputs=[user_input, pdf_upload, state],
@@ -343,29 +354,29 @@ def create_cellatria(env_path):
             outputs=[chatbot, user_input, pdf_upload, state]
         )
 
-        # --- Terminal Panel ---
+        # Terminal Panel
         with gr.Accordion("Terminal Panel", open=False, elem_id="logs_terminal_panel"):
             with gr.Row(equal_height=True):
                 shell_input = gr.Textbox(placeholder="Enter shell command (e.g., ls -la)", lines=1, label="Command")
             shell_output = gr.Textbox(label="Terminal Output", lines=10, interactive=False, elem_id="terminal_aes")
 
-        # --- Timer Hook ---
+        # Timer Hook
         log_timer = gr.Timer(value=1.0, active=True)
         log_timer.tick(fn=read_log, inputs=[], outputs=[log_viewer] )
 
-        # --- Bind inputs to gr_block_fn ---
+        # Bind inputs to gr_block_fn
         shell_input.submit(
             fn=terminal_interface,
             inputs=shell_input,
             outputs=[shell_output, shell_input]
         )
 
-        # --- History Panel ---
+        # History Panel
         with gr.Accordion("Export Chat", open=False):
             export_btn = gr.Button("Download Chat", variant="primary")
             chat_file = gr.File(file_types=[".json"], label=".json", show_label=True, interactive=False)
 
-        # --- Bind inputs to gr_block_fn ---
+        # Bind inputs to gr_block_fn
         export_btn.click(
             fn=export_chat_history,
             inputs=[state],
