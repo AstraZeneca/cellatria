@@ -160,7 +160,7 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 
 ---
 
-## CellExpress Analysis Engine
+## CellExpress Engine
 <details>
 
 **CellExpress** is a companion pipeline embedded within the **cellAtria** framework. It delivers a reproducible and automated workflow for processing single-cell RNA-seq datasets (scRNA-seq) — from raw count matrices to comprehensive cell type annotations and report generation.
