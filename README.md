@@ -176,7 +176,7 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 <details>
 <br>
 
-For help and questions please contact the [cellatria's maintenance team](mailto:ni.nouri@gmail.com).
+For help and questions please contact the [CellAtria maintenance team](mailto:ni.nouri@gmail.com).
 
 </details>
 
