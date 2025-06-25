@@ -751,6 +751,7 @@ Clears all arguments in the internal `cellexpress_cache`.
 - Always include the raw log tail.
 - Let the LLM interpret the log.
 - Return a clear error if the file is missing or unreadable.
+- if pipeline has successfully completed, do not propose additional downstream execution steps beyond CellExpress.
 
 </details>
 
