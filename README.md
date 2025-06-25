@@ -139,6 +139,17 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 ---
 
+## CellExpress Engine
+<details>
+
+**CellExpress** is a companion pipeline embedded within the **cellAtria** framework. It delivers a reproducible and automated workflow for processing single-cell RNA-seq datasets (scRNA-seq) — from raw count matrices to comprehensive cell type annotations and report generation.
+
+> For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/nourin-nn/cellatria/blob/main/cellexpress/README.md).
+
+</details>
+
+---
+
 ## Usage Intuition
 <details>
 <br>
@@ -155,17 +166,6 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 6. **CellExpress Execution** — Launches the standardized single-cell analysis pipeline.  
 
 > This modular, agent-guided framework allows users to begin at any point while preserving logical consistency across steps.
-
-</details>
-
----
-
-## CellExpress Engine
-<details>
-
-**CellExpress** is a companion pipeline embedded within the **cellAtria** framework. It delivers a reproducible and automated workflow for processing single-cell RNA-seq datasets (scRNA-seq) — from raw count matrices to comprehensive cell type annotations and report generation.
-
-> For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/nourin-nn/cellatria/blob/main/cellexpress/README.md).
 
 </details>
 
