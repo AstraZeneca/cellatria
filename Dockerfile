@@ -138,7 +138,7 @@ EXPOSE 7860
 # -----------------------------------
 # Set maintainer
 LABEL maintainer="Nima Nouri <ni.nouri@gmail.com>" \
-      description="Docker image for running CellAtria, an agentic interface for single-cell data ingestion and analysis."
+      description="Docker image for running cellAtria, an agentic interface for single-cell data ingestion and analysis."
 LABEL version="1.0.0"
 # -----------------------------------
 ENV PYTHONPATH=/opt/cellatria/agent
