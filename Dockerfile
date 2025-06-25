@@ -2,6 +2,13 @@
 FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 # -----------------------------------
+# OCI-compliant image metadata
+LABEL org.opencontainers.image.title="cellAtria"
+LABEL org.opencontainers.image.version="v1.0.0"
+LABEL org.opencontainers.image.description="CellAtria: Agentic Triage of Regulated single-cell data Ingestion and Analysis."
+LABEL org.opencontainers.image.authors="Nima Nouri <ni.nouri@gmail.com>"
+LABEL org.opencontainers.image.source="https://github.com/nourin-nn/cellatria"
+# -----------------------------------
 # installing python and all required packages
 RUN apt-get update --fix-missing && \ 
 		apt-get install -y --no-install-recommends --fix-missing \
@@ -135,11 +142,6 @@ WORKDIR /data
 # -----------------------------------
 # Expose the port used by Gradio
 EXPOSE 7860
-# -----------------------------------
-# Set maintainer
-LABEL maintainer="Nima Nouri <ni.nouri@gmail.com>" \
-      description="Docker image for running cellAtria, an agentic interface for single-cell data ingestion and analysis."
-LABEL version="1.0.0"
 # -----------------------------------
 ENV PYTHONPATH=/opt/cellatria/agent
 ENV ENV_PATH=/data
