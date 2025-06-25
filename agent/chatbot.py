@@ -4,42 +4,32 @@
 import os
 import sys
 import argparse
-from base import create_cellatria
 
 # -------------------------------
 
 HELP_TEXT = """
-cellatria - Agentic Triage of Regulated single-cell data Ingestion and Analysis
-
-Usage:
-  cellatria [--help]
-
-Environment variables:
-  ENV_PATH           Path to your environment directory (default: /data)
-  PROVIDER           LLM provider ("Azure OpenAI", "OpenAI", "Anthropic", "Google", "Local")
-  ...                (see .env for full list)
-
-Example:
-  docker run -it --rm -p 7860:7860 -v /path/to/data:/data -e ENV_PATH=/data cellatria:latest
+cellAtria - Agentic Triage of Regulated single-cell data Ingestion and Analysis
+Version: 1.0.0
 """
 
 parser = argparse.ArgumentParser(add_help=False)
-parser.add_argument("--help", "-h", action="store_true")
+parser.add_argument("--version", "-v", action="store_true")
 parser.add_argument("--env_path", type=str, default="/mnt/work/projects")
 args, unknown = parser.parse_known_args()
 
-if args.help:
+if args.version:
     print(HELP_TEXT)
     sys.exit(0)
 
 # -------------------------------
 
+from base import create_cellatria
 graph, cellatria = create_cellatria(args.env_path)
 
 # -------------------------------
 
 print("\n")
-print("✅ CellAtria agent successfully initialized.")
+print("✅ cellAtria successfully initialized.")
 print("📍 Copy and paste the link below in your browser to interact with the agent:")
 print("👉 http://0.0.0.0:7860\n")
 
