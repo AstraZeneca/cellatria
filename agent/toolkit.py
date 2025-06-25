@@ -909,8 +909,8 @@ class CellExpressArgs(BaseModel):
     input: str = Field(..., description="Input directory containing the sample folders and metadata.csv.")
     project: str = Field(..., description="Project name.")
     species: str = Field(..., description="Species: 'hs' for human, 'mm' for mouse.")
-    tissue: str = Field(..., description="Tissue name or UBERON ID.")
-    disease: str = Field(..., description="Disease name or MONDO ID.")
+    tissue: str = Field(..., description="Tissue name.")
+    disease: str = Field(..., description="Disease name.")
 
     # Quality control arguments
     min_umi_per_cell: Optional[int] = Field(750, description="Minimum UMI counts required per cell to pass filtering (default: 750).")
