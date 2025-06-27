@@ -180,17 +180,6 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 <details>
 <br>
 
-For help and questions please contact the [cellAtria maintenance team](mailto:ni.nouri@gmail.com).
-
-</details>
-
----
-
-## Contributors
-
-<details>
-<br>
-
 We welcome community contributions! If you'd like to help improve **cellAtria**, please feel free to 
 suggest enhancements.
 
