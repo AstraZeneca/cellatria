@@ -185,3 +185,20 @@ For help and questions please contact the [cellAtria maintenance team](mailto:ni
 </details>
 
 ---
+
+## Contributors
+
+<details>
+<br>
+
+We welcome community contributions! If you'd like to help improve **cellAtria**, please feel free to 
+suggest enhancements.
+
+
+| Role         | Name               | Contact                                     |
+|--------------|--------------------|---------------------------------------------|
+| Maintainer   | Nima Nouri         | [ni.nouri@gmail.com](mailto:ni.nouri@gmail.com) | 
+
+</details>
+
+---
