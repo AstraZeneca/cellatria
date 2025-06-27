@@ -13,7 +13,7 @@
 
 <!-- Version Banner -->
 <p align="center" width="100%">
-<img width="15%" src="https://img.shields.io/badge/release-v1.0.0-brightgreen.svg?style=for-the-badge" alt="Release v1.0.0"/>
+<img width="15%" src="https://img.shields.io/badge/release-v1.0.0-4444AA.svg?style=for-the-badge" alt="Release v1.0.0"/>
 </p>
 <p align="center" width="100%">
   <img width="100%" src="cellatria_git_logo.png"> 
