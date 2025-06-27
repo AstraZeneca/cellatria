@@ -145,6 +145,8 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 **CellExpress** is a companion pipeline embedded within the **cellAtria** framework. It delivers a reproducible and automated workflow for processing single-cell RNA-seq datasets (scRNA-seq) — from raw count matrices to comprehensive cell type annotations and report generation.
 
+Designed to lower bioinformatics barriers, **CellExpress** implements a comprehensive set of state-of-the-art, Scanpy-based processing stages, including quality control (performed globally or per sample), data transformation (including normalization, highly variable gene selection, and scaling), dimensionality reduction (UMAP and t-SNE), graph-based clustering, and marker gene identification. Additional tools are integrated to support advanced analysis tasks, including doublet detection, batch correction, and automated cell type annotation using both tissue-agnostic and tissue-specific models. All analytical steps are executed sequentially under centralized control, with parameters fully configurable via a comprehensive input schema. 
+
 > For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/nourin-nn/cellatria/blob/main/cellexpress/README.md).
 
 </details>
