@@ -31,8 +31,8 @@
 
 - Accepts primary research articles as **PDFs** or **URLs**.
 - Extracts structured metadata such as sample annotations, organism, tissue type, and GEO (Gene Expression Omnibus) accession identifiers.
-- Resolves **GSE (study-level)** and **GSM (sample-level)** dependencies across GEO and organizes raw data accordingly.
-- Orchestrates full ingestion pipelines and triggers **CellExpress** — an integrated, containerized scRNA-seq analysis framework.
+- Resolves **GSE (study-level)** and **GSM (sample-level)** dependencies across GEO and organizes data accordingly.
+- Orchestrates full ingestion pipelines and triggers [**CellExpress**](#cellexpress) — an integrated, containerized scRNA-seq analysis framework.
 - Supports metadata introspection, file transfers, directory traversal, and summarization tools.
 - All actions are composed into reusable graph-based tools that operate as callable agent nodes.
 
@@ -139,6 +139,7 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 ---
 
+<a name="cellexpress"></a>
 ## CellExpress Engine
 <details>
 
