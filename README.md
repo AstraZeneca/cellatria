@@ -1,5 +1,4 @@
 <p align="center">
-  <a href="https://github.com/nourin-nn/cellatria/actions/workflows/docker.yml"><img src="https://github.com/nourin-nn/cellatria/actions/workflows/docker.yml/badge.svg" alt="Docker Build Status"/></a>
   <a href="#"><img src="https://img.shields.io/badge/made%20with-Python-830051?style=flat&logo=python&logoColor=white" alt="Made with Python"/></a>
   <a href="#"><img src="https://img.shields.io/badge/container-Docker-830051?style=flat&logo=docker&logoColor=white" alt="Docker"/></a>
   <a href="#"><img src="https://img.shields.io/badge/platform-GitHub-830051?style=flat&logo=github&logoColor=white" alt="Platform"/></a>
@@ -13,6 +12,7 @@
 
 <!-- Version Banner -->
 <p align="center" width="100%">
+<a href="https://github.com/nourin-nn/cellatria/actions/workflows/docker.yml"><img src="https://github.com/nourin-nn/cellatria/actions/workflows/docker.yml/badge.svg" alt="Docker Build Status"/></a>
 <img width="15%" src="https://img.shields.io/badge/release-v1.0.0-4444AA.svg?style=for-the-badge" alt="Release v1.0.0"/>
 </p>
 <p align="center" width="100%">
