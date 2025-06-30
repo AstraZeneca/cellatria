@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from bs4.element import Comment
 from typing import List, Dict, Any, TypedDict, Literal, Optional, Union
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 import fitz
 import os
 import json
