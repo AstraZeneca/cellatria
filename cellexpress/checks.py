@@ -3,9 +3,6 @@
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-# -------------------------------
 import re
 import pandas as pd
 from helper import (convert_none, parse_vars)
