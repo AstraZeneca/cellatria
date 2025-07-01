@@ -233,7 +233,7 @@ Example metadata file with sample-based QC:
 <details> 
 
 ### Downloading Pretrained SCimilarity Models  
-`SCimilarity` supports tissue-agnostic automated cell type annotation using pretrained models. You can download them manually from [Zenodo repository](https://zenodo.org/records/10685499) or via command line:
+`SCimilarity` supports cross-tissue automated cell type annotation using pretrained models. You can download them manually from [Zenodo repository](https://zenodo.org/records/10685499) or via command line:
 
 ```bash
 # Download the ZIP archive of SCimilarity pretrained models
