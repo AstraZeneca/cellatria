@@ -233,7 +233,7 @@ Example metadata file with sample-based QC:
 <details> 
 
 ### Downloading Pretrained SCimilarity Models  
-SCimilarity supports automated cell type annotation using pretrained models. You can download them manually from [Zenodo repository](https://zenodo.org/records/10685499) or via command line:
+`SCimilarity` supports tissue-agnostic automated cell type annotation using pretrained models. You can download them manually from [Zenodo repository](https://zenodo.org/records/10685499) or via command line:
 
 ```bash
 # Download the ZIP archive of SCimilarity pretrained models
@@ -258,7 +258,7 @@ Afterward, use the `--scim_model_path /path/to/your/scimilarity_models` flag whe
 
 ### Downloading Pretrained CellTypist Models
 
-`CellTypist` is required for tissue-specific automated cell type annotation in the **CellExpress** pipeline. You can manually download `.pkl` model files from the [CellTypist Models](https://www.celltypist.org/models). 
+`CellTypist` is used for tissue-specific automated cell type annotation in the **CellExpress** pipeline. You can manually download `.pkl` model files from the [CellTypist Models](https://www.celltypist.org/models). 
 
 You can also download models programmatically using Python. First, install `CellTypist` using either `pip` or `conda`:
 
