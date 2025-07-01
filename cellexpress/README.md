@@ -394,7 +394,7 @@ library(Seurat)
 library(here)
 
 # Load the processed AnnData (.h5ad) file
-sce <- readH5AD(here("data/adata_cellexpress_v1-0-0_nXLkzwJ_2025-05-01.h5ad"))
+sce <- readH5AD("path/to/your/file.h5ad")
 
 # Convert to Seurat object
 seurat_obj <- as.Seurat(sce, counts = "X", data = NULL)
