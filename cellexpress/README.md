@@ -115,11 +115,7 @@ inputs
 | `--tissue` | ✅ | `str` | Tissue name. |
 | `--disease` | ✅ | `str` | Disease name. |
 
-📍 **Note**: To ensure consistency and compliance with data governance:
-
-- The `--input` path must be an absolute path (e.g., `/mnt/data/CTPM-CellExpress/projects/my_project`)
-- No trailing slashes (`/` or `\\`)
-- The directory must exist
+> To ensure consistency and compliance with data governance; the `--input` path must be an absolute path (e.g., `/path/to/my_project`)
 
 ---
 
@@ -136,7 +132,7 @@ inputs
 | `--doublet_method` | `str` | `None` | Doublet detection method: currently supports [`scrublet`](https://github.com/swolock/scrublet). |
 | `--scrublet_cutoff` | `float` | 0.25 | Threshold above which cells are considered doublets (if using `scrublet`). |
 
-📍 **Sample-Based Quality Control (QC)**
+**Sample-Based Quality Control (QC)**
 
 When sample-based QC is required, all QC thresholds can be overridden on a **per-sample basis** using the `metadata.csv` file.  
 In this case, the command-line values serve as **global defaults**, but will be **overwritten** by any per-sample values defined in the metadata.
@@ -184,7 +180,9 @@ Example metadata file with sample-based QC:
 | `--resolution` | `float` | 0.6 | Resolution parameter for Leiden clustering. |
 | `--compute_tsne` | `str` | `no` | Whether to compute t-SNE embedding (`yes`/`no`). |
 
-📍 **Note:** `--regress_out` is recommended for smaller datasets (<20k cells) where technical noise could distort biological signals. Consider enabling this if your data comes from different platforms, batches, or protocols with variable sequencing depth. For larger datasets, skipping this step significantly improves speed and reduces memory usage."
+> `--regress_out` is recommended for smaller datasets (<20k cells) where technical noise could distort biological signals. Consider enabling this if your data comes from different platforms, batches, or protocols with variable sequencing depth. For larger datasets, skipping this step significantly improves speed and reduces memory usage."
+
+> Batch correction is supported via Harmony as the currently implemented method. When batch correction is enabled, the `--batch_vars` argument must be provided to specify one or more comma-separated columns from adata.obs (e.g., donor_id,sample_id). 
 
 ---
 
@@ -222,7 +220,7 @@ Example metadata file with sample-based QC:
 | `--only_qc` | `str` | `no` | Set to `yes` to only compute and report QC metrics. |
 | `--fix_gene_names` | `str` | `no` | Replace Ensembl IDs with gene symbols using given column name. |
 
-📍 **Note**: If *.h5ad input dataset uses Ensembl IDs or unnamed features as gene identifiers, use this option to replace `adata.var_names` with gene symbols from a specific column in `adata.var`. This is especially useful when gene symbols are stored in an alternate column (e.g., `gene_symbol`, `hgnc_symbol`, or `SYMBOL`). The provided string should match the name of the column to be used as the new gene identifiers. 
+> If *.h5ad input dataset uses Ensembl IDs or unnamed features as gene identifiers, use this option to replace `adata.var_names` with gene symbols from a specific column in `adata.var`. This is especially useful when gene symbols are stored in an alternate column (e.g., `gene_symbol`, `hgnc_symbol`, or `SYMBOL`). The provided string should match the name of the column to be used as the new gene identifiers. 
 
 </details>
 
@@ -350,7 +348,7 @@ outputs_cellexpress_v<x-y-z>_<UI>
 2. **Configuration JSON**  
    `config_cellexpress_v<x-y-z>_<UI>_YYYY-MM-DD.json`  
    A full snapshot of the pipeline settings, metadata, runtime details, and computational 
-   environment (e.g., DOMINO version, execution ID, as well as python packages). 
+   environment. 
 
 3. **QC-ed Count Matrix**  
    `counts-qced_cellexpress_v<x-y-z>_<UI>_YYYY-MM-DD.h5ad`  
@@ -415,10 +413,10 @@ DimPlot(seurat_obj, group.by = "sample")
 <details>
 <br>
 
-The `dockerfile` is the dedicated computing environment for executing the **CellExpress** workflow in a consistent and reproducible manner. 
+The `dockerfile` is the dedicated computing environment for executing **cellatria** and the co-developed **CellExpress** pipelie in a consistent and reproducible manner. 
 It includes all required Python and R dependencies, along with support for HTML reporting and visualization. 
 Built on an Ubuntu-based system, the environment also provides essential system-level packages to support end-to-end 
-pipeline execution. It is optimized for use on Domino platforms.
+pipeline execution. 
 
 </details>
 
