@@ -23,7 +23,7 @@
 
 ---
 
-## Introduction
+## ✨ Introduction
 <details>
 <br>
 
@@ -35,7 +35,7 @@
 
 ---
 
-## Key Features
+## 💡 Key Features
 <details>
 <br>
 
@@ -52,7 +52,7 @@
 
 ---
 
-## Getting Started
+## 🚀  Getting Started
 <details>
 
 ### (1) Prerequisites
@@ -125,7 +125,7 @@ makes the contents of `/absolute/path/on/host` on your host machine available in
 ---
 
 <a name="env_setup"></a>
-## LLM Configuration
+## 🛠️ LLM Configuration
 
 <details>
 
@@ -150,7 +150,7 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 ---
 
 <a name="cellexpress"></a>
-## CellExpress Engine
+## 🚂 CellExpress Engine
 <details>
 <br>
 
@@ -164,7 +164,7 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 ---
 
-## Usage Intuition
+## 🧠 Usage Intuition
 <details>
 <br>
 
@@ -185,7 +185,7 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 
 ---
 
-## Contact
+## 📬 Contact
 
 <details>
 <br>
