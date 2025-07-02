@@ -105,7 +105,7 @@ inputs
 <details>
 <br>
 
-### 🔹 General Arguments
+### General Arguments
 
 | Argument | Required | Type | Description |
 |----------|----------|------|-------------|
@@ -123,7 +123,7 @@ inputs
 
 ---
 
-### 🧪 Quality Control (QC) Arguments
+### Quality Control (QC) Arguments
 
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -169,7 +169,7 @@ Example metadata file with sample-based QC:
 
 ---
 
-### 🔬 Analysis Arguments
+### Analysis Arguments
 
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -188,7 +188,7 @@ Example metadata file with sample-based QC:
 
 ---
 
-### 🏷️ Annotation Arguments
+### Annotation Arguments
 
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -199,7 +199,7 @@ Example metadata file with sample-based QC:
 
 ---
 
-### 📊 Differential Expression (DE) Arguments
+### Differential Expression (DE) Arguments
 
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -213,7 +213,7 @@ Example metadata file with sample-based QC:
 
 ---
 
-### 🧾 Additional Options
+### Additional Options
 
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
