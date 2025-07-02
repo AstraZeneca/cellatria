@@ -1392,7 +1392,7 @@ if (!is.null(params$opt$data_url)) {
 # ExpressWorkspace {.tabset}
 
 <u class="tooltip-custom tooltip-custom-label" data-tooltip="The **ExpressWorkspace** section documents the computing environment 
-used for analysis, including detailed specifications of the R, Python, and Domino execution environments. 
+used for analysis, including detailed specifications of the R and Python execution environments. 
 These tables capture software versions, package dependencies, and runtime metadata, supporting reproducibility and 
 transparency of the **CellExpress** workflow.">Read me</u>
 
