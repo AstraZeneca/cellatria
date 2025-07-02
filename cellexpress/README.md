@@ -415,8 +415,7 @@ DimPlot(seurat_obj, group.by = "sample")
 
 The `Dockerfile` defines the dedicated computing environment for executing **cellatria** and the co-developed **CellExpress** pipelie in a consistent and reproducible manner. 
 It includes all required Python and R dependencies, along with support for HTML reporting and visualization. 
-Built on an Ubuntu-based system, the environment also provides essential system-level packages to support end-to-end 
-pipeline execution. 
+Built on an Ubuntu-based system, the environment also provides essential system-level packages to support end-to-end pipeline execution. 
 
 </details>
 
