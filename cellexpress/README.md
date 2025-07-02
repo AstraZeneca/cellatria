@@ -199,6 +199,10 @@ Example metadata file with sample-based QC:
 | `--cty_model_path` | `str` | `None` | Path to directory containing CellTypist `.pkl` models. |
 | `--cty_model_name` | `str` | `None` | [CellTypist](https://www.celltypist.org/models) model name (without `.pkl` extension). Example: `Immune_All_High`. |
 
+> `SCimilarity` supports cross-tissue automated cell type annotation using pretrained models.
+
+> `CellTypist` is used for tissue-specific automated cell type annotation using pretrained models.
+
 ---
 
 ### Differential Expression (DE) Arguments
