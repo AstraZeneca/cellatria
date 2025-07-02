@@ -115,7 +115,11 @@ inputs
 | `--tissue` | ✅ | `str` | Tissue name. |
 | `--disease` | ✅ | `str` | Disease name. |
 
-> To ensure consistency and compliance with data governance; the `--input` path must be an absolute path (e.g., `/path/to/my_project`)
+**To ensure consistency and compliance with data governance:**
+
+- The `--input` path must be an absolute path (e.g., `/path/to/my_project`)
+- No trailing slashes (`/` or `\\`)
+- The directory must exist
 
 ---
 
@@ -132,7 +136,7 @@ inputs
 | `--doublet_method` | `str` | `None` | Doublet detection method: currently supports [`scrublet`](https://github.com/swolock/scrublet). |
 | `--scrublet_cutoff` | `float` | 0.25 | Threshold above which cells are considered doublets (if using `scrublet`). |
 
-**Sample-Based Quality Control (QC)**
+**Sample-Based Quality Control (QC):**
 
 When sample-based QC is required, all QC thresholds can be overridden on a **per-sample basis** using the `metadata.csv` file.  
 In this case, the command-line values serve as **global defaults**, but will be **overwritten** by any per-sample values defined in the metadata.
@@ -359,7 +363,7 @@ outputs_cellexpress_v<x-y-z>_<UI>
    A harmonized and fully annotated `AnnData` object (compatible with [`Scanpy`](https://scanpy.readthedocs.io/en/stable/)), including normalized 
    gene expression, embeddings, clustering labels, cell annotations.
 
-**CellExpress** generates a unique identifier (UID) for all three output files. The
+> **CellExpress** generates a unique identifier (UID) for all three output files. The
 UID is a 7-character alphanumeric code (consisting of upper and lower-case
 letters and numbers) that is assigned to all three output files and projected on
 the HTML summary report. The UID serves as a tracking mechanism for the data in
