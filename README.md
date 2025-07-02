@@ -21,9 +21,17 @@
   <img width="100%" src="cellatria_git_logo.png"> 
 </p>
 
+---
+
+## Introduction
+<details>
+<br>
+
 **cellAtria** is a modular, agent-driven platform designed to automate the end-to-end metadata curation, data ingestion, and single-cell RNA sequencing (scRNA-seq) analysis. By integrating large language models (LLMs) with domain-specific bioinformatics toolchains, cellAtria streamlines the full lifecycle of single-cell studies — from literature parsing and metadata extraction to data acquisition and pipeline execution — all accessible through a natural language interface.
 
 > **cellAtria** empowers users to interact with data and tools via natural language, abstracting away scripting complexity.
+
+</details>
 
 ---
 
