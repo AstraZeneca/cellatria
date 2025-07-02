@@ -41,7 +41,7 @@ parser.add_argument("--input",
                     required=True, 
                     default=None, 
                     help=("Path to input data directory. Must meet the following criteria:\n"
-                        "• Absolute path (e.g., /domino/datasets/local/CTPM-CellExpress/projects/my_project)\n"
+                        "• Absolute path (e.g., /path/to/my_project)\n"
                         "• No trailing slash (/)\n"
                         "• Directory must exist on the file system"))
 parser.add_argument("--project",  
