@@ -78,7 +78,7 @@ docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
 ---
 
 ### (3)  Launching Agent
-Start the agent with the following command (replace paths with your actual directories)::
+Start the agent with the following command (replace paths with your actual directories):
 
 ```bash
 # Run this command in your terminal
@@ -94,7 +94,7 @@ Command Breakdown:
 
 - `-p 7860:7860`: Exposes the agent user interface (UI) on port 7860.
 - `-v /path/to/your/project/directory:/data`: Mounts your project directory into the container.
-- `-v /path/to/your/env/directory:/envdir`: Mounts your `.env` directory for configuration (see [LLM Configuration](#env_setup)).
+- `-v /path/to/your/env/directory:/envdir`: Mounts your `.env` directory for configuration (see [LLM Configuration](#env_setup) section below).
 - `ghcr.io/nourin-nn/cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
 - `--env_path /envdir`: Tells agent where to find the `.env` file for provider setup.
 
