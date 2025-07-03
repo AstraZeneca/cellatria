@@ -64,7 +64,7 @@
 
 ### (2) Docker Images
 
-The **cellAtria** GitHub repository is equipped with a GitHub Actions workflow that automatically builds and publishes a Docker image to the [GitHub Container Registry](https://github.com/nourin-nn/cellatria/pkgs/container/cellatria) upon each successful release or update.
+The **cellAtria** repository includes a GitHub Actions workflow that builds and publishes a preconfigured Docker image to the [GitHub Container Registry](https://github.com/nourin-nn/cellatria/pkgs/container/cellatria). This image contains all dependencies needed to run the agent in a consistent environment.
 
 Pull the latest **cellAtria** Docker image using:
 
