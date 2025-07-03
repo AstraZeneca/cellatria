@@ -58,7 +58,7 @@
 ### (1) Prerequisites
 
 - **Docker**: Install [Docker](https://docs.docker.com/get-docker/) and ensure the Docker daemon is running.
-- **Environment Configuration**: Provide a `.env` file with credentials and parameters (see [LLM Configuration](#env_setup)).
+- **Environment Configuration**: Provide a `.env` file with credentials and parameters (see [LLM Configuration](#env_setup) section below).
 
 ---
 
