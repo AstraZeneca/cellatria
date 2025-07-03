@@ -40,11 +40,11 @@
 <br>
 
 - Accepts primary research articles as **PDFs** or **URLs**.
-- Extracts structured metadata such as sample annotations, organism, tissue type, and GEO (Gene Expression Omnibus) accession identifiers.
-- Resolves **GSE (study-level)** and **GSM (sample-level)** dependencies across GEO and organizes data accordingly.
-- Orchestrates full ingestion pipelines and triggers [**CellExpress**](#cellexpress) — an integrated, containerized scRNA-seq analysis framework.
-- Supports metadata introspection, file transfers, directory traversal, and summarization tools.
-- All actions are composed into reusable graph-based tools that operate as callable agent nodes.
+- Extracts structured metadata, including sample annotations, organism, tissue type, and GEO (Gene Expression Omnibus) accession identifiers.
+- Resolves and organizes GEO datasets by accessing both **GSE (study-level)** and **GSM (sample-level)** records, ensuring structured data retrieval across studies and samples.
+- Orchestrates full pipeline configuration and launches [**CellExpress**](#cellexpress), a containerized and integrated framework for standardized scRNA-seq analysis..
+- Enables metadata editing, secure file transfers, and file system management.
+- Composes all actions into reusable, graph-based tools that operate as callable agent nodes.
 
 > Additional details on the underlying toolkits and LLM initialization logic can be found in the [system prompts reference](https://github.com/nourin-nn/cellatria/blob/main/agent/system_prompts.md)
 
