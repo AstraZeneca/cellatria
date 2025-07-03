@@ -215,24 +215,3 @@ suggest enhancements.
 </details>
 
 ---
-
-## 📝 Citing cellAtria
-<details>
-<br>
-
-If you use **cellAtria** please cite our paper: Nouri N. et al. "Leveraging Agentic AI for End-to-End Analysis of Single-Cell RNA-seq Data", XXXXXXX, 2025, doi:xx.xxxx/xxxxx.
-
-```
-  @Article{,
-    author = {Nima Nouri et al.},
-    title = {Leveraging Agentic AI for End-to-End Analysis of Single-Cell RNA-seq Data},
-    journal = {XXXXXX},
-    year = {2025},
-    url = {XXXXXX},
-    doi = {xx.xxxx/xxxxx},
-  }
-```
-
-</details>
-
----
