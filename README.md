@@ -131,9 +131,7 @@ makes the contents of `/absolute/path/on/host` on your host machine available in
 
 ### Quick Start
 
-cellAtria requires a `.env` file to configure access to your chosen LLM provider.
-
-> You can download the template [`.env`](https://github.com/nourin-nn/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
+cellAtria requires a `.env` file to configure access to your chosen LLM provider. You can download the template [`.env`](https://github.com/nourin-nn/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
 
 ### Supported LLM Backends
 
