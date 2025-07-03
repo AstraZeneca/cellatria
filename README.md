@@ -64,7 +64,7 @@
 
 ### (2) Docker Images
 
-The **cellAtria** repository includes a GitHub Actions workflow that builds and publishes a preconfigured Docker image to the [GitHub Container Registry](https://github.com/nourin-nn/cellatria/pkgs/container/cellatria). This image contains all dependencies needed to run the agent in a consistent environment.
+The **cellAtria** repository includes a GitHub Actions workflow that builds and publishes a preconfigured Docker image to the [GitHub Container Registry](https://github.com/nourin-nn/cellatria/pkgs/container/cellatria).
 
 Pull the latest **cellAtria** Docker image using:
 
@@ -73,7 +73,7 @@ Pull the latest **cellAtria** Docker image using:
 docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
 ```
 
-> This container includes all necessary dependencies to launch the **cellAtria** agent.
+> This image contains all dependencies needed to run  the **cellAtria** agent in a consistent environment.
 
 ---
 
