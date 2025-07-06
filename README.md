@@ -33,8 +33,6 @@
 
 > **cellAtria** empowers users to interact with data and tools via natural language, abstracting away scripting complexity.
 
-> <span style="color:#2E86C1"><strong>cellAtria</strong> empowers users to interact with data and tools via natural language, abstracting away scripting complexity.</span>
-
 </details>
 
 ---
