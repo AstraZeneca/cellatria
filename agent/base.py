@@ -377,7 +377,7 @@ def create_cellatria(env_path):
             fb_base_path = gr.Textbox(value=os.getcwd(), label="Directory Path")
             fb_current_path_md = gr.Markdown()
             fb_dir_dropdown = gr.Dropdown(label="Subdirectories", choices=[], interactive=True)
-            fb_refresh_button = gr.Button("🔄 Refresh")
+            fb_refresh_button = gr.Button("Refresh")
             fb_file_display = gr.Textbox(label="Files in Directory", lines=10, interactive=False)
 
             def fb_list_subdirs_and_files(path):
@@ -394,7 +394,7 @@ def create_cellatria(env_path):
                 dirs = [f"📁 {d}" for d in dirs]
                 parent = os.path.dirname(path.rstrip("/"))
                 if parent and os.path.abspath(parent) != os.path.abspath(path):
-                    return ["⬆️ .. (Up)"] + dirs
+                    return [".. (Up)"] + dirs
                 return dirs
 
             def fb_initial_refresh(path):
