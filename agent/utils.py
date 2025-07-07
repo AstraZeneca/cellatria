@@ -145,6 +145,12 @@ gr_css = """
     font-size: 12px;
 }
 
+#logs_terminal_panel { background-color: #ccece6; }
+
+#logs_browser_panel { background-color: #e6f7ff; }
+
+#logs_history_panel { background-color: #fbeee6; }
+
 #log_viewer_aes textarea {
     background-color: #1435F3 !important;
     color: white !important;

@@ -354,7 +354,7 @@ def create_cellatria(env_path):
             outputs=[chatbot, user_input, pdf_upload, state]
         )
 
-        # Terminal Panel
+        # --- Terminal Panel ---
         with gr.Accordion("Terminal Panel", open=False, elem_id="logs_terminal_panel"):
             with gr.Row(equal_height=True):
                 shell_input = gr.Textbox(placeholder="Enter shell command (e.g., ls -la)", lines=1, label="Command")
@@ -371,8 +371,86 @@ def create_cellatria(env_path):
             outputs=[shell_output, shell_input]
         )
 
-        # History Panel
-        with gr.Accordion("Export Chat", open=False):
+        # --- File Browser ---
+        with gr.Accordion("File Browser", open=False, elem_id="logs_browser_panel"):
+
+            fb_base_path = gr.Textbox(value=os.getcwd(), label="Directory Path")
+            fb_current_path_md = gr.Markdown()
+            fb_dir_dropdown = gr.Dropdown(label="Subdirectories", choices=[], interactive=True)
+            fb_refresh_button = gr.Button("🔄 Refresh")
+            fb_file_display = gr.Textbox(label="Files in Directory", lines=10, interactive=False)
+
+            def fb_list_subdirs_and_files(path):
+                try:
+                    items = os.listdir(path)
+                    dirs = sorted([item for item in items if os.path.isdir(os.path.join(path, item))])
+                    files = sorted([item for item in items if os.path.isfile(os.path.join(path, item))])
+                    return dirs, files, None
+                except Exception as e:
+                    return [], [], f"❌ Error: {str(e)}"
+
+            def fb_get_dropdown_choices(path):
+                dirs, _, _ = fb_list_subdirs_and_files(path)
+                dirs = [f"📁 {d}" for d in dirs]
+                parent = os.path.dirname(path.rstrip("/"))
+                if parent and os.path.abspath(parent) != os.path.abspath(path):
+                    return ["⬆️ .. (Up)"] + dirs
+                return dirs
+
+            def fb_initial_refresh(path):
+                choices = fb_get_dropdown_choices(path)
+                dirs, files, error = fb_list_subdirs_and_files(path)
+                if error:
+                    file_display_val = f"<span style='color:red'>{error}</span>"
+                else:
+                    file_display_val = "\n".join(f"📄 {f}" for f in files) or "No files in this directory."
+                current_path = f"**Current Path:** `{path}`  \n**Folders:** {len(dirs)} | **Files:** {len(files)}"
+                return (
+                    gr.Dropdown(choices=choices, value=None, interactive=bool(choices)),
+                    file_display_val,
+                    path,
+                    current_path
+                )
+
+            def fb_navigate_subdir(subdir, base):
+                if subdir and subdir.startswith("📁 "):
+                    subdir = subdir[2:]
+                if subdir == "⬆️ .. (Up)":
+                    new_path = os.path.dirname(base.rstrip("/"))
+                    if not new_path:
+                        new_path = base
+                elif subdir:
+                    new_path = os.path.join(base, subdir)
+                else:
+                    new_path = base
+                choices = fb_get_dropdown_choices(new_path)
+                dirs, files, error = fb_list_subdirs_and_files(new_path)
+                if error:
+                    file_display_val = f"<span style='color:red'>{error}</span>"
+                else:
+                    file_display_val = "\n".join(f"📄 {f}" for f in files) or "No files in this directory."
+                current_path = f"**Current Path:** `{new_path}`  \n**Folders:** {len(dirs)} | **Files:** {len(files)}"
+                return (
+                    gr.Dropdown(choices=choices, value=None, interactive=bool(choices)),
+                    file_display_val,
+                    new_path,
+                    current_path
+                )
+
+            fb_dir_dropdown.change(
+                fn=fb_navigate_subdir,
+                inputs=[fb_dir_dropdown, fb_base_path],
+                outputs=[fb_dir_dropdown, fb_file_display, fb_base_path, fb_current_path_md]
+            )
+
+            fb_refresh_button.click(
+                fn=fb_initial_refresh,
+                inputs=fb_base_path,
+                outputs=[fb_dir_dropdown, fb_file_display, fb_base_path, fb_current_path_md]
+            )
+
+        # --- History Panel ---
+        with gr.Accordion("Export Chat", open=False, elem_id="logs_history_panel"):
             export_btn = gr.Button("Download Chat", variant="primary")
             chat_file = gr.File(file_types=[".json"], label=".json", show_label=True, interactive=False)
 
@@ -381,8 +459,8 @@ def create_cellatria(env_path):
             fn=export_chat_history,
             inputs=[state],
             outputs=[chat_file]
-        )              
-
-    # -------------------------------
+        )   
 
     return graph, cellatria
+
+# -------------------------------
