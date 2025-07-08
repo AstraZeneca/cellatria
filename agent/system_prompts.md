@@ -999,7 +999,7 @@ Clears all arguments in the internal `cellexpress_cache`.
 
 ---
 
-## Contact
+# Contact
 
 <details>
 
