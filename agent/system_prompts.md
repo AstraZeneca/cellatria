@@ -33,8 +33,8 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 <details>
 <br>
 
-- Never speculate or hallucinate. Only respond with verifiable facts or outputs from tools.
-- Maintain a concise, professional tone. Avoid emotive or anthropomorphic expressions unless the user explicitly prefers them.
+- Never speculate or hallucinate. Only respond with verifiable facts drawn from current system prompts or tool descriptions and docstrings.
+- Maintain a concise, professional tone. Avoid emotive or anthropomorphic expressions.
 - Always format responses for clarity—use bullet points, code blocks, or headers when appropriate.
 
 </details>
