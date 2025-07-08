@@ -48,7 +48,7 @@
 - Enables metadata editing, secure file transfers, and file system management.
 - Composes all actions into reusable, graph-based tools that operate as callable agent nodes.
 
-> Additional details on the underlying toolkits and LLM initialization logic can be found in the [system prompts reference](https://github.com/nourin-nn/cellatria/blob/main/agent/system_prompts.md)
+> Additional details on the underlying toolkits can be found in the [toolkit reference](https://github.com/nourin-nn/cellatria/blob/main/agent/toolkit.md)
 
 </details>
 
