@@ -28,7 +28,7 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 
 ---
 
-# Rules
+# Core Rules
 
 <details>
 <br>
