@@ -5,6 +5,9 @@ import os
 import re
 import json
 import uuid
+import subprocess
+import threading
+from datetime import datetime
 import pandas as pd
 import gradio as gr
 from typing import List, Dict, Any, TypedDict, Literal, Optional
@@ -370,4 +373,206 @@ def checks_args(args):
 
     print(f"*** ✅ All checks passed.")
 
-    # -------------------------------
+# -------------------------------
+# Configuration
+LOG_PATH = "/tmp/cellatria_log.txt"
+
+# Logging
+def log_status(message: str):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(LOG_PATH, "a") as f:
+        # f.write(f"[{timestamp}] {message}\n")
+        f.write(f"{message}\n")
+
+def read_log():
+    try:
+        with open(LOG_PATH, "r") as f:
+            return f.read()
+    except FileNotFoundError:
+        return "📁 No logs yet."
+
+# -------------------------------
+
+# Terminal Session
+class TerminalSession:
+    def __init__(self):
+        self.process = subprocess.Popen(
+            ["bash"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1
+        )
+        self.lock = threading.Lock()
+        self.latest_output = ""
+        self.history = ""  
+
+        # Start thread to continuously read output
+        threading.Thread(target=self._read_output, daemon=True).start()
+
+    def _read_output(self):
+        for line in self.process.stdout:
+            with self.lock:
+                self.latest_output += line
+
+    def run_command(self, cmd):
+        if self.process.poll() is not None:
+            return "❌ Shell has exited."
+
+        with self.lock:
+            self.latest_output = ""
+
+        self.process.stdin.write(cmd + "\n")
+        self.process.stdin.flush()
+        
+        time.sleep(0.3)
+        
+        with self.lock:
+            result = self.latest_output.strip()
+        return result
+
+# -------------------------------
+
+def clean_ansi(text):
+    return ansi_escape.sub('', text)
+
+# -------------------------------
+
+# Define the function used in Gradio UI
+def terminal_interface(cmd):
+    global terminal_transcript
+    raw_output = terminal.run_command(cmd)
+    cleaned_output = clean_ansi(raw_output).strip()
+
+    silent_commands = [
+        "cd ",       # change directory
+        "export ",   # set environment variable
+        "unset ",    # unset environment variable
+        "alias ",    # define an alias
+        "unalias ",  # remove an alias
+        "set ",      # set shell options or positional parameters
+        "shopt ",    # shell options (bash-specific)
+        "trap ",     # set signal handlers
+        "pushd ",    # push directory onto stack
+        "popd",      # pop directory from stack
+        "exec ",     # replace shell with command
+        "true",      # does nothing, returns 0
+        "false",     # does nothing, returns 1
+        ":",         # no-op command
+        "clear",     # clears the screen
+        "reset",     # resets the terminal
+        "wait",      # waits for background jobs
+        "disown",    # removes jobs from shell's job table
+        "bg",        # resume job in background
+        "fg",        # resume job in foreground
+        "jobs",      # list background jobs
+        "readonly ", # mark variables as read-only
+        "declare ",  # variable declaration (bash)
+        "typeset ",  # synonym for declare (ksh/zsh)
+        "let ",      # arithmetic evaluation
+        "source ",   # source a script
+        ".",         # shorthand for source
+    ]
+    is_silent = any(cmd.strip().startswith(sc) for sc in silent_commands)
+    
+    if cleaned_output:
+        terminal_transcript += f"\n$ {cmd}\n{cleaned_output}\n---"
+    elif is_silent:
+        terminal_transcript += f"\n$ {cmd}\n---"  # Silent: do not show fake "(no output)"
+    else:
+        # For commands like `ls` or `cat` returning true empty output
+        terminal_transcript += f"\n$ {cmd}\n---"
+
+    return terminal_transcript.strip(), ""  # keep input cleared
+
+# -------------------------------
+# File Browser Handlers
+def fb_list_subdirs_and_files(path):
+    try:
+        items = os.listdir(path)
+        dirs = sorted([item for item in items if os.path.isdir(os.path.join(path, item))])
+        files = sorted([item for item in items if os.path.isfile(os.path.join(path, item))])
+        return dirs, files, None
+    except Exception as e:
+        return [], [], f"❌ Error: {str(e)}"
+
+def fb_get_dropdown_choices(path):
+    dirs, _, _ = fb_list_subdirs_and_files(path)
+    dirs = [f"📁 {d}" for d in dirs]
+    parent = os.path.dirname(path.rstrip("/"))
+    if parent and os.path.abspath(parent) != os.path.abspath(path):
+        return [".. (Up)"] + dirs
+    return dirs
+
+def fb_initial_refresh(path):
+    choices = fb_get_dropdown_choices(path)
+    dirs, files, error = fb_list_subdirs_and_files(path)
+    if error:
+        file_display_val = f"<span style='color:red'>{error}</span>"
+    else:
+        file_display_val = "\n".join(f"📄 {f}" for f in files) or "No files in this directory."
+    current_path = f"**Current Path:** `{path}`  \n**Folders:** {len(dirs)} | **Files:** {len(files)}"
+    return (
+        gr.Dropdown(choices=choices, value=None, interactive=bool(choices)),
+        file_display_val,
+        path,
+        current_path
+    )
+
+def fb_navigate_subdir(subdir, base):
+    if subdir and subdir.startswith("📁 "):
+        subdir = subdir[2:]
+    if subdir == ".. (Up)":
+        new_path = os.path.dirname(base.rstrip("/"))
+        if not new_path:
+            new_path = base
+    elif subdir:
+        new_path = os.path.join(base, subdir)
+    else:
+        new_path = base
+    choices = fb_get_dropdown_choices(new_path)
+    dirs, files, error = fb_list_subdirs_and_files(new_path)
+    if error:
+        file_display_val = f"<span style='color:red'>{error}</span>"
+    else:
+        file_display_val = "\n".join(f"📄 {f}" for f in files) or "No files in this directory."
+    current_path = f"**Current Path:** `{new_path}`  \n**Folders:** {len(dirs)} | **Files:** {len(files)}"
+    return (
+        gr.Dropdown(choices=choices, value=None, interactive=bool(choices)),
+        file_display_val,
+        new_path,
+        current_path
+    )
+            
+# -------------------------------
+
+# Chat Export Feature
+def export_chat_history(state_data):
+    uid = uuid.uuid4().hex[:8]
+    filename = f"chat_{uid}.json"
+    filepath = os.path.join(tempfile.gettempdir(), filename)
+    with open(filepath, "w") as f:
+        json.dump(state_data, f, indent=2)
+    return filepath
+
+# -------------------------------
+# Initial message
+initial_message = {
+    "role": "assistant",
+    "content": (
+        "👋 Hello! I'm **cellAtria**, your assistant for analyzing single-cell RNA-seq (scRNA-seq) datasets.\n\n"
+        "Here's what I can help you with:\n"
+        "1. Extract structured metadata from scientific articles (PDF or URL).\n"
+        "2. Store and organize metadata in structured project directories.\n"
+        "3. Access public databases (currently support GEO) and fetch associated sample metadata.\n"
+        "4. Download and organize scRNA-seq datasets.\n"        
+        "5. Trigger CellExpress standardized single-cell data processing.\n\n"
+        "To see a list of all available actions, type `'help'`.\n"
+        "**Let's see how far we can fly together.** 🕊️\n\n"
+        "To get started, let's set up your working directory. I can show you the current one or help create a new path. You can change your working directory anytime you wish.\n"
+        f"📂 **Current Working Directory:** `{os.getcwd()}`"
+    )
+}
+
+# -------------------------------
