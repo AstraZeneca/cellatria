@@ -7,6 +7,8 @@ import json
 import uuid
 import subprocess
 import threading
+import time
+import tempfile
 from datetime import datetime
 import pandas as pd
 import gradio as gr
@@ -433,9 +435,18 @@ class TerminalSession:
         return result
 
 # -------------------------------
+# Store transcript outside the session
+terminal_transcript = ""
+
+# Strip ANSI codes before displaying
+ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 
 def clean_ansi(text):
     return ansi_escape.sub('', text)
+
+# -------------------------------
+# Initialize the terminal session
+terminal = TerminalSession()
 
 # -------------------------------
 
