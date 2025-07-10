@@ -16,9 +16,7 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
 import traceback
-import time
 import json
-import tempfile
 import pprint
 import gradio as gr
 from toolkit import tools
@@ -29,9 +27,6 @@ from utils import (gr_css, get_llm_from_env, chatbot_theme, base_path,
                     export_chat_history, initial_message)
 
 # -------------------------------
-# Store transcript outside the session
-terminal_transcript = ""
-
 def create_cellatria(env_path):
 
     env_file = os.path.join(env_path, ".env")
@@ -73,14 +68,6 @@ def create_cellatria(env_path):
     graph_builder.add_conditional_edges("chatbot", tools_condition)
     graph_builder.set_entry_point("chatbot")
     graph = graph_builder.compile(checkpointer=MemorySaver())
-
-    # -------------------------------
-    # Initialize the terminal session
-    terminal = TerminalSession()
-
-    # -------------------------------
-    # Strip ANSI codes before displaying
-    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 
     # -------------------------------
     # Chat Handler
