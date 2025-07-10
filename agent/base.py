@@ -22,6 +22,7 @@ import threading
 import time
 import json
 import tempfile
+import pprint
 import gradio as gr
 from toolkit import tools
 from utils import gr_css, get_llm_from_env, chatbot_theme, base_path
@@ -264,6 +265,120 @@ def create_cellatria(env_path):
         )
 
     # -------------------------------
+    # Backend Handler
+    def gr_block_stream_backend(user_input, pdf_file, history):
+        messages = []
+        if not history:
+            history = [initial_message]
+
+        for h in history:
+            role = h["role"]
+            content = h["content"]
+            if role == "user":
+                messages.append(HumanMessage(content=content))
+            elif role == "assistant":
+                messages.append(AIMessage(content=content))
+
+        if user_input:
+            messages.append(HumanMessage(content=user_input))
+
+        config = {"configurable": {"thread_id": chat_thread_id}}
+        backend_log = []
+
+        try:
+            for step in graph.stream({"messages": messages}, config=config):
+                # --- Extract summary info ---
+                summary_lines = []
+                if "chatbot" in step:
+                    msg = step["chatbot"]["messages"]
+                    meta = getattr(msg, "response_metadata", {})
+                    model = meta.get("model_name", "")
+                    tokens = meta.get("token_usage", {})
+                    summary_lines.append(f"**Step:** `chatbot`")
+                    summary_lines.append(f"**Model:** `{model}`")
+                    summary_lines.append(
+                        f"**Tokens:** {tokens.get('completion_tokens', '?')} completion, "
+                        f"{tokens.get('prompt_tokens', '?')} prompt, "
+                        f"{tokens.get('total_tokens', '?')} total"
+                    )
+                elif "tools" in step:
+                    for tool_msg in step["tools"]["messages"]:
+                        summary_lines.append(f"**Step:** `tools`")
+                        summary_lines.append(f"**Tool:** `{getattr(tool_msg, 'name', 'unknown')}`")
+                # --- End summary info ---
+
+                # Pretty-print the step dict as plain text
+                step_txt = pprint.pformat(step, compact=True, width=120)
+                backend_log.append(
+                    "\n".join(summary_lines) +
+                    "\n\n```python\n" + step_txt + "\n```\n"
+                )
+                yield "\n\n".join(backend_log)
+        except Exception as e:
+            backend_log.append(f"❌ Error: {str(e)}")
+            backend_log.append(traceback.format_exc())
+            yield "\n\n".join(backend_log)
+
+    # -------------------------------
+    # File Browser Handlers
+    def fb_list_subdirs_and_files(path):
+        try:
+            items = os.listdir(path)
+            dirs = sorted([item for item in items if os.path.isdir(os.path.join(path, item))])
+            files = sorted([item for item in items if os.path.isfile(os.path.join(path, item))])
+            return dirs, files, None
+        except Exception as e:
+            return [], [], f"❌ Error: {str(e)}"
+
+    def fb_get_dropdown_choices(path):
+        dirs, _, _ = fb_list_subdirs_and_files(path)
+        dirs = [f"📁 {d}" for d in dirs]
+        parent = os.path.dirname(path.rstrip("/"))
+        if parent and os.path.abspath(parent) != os.path.abspath(path):
+            return [".. (Up)"] + dirs
+        return dirs
+
+    def fb_initial_refresh(path):
+        choices = fb_get_dropdown_choices(path)
+        dirs, files, error = fb_list_subdirs_and_files(path)
+        if error:
+            file_display_val = f"<span style='color:red'>{error}</span>"
+        else:
+            file_display_val = "\n".join(f"📄 {f}" for f in files) or "No files in this directory."
+        current_path = f"**Current Path:** `{path}`  \n**Folders:** {len(dirs)} | **Files:** {len(files)}"
+        return (
+            gr.Dropdown(choices=choices, value=None, interactive=bool(choices)),
+            file_display_val,
+            path,
+            current_path
+        )
+
+    def fb_navigate_subdir(subdir, base):
+        if subdir and subdir.startswith("📁 "):
+            subdir = subdir[2:]
+        if subdir == ".. (Up)":
+            new_path = os.path.dirname(base.rstrip("/"))
+            if not new_path:
+                new_path = base
+        elif subdir:
+            new_path = os.path.join(base, subdir)
+        else:
+            new_path = base
+        choices = fb_get_dropdown_choices(new_path)
+        dirs, files, error = fb_list_subdirs_and_files(new_path)
+        if error:
+            file_display_val = f"<span style='color:red'>{error}</span>"
+        else:
+            file_display_val = "\n".join(f"📄 {f}" for f in files) or "No files in this directory."
+        current_path = f"**Current Path:** `{new_path}`  \n**Folders:** {len(dirs)} | **Files:** {len(files)}"
+        return (
+            gr.Dropdown(choices=choices, value=None, interactive=bool(choices)),
+            file_display_val,
+            new_path,
+            current_path
+        )
+               
+    # -------------------------------
     # Chat Export Feature
     def export_chat_history(state_data):
         uid = uuid.uuid4().hex[:8]
@@ -354,6 +469,21 @@ def create_cellatria(env_path):
             outputs=[chatbot, user_input, pdf_upload, state]
         )
 
+        # --- Backend Panel ---
+        with gr.Accordion("Agent Backend", open=False, elem_id="agent_backend_panel"):
+            agent_backend_md = gr.Markdown("No agent activity yet.", elem_id="agent_backend_md")
+
+        user_input.submit(
+            fn=gr_block_stream_backend,
+            inputs=[user_input, pdf_upload, state],
+            outputs=agent_backend_md
+        )
+        submit_btn.click(
+            fn=gr_block_stream_backend,
+            inputs=[user_input, pdf_upload, state],
+            outputs=agent_backend_md
+        )
+
         # --- Terminal Panel ---
         with gr.Accordion("Terminal Panel", open=False, elem_id="logs_terminal_panel"):
             with gr.Row(equal_height=True):
@@ -379,63 +509,6 @@ def create_cellatria(env_path):
             fb_dir_dropdown = gr.Dropdown(label="Subdirectories", choices=[], interactive=True)
             fb_refresh_button = gr.Button("Refresh Directory", variant="primary")
             fb_file_display = gr.Textbox(label="Files in Directory", lines=10, interactive=False)
-
-            def fb_list_subdirs_and_files(path):
-                try:
-                    items = os.listdir(path)
-                    dirs = sorted([item for item in items if os.path.isdir(os.path.join(path, item))])
-                    files = sorted([item for item in items if os.path.isfile(os.path.join(path, item))])
-                    return dirs, files, None
-                except Exception as e:
-                    return [], [], f"❌ Error: {str(e)}"
-
-            def fb_get_dropdown_choices(path):
-                dirs, _, _ = fb_list_subdirs_and_files(path)
-                dirs = [f"📁 {d}" for d in dirs]
-                parent = os.path.dirname(path.rstrip("/"))
-                if parent and os.path.abspath(parent) != os.path.abspath(path):
-                    return [".. (Up)"] + dirs
-                return dirs
-
-            def fb_initial_refresh(path):
-                choices = fb_get_dropdown_choices(path)
-                dirs, files, error = fb_list_subdirs_and_files(path)
-                if error:
-                    file_display_val = f"<span style='color:red'>{error}</span>"
-                else:
-                    file_display_val = "\n".join(f"📄 {f}" for f in files) or "No files in this directory."
-                current_path = f"**Current Path:** `{path}`  \n**Folders:** {len(dirs)} | **Files:** {len(files)}"
-                return (
-                    gr.Dropdown(choices=choices, value=None, interactive=bool(choices)),
-                    file_display_val,
-                    path,
-                    current_path
-                )
-
-            def fb_navigate_subdir(subdir, base):
-                if subdir and subdir.startswith("📁 "):
-                    subdir = subdir[2:]
-                if subdir == ".. (Up)":
-                    new_path = os.path.dirname(base.rstrip("/"))
-                    if not new_path:
-                        new_path = base
-                elif subdir:
-                    new_path = os.path.join(base, subdir)
-                else:
-                    new_path = base
-                choices = fb_get_dropdown_choices(new_path)
-                dirs, files, error = fb_list_subdirs_and_files(new_path)
-                if error:
-                    file_display_val = f"<span style='color:red'>{error}</span>"
-                else:
-                    file_display_val = "\n".join(f"📄 {f}" for f in files) or "No files in this directory."
-                current_path = f"**Current Path:** `{new_path}`  \n**Folders:** {len(dirs)} | **Files:** {len(files)}"
-                return (
-                    gr.Dropdown(choices=choices, value=None, interactive=bool(choices)),
-                    file_display_val,
-                    new_path,
-                    current_path
-                )
 
             fb_dir_dropdown.change(
                 fn=fb_navigate_subdir,
