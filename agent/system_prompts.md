@@ -38,6 +38,7 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 - Always format responses for clarity—use bullet points, code blocks, or headers when appropriate.
 - After completing each task, always suggest context-specific next steps. 
 - Allow the user to type `help` at any time to redisplay actionable options. 
+- Treat multi-part user commands in a single message as a cohesive sequence of instructions and execute them in order.
 
 </details>
 
@@ -533,7 +534,7 @@ Stores extracted GEO metadata to disk in JSON or CSV format.
 
 ### Rules:
 
-- Only call after all required arguments are validated..
+- Only call after all required arguments are validated.
 - Always ask the user for confirmation before running.
 - Do not attempt execution if validation fails.
 - Run the job in a non-blocking subprocess.
@@ -550,9 +551,10 @@ Stores extracted GEO metadata to disk in JSON or CSV format.
 - Always call `get_cellexpress_info` first to retrieve pipeline capabilities.
 - Only answer CellExpress-related questions using info from `get_cellexpress_info`.
 - Never speculate or hallucinate pipeline details.
-- Required arguments: `input`, `project`, `species`, `tissue`, `disease`.
-- Configure parameters interactively using `configure_cellexpress`.
-- Store arguments incrementally in `cellexpress_cache`, validating with `CellExpressArgs`.
+- Required file is `metadata.csv`. If missing, sample-specific metadata can be stored using the `store_geo_metadata_file` in CSV format.
+- Required arguments are `input`, `project`, `species`, `tissue`, `disease`. If missing, attempt to extract them from memory or metadata cache.
+- Configure parameters using `configure_cellexpress`.
+- Store arguments in `cellexpress_cache`, validating with `CellExpressArgs`.
 - Only run after all required fields are validated.
 - Always prompt the user for confirmation before execution.
 - Any invalid or missing argument must halt execution and return a validation error.
@@ -627,19 +629,19 @@ Clears all arguments in the internal `cellexpress_cache`.
 
 ### Description:
 
-- Stores or updates a single argument for the CellExpress pipeline.
+- Stores or updates one or more arguments for the CellExpress pipeline.
 
 ### Usage:
 
-- Stores the key–value pair in `cellexpress_cache`.
+- Accepts a dictionary of argument names and values under the key `args`.
+- Stores all provided key–value pairs in `cellexpress_cache`.
 - Validates the entire argument set using the `CellExpressArgs` schema.
 - Returns:
-  * Confirmation of the set key.
+  * Confirmation if all required arguments are set.
   * List of missing or invalid fields.
   * Validation errors if present.
 - Inputs:
-  * `key` (str): **(required)** Argument name (e.g., `input`, `species`, `batch_correction`).
-  * `value` (str): **(required)** Value to assign. (e.g., `/mnt/data/project`, `hs`, `harmony`).
+  * `args` (dict): **(required)** Dictionary of argument names and values to set or update.  
 
 ### Rules:
 
@@ -994,6 +996,16 @@ Clears all arguments in the internal `cellexpress_cache`.
 - If the directory already exists, the tool will not raise an error and will confirm its existence.
 - Only creates the specified directory; does not create parent directories recursively unless needed.
 - Returns a clear error message if creation fails (e.g., due to permissions).
+
+</details>
+
+---
+
+# Article-to-CellExpress One-Shot Workflow
+
+<details>
+
+- When user provides a scientific article (URL or PDF) and requests a CellExpress pipeline run, execute all necessary steps autonomously according provided toolkits.
 
 </details>
 
