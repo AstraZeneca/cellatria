@@ -221,7 +221,7 @@ def fetch_geo_metadata(gse_id: str) -> dict:
                     sample_rows.append({
                         "sample": gsm_id,
                         "description": gsm_desc,
-                        "biosample_id": biosample,
+                        "biosample_id": biosample if biosample is not None else "Unavailable",
                         "sra_ids": ", ".join(sra_ids) if sra_ids else "Unavailable"
                     })
 
@@ -820,24 +820,24 @@ class CellExpressCache:
 cellexpress_cache = CellExpressCache()
 
 class ConfigArgInput(BaseModel):
-    key: str = Field(..., description="The argument name you want to set or update.")
-    value: str = Field(..., description="The value to assign to this argument.")
+    args: Dict[str, str] = Field(..., description="Dictionary of argument names and values to set/update.")
 
 @tool(args_schema=ConfigArgInput)
-def configure_cellexpress(key: str, value: str) -> str:
+def configure_cellexpress(args: Dict[str, str]) -> str:
     """
-    Store or update a CellExpress argument. Validates against full argument schema.
+    Store or update multiple CellExpress arguments. Validates against full argument schema.
+    Accept single argument prompts as well as multiple arguments.
     """
-    cellexpress_cache.set_args({key: value})
+    cellexpress_cache.set_args(args)
 
     # Try full schema validation
     try:
-        args = cellexpress_cache.get_args()
-        validated = CellExpressArgs(**args)
-        return f"✅ `{key}` set. ✅ All required arguments valid. Ready to run CellExpress."
+        all_args = cellexpress_cache.get_args()
+        validated = CellExpressArgs(**all_args)
+        return "✅ All required arguments set. Ready to run CellExpress."
     except ValidationError as e:
         missing = cellexpress_cache.missing_required_fields()
-        return f"✅ `{key}` set. Still missing or invalid: {missing}\nValidation errors:\n{e}"
+        return f"Still missing or invalid: {missing}\nValidation errors:\n{e}"
 
 # -------------------------------
 # Previews the current CellExpress CLI configuration.
@@ -987,6 +987,8 @@ def run_cellexpress(**kwargs) -> str:
 
     for key, val in args_dict.items():
         if val is not None:
+            if key in {"project", "tissue", "disease"}:
+                val = str(val).replace(" ", "_")
             base_cmd.append(f"--{key}")
             base_cmd.append(str(val))
 
