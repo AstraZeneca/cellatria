@@ -13,6 +13,7 @@
 !*.env
 !README.md
 !Dockerfile
+!LICENSE.txt
 
 # Exclude directories inside agent and cellexpress
 **/__pycache__/
