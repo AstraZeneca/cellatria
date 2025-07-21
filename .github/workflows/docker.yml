@@ -1,6 +1,6 @@
 # GitHub Actions workflow
 # Build and Push cellatria image to GHCR
-name: cellatria image v1-0-0
+name: cellatria image
 
 # Trigger workflow on push to main branch
 on:
