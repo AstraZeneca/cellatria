@@ -13,7 +13,7 @@
 
 <!-- Version Banner -->
 <p align="center" width="100%">
-  <a href="https://github.com/nourin-nn/cellatria/actions/workflows/docker.yml"><img src="https://github.com/nourin-nn/cellatria/actions/workflows/docker.yml/badge.svg" alt="Docker Build Status"/></a>
+  <a href="https://github.com/azu-oncology-rd/cellatria/actions/workflows/docker.yml"><img src="https://github.com/azu-oncology-rd/cellatria/actions/workflows/docker.yml/badge.svg?branch=main" alt="Docker Build Status"/></a>
   <br>
   <img width="15%" src="https://img.shields.io/badge/release-v1.0.0-4444AA.svg?style=for-the-badge" alt="Release v1.0.0"/>
 </p>
