@@ -1016,7 +1016,7 @@ Clears all arguments in the internal `cellexpress_cache`.
 <details>
 
 - For help and questions about **cellAtria** agent, please contact Nima Nouri 
-- Email: ni.nouri@gmail.com
+- Email: nima.nouri@astrazeneca.com
 - Role: author (aut) and creator (cre)
 
 </details>

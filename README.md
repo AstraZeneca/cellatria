@@ -48,7 +48,7 @@
 - Enables metadata editing, secure file transfers, and file system management.
 - Composes all actions into reusable, graph-based tools that operate as callable agent nodes.
 
-> Additional details on the underlying toolkits can be found in the [toolkit reference](https://github.com/nourin-nn/cellatria/blob/main/agent/toolkit.md)
+> Additional details on the underlying toolkits can be found in the [toolkit reference](https://github.com/azu-oncology-rd/cellatria/blob/main/agent/toolkit.md)
 
 </details>
 
@@ -66,13 +66,13 @@
 
 ### (2) Docker Images
 
-The **cellAtria** repository includes a GitHub Actions workflow that builds and publishes a preconfigured Docker image to the [GitHub Container Registry](https://github.com/nourin-nn/cellatria/pkgs/container/cellatria).
+The **cellAtria** repository includes a GitHub Actions workflow that builds and publishes a preconfigured Docker image to the [GitHub Container Registry](https://github.com/azu-oncology-rd/cellatria/pkgs/container/cellatria).
 
 Pull the latest **cellAtria** Docker image using:
 
 ```bash
 # Run this command in your terminal
-docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
+docker pull ghcr.io/azu-oncology-rd/cellatria:v1.0.0
 ```
 
 > This image contains all dependencies needed to run  the **cellAtria** agent in a consistent environment.
@@ -88,7 +88,7 @@ docker run -it --rm \
   -p 7860:7860 \
   -v /path/to/your/project/directory:/data \
   -v /path/to/your/env/directory:/envdir \
-  ghcr.io/nourin-nn/cellatria:v1.0.0 cellatria \
+  ghcr.io/azu-oncology-rd/cellatria:v1.0.0 cellatria \
   --env_path /envdir
 ```
 
@@ -97,7 +97,7 @@ Command Breakdown:
 - `-p 7860:7860`: Exposes the agent user interface (UI) on port 7860.
 - `-v /path/to/your/project/directory:/data`: Mounts your project directory into the container.
 - `-v /path/to/your/env/directory:/envdir`: Mounts your `.env` directory for configuration (see [LLM Configuration](#env_setup) section below).
-- `ghcr.io/nourin-nn/cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
+- `ghcr.io/azu-oncology-rd/cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
 - `--env_path /envdir`: Tells agent where to find the `.env` file for provider setup.
 
 > macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container. 
@@ -133,7 +133,7 @@ makes the contents of `/absolute/path/on/host` on your host machine available in
 
 ### Quick Start
 
-cellAtria requires a `.env` file to configure access to your chosen LLM provider. You can download the template [`.env`](https://github.com/nourin-nn/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
+cellAtria requires a `.env` file to configure access to your chosen LLM provider. You can download the template [`.env`](https://github.com/azu-oncology-rd/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
 
 ### Supported LLM Backends
 
@@ -160,7 +160,7 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 > Designed to lower bioinformatics barriers, **CellExpress** implements a comprehensive set of state-of-the-art, Scanpy-based processing stages, including quality control (performed globally or per sample), data transformation (including normalization, highly variable gene selection, and scaling), dimensionality reduction (UMAP and t-SNE), graph-based clustering, and marker gene identification. Additional tools are integrated to support advanced analysis tasks, including doublet detection, batch correction, and automated cell type annotation using both tissue-agnostic and tissue-specific models. All analytical steps are executed sequentially under centralized control, with parameters fully configurable via a comprehensive input schema. 
 
-For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/nourin-nn/cellatria/blob/main/cellexpress/README.md).
+For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/azu-oncology-rd/cellatria/blob/main/cellexpress/README.md).
 
 </details>
 
@@ -212,7 +212,7 @@ suggest enhancements.
 
 | Role         | Name               | Contact                                     |
 |--------------|--------------------|---------------------------------------------|
-| Author/Maintainer   | Nima Nouri         | [ni.nouri@gmail.com](mailto:ni.nouri@gmail.com) | 
+| Author/Maintainer   | Nima Nouri         | [nima.nouri@astrazeneca.com](mailto:nima.nouri@astrazeneca.com) | 
 
 </details>
 

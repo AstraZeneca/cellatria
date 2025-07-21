@@ -6,8 +6,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 LABEL org.opencontainers.image.title="cellAtria"
 LABEL org.opencontainers.image.version="v1.0.0"
 LABEL org.opencontainers.image.description="CellAtria: Agentic Triage of Regulated single-cell data Ingestion and Analysis."
-LABEL org.opencontainers.image.authors="Nima Nouri <ni.nouri@gmail.com>"
-LABEL org.opencontainers.image.source="https://github.com/nourin-nn/cellatria"
+LABEL org.opencontainers.image.authors="Nima Nouri <nima.nouri@astrazeneca.com>"
+LABEL org.opencontainers.image.source="https://github.com/azu-oncology-rd/cellatria"
 # -----------------------------------
 # installing python and all required packages
 RUN apt-get update --fix-missing && \ 

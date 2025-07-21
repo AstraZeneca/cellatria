@@ -294,14 +294,14 @@ If you're using the **cellAtria** container (which includes `CellTypist` preinst
 
 First, pull the latest **cellAtria** Docker image using:
 ```bash
-docker pull ghcr.io/nourin-nn/cellatria:v1.0.0
+docker pull ghcr.io/azu-oncology-rd/cellatria:v1.0.0
 ```
 
 Then, run the following one-liner, which uses the containerized environment:
 ```bash
 docker run --rm -it \
   -v /path/to/your/celltypist_models:/data \  
-  ghcr.io/nourin-nn/cellatria:v1.0.0 \
+  ghcr.io/azu-oncology-rd/cellatria:v1.0.0 \
   python -c "
 import os
 os.environ['CELLTYPIST_FOLDER'] = '/data'
@@ -434,7 +434,7 @@ Built on an Ubuntu-based system, the environment also provides essential system-
 <details>
 <br>
 
-- For help and questions about **CellExpress** workflow, please contact the [CellExpress maintenance team](mailto:ni.nouri@gmail.com).
+- For help and questions about **CellExpress** workflow, please contact the [CellExpress maintenance team](mailto:nima.nouri@astrazeneca.com).
 
 </details>
 
@@ -451,7 +451,7 @@ suggest enhancements.
 
 | Role         | Name               | Contact                                     |
 |--------------|--------------------|---------------------------------------------|
-| Maintainer   | Nima Nouri         | [ni.nouri@gmail.com](mailto:ni.nouri@gmail.com) | 
+| Maintainer   | Nima Nouri         | [nima.nouri@astrazeneca.com](mailto:nima.nouri@astrazeneca.com) | 
 
 </details>
 
