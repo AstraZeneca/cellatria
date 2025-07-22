@@ -23,7 +23,7 @@ from toolkit import tools
 from utils import (gr_css, get_llm_from_env, chatbot_theme, base_path, 
                     log_status, read_log, 
                     TerminalSession, clean_ansi, terminal_interface, 
-                    fb_list_subdirs_and_files, fb_get_dropdown_choices, fb_initial_refresh, fb_navigate_subdir, 
+                    fb_initial_refresh, fb_navigate_subdir, 
                     export_chat_history, initial_message)
 
 # -------------------------------
