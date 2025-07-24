@@ -36,7 +36,10 @@
 <p align="center" width="100%">
   <img width="55%" src="cellatria_git_fig1.png"> 
 </p>
-<p align="center"><em><strong>Language model-mediated orchestration of toolchains</strong>. Upon receiving a user prompt, the CellAtria interface transfers the request to the LLM agent, which interprets intent and autonomously invokes relevant tools. Outputs are returned through the interface, completing a full cycle of context-aware execution.</em></p>
+<p align="center">
+  <small><em><strong>Language model-mediated orchestration of toolchains</strong>. Upon receiving a user prompt, the CellAtria interface transfers the request to the LLM agent, which interprets intent and autonomously invokes relevant tools. Outputs are returned through the interface, completing a full cycle of context-aware execution.</em></small>
+</p>
+
 
 </details>
 
