@@ -13,11 +13,13 @@
 
 **CellExpres** is an automated and versatile workflow meticulously designed to 
 simplify and expedite the standard procedures entailed in scRNA-seq analysis, 
-eliminating the need for specialized bioinformatics expertise. It encompasses 
-various crucial steps in scRNA-seq analysis, starting from the aligned count matrices, 
+eliminating the need for specialized bioinformatics expertise. 
+
+> **CellExpress** encompasses various crucial steps in scRNA-seq analysis, starting from the aligned count matrices, 
 followed by quality control, doublet removal, normalization, batch correction, dimensionality 
 reduction, clustering, identification of cell markers, and cell type annotation. 
-CellExpress Docker-based framework ensures reproducibility of results across diverse computing environments.
+
+> **CellExpress** Docker-based framework ensures reproducibility of results across diverse computing environments.
 
 </details>
 
