@@ -27,7 +27,9 @@
 <details>
 <br>
 
-**CellAtria** is an agentic AI system that enables full-lifecycle, document-to-analysis automation in single-cell research. By integrating natural language interaction with a graph-based, multi-actor execution framework, the system orchestrates tasks ranging from literature parsing and metadata extraction to dataset retrieval and downstream scRNA-seq analysis. 
+**CellAtria** is an agentic AI system that enables full-lifecycle, document-to-analysis automation in single-cell research. 
+
+> By integrating natural language interaction with a graph-based, multi-actor execution framework, the system orchestrates tasks ranging from literature parsing and metadata extraction to dataset retrieval and downstream scRNA-seq analysis. 
 
 > Through a comprehensive interface, CellAtria enables users to engage with a language model augmented by task-specific tools, eliminating the need for manual command-line operations and accelerating data onboarding and the reuse of public single-cell resources.
 
