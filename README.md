@@ -44,7 +44,7 @@
 - Accepts primary research articles as **PDFs** or **URLs**.
 - Extracts structured metadata, including sample annotations, organism, tissue type, and GEO (Gene Expression Omnibus) accession identifiers.
 - Resolves and organizes GEO datasets by accessing both **GSE (study-level)** and **GSM (sample-level)** records, ensuring structured data retrieval across studies and samples.
-- Orchestrates full pipeline configuration and launches [**CellExpress**](#cellexpress), a containerized and integrated framework for standardized scRNA-seq analysis..
+- Orchestrates full pipeline configuration and launches [**CellExpress**](#cellexpress), a containerized and integrated framework for standardized scRNA-seq analysis.
 - Enables metadata editing, secure file transfers, and file system management.
 - Composes all actions into reusable, graph-based tools that operate as callable agent nodes.
 
@@ -159,6 +159,8 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 **CellExpress** is a companion pipeline embedded within the **cellAtria** framework. It delivers a reproducible and automated workflow for processing single-cell RNA-seq datasets (scRNA-seq) — from raw count matrices to comprehensive cell type annotations and report generation.
 
 > Designed to lower bioinformatics barriers, **CellExpress** implements a comprehensive set of state-of-the-art, Scanpy-based processing stages, including quality control (performed globally or per sample), data transformation (including normalization, highly variable gene selection, and scaling), dimensionality reduction (UMAP and t-SNE), graph-based clustering, and marker gene identification. Additional tools are integrated to support advanced analysis tasks, including doublet detection, batch correction, and automated cell type annotation using both tissue-agnostic and tissue-specific models. All analytical steps are executed sequentially under centralized control, with parameters fully configurable via a comprehensive input schema. 
+
+> Designed for flexible deployment, **CellExpress** operates as a fully standalone pipeline for comprehensive scRNA-seq data analysis and can be orchestrated either through an agentic system - as incorporated into the CellAtria framework - or via direct command-line execution.
 
 For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/azu-oncology-rd/cellatria/blob/main/cellexpress/README.md).
 
