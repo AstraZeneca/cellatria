@@ -36,6 +36,7 @@
 <p align="center" width="100%">
   <img width="55%" src="cellatria_git_fig1.png"> 
 </p>
+<p align="center"><em><strong>Language model-mediated orchestration of toolchains<strong>. Upon receiving a user prompt, the CellAtria interface transfers the request to the LLM agent, which interprets intent and autonomously invokes relevant tools. Outputs are returned through the interface, completing a full cycle of context-aware execution..</em></p>
 
 </details>
 
@@ -164,7 +165,7 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 > Designed to lower bioinformatics barriers, **CellExpress** implements a comprehensive set of state-of-the-art, Scanpy-based processing stages, including quality control (performed globally or per sample), data transformation (including normalization, highly variable gene selection, and scaling), dimensionality reduction (UMAP and t-SNE), graph-based clustering, and marker gene identification. Additional tools are integrated to support advanced analysis tasks, including doublet detection, batch correction, and automated cell type annotation using both tissue-agnostic and tissue-specific models. All analytical steps are executed sequentially under centralized control, with parameters fully configurable via a comprehensive input schema. 
 
-Designed for flexible deployment, **CellExpress** operates as a fully standalone pipeline for comprehensive scRNA-seq data analysis and can be orchestrated either through an agentic system - as incorporated into the CellAtria framework - or via direct command-line execution.
+Designed for flexible deployment, **CellExpress** operates as a fully standalone pipeline for comprehensive scRNA-seq data analysis and can be orchestrated either through an agentic system - as incorporated into the **CellAtria** framework - or via direct command-line execution.
 
 > For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/azu-oncology-rd/cellatria/blob/main/cellexpress/README.md).
 
