@@ -27,11 +27,13 @@
 <details>
 <br>
 
-**cellAtria** is an agentic system that enables dialogue-driven, document-to-analysis automation in single-cell research.
+**CellAtria** is an agentic AI system that enables full-lifecycle, document-to-analysis automation in single-cell research. By integrating natural language interaction with a graph-based, multi-actor execution framework, the system orchestrates tasks ranging from literature parsing and metadata extraction to dataset retrieval and downstream scRNA-seq analysis. 
 
-> **cellAtria** integrates large language models (LLMs) with file management functions and domain-specific bioinformatics toolchains to streamline metadata extraction, dataset retrieval, and analysis orchestration.
+> Through a comprehensive interface, CellAtria enables users to engage with a language model augmented by task-specific tools, eliminating the need for manual command-line operations and accelerating data onboarding and the reuse of public single-cell resources.
 
-> **cellAtria** empowers users to interact with data and tools via natural language, abstracting away scripting complexity.
+<p align="center" width="100%">
+  <img width="55%" src="cellatria_git_fig1.png"> 
+</p>
 
 </details>
 
@@ -160,9 +162,9 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 > Designed to lower bioinformatics barriers, **CellExpress** implements a comprehensive set of state-of-the-art, Scanpy-based processing stages, including quality control (performed globally or per sample), data transformation (including normalization, highly variable gene selection, and scaling), dimensionality reduction (UMAP and t-SNE), graph-based clustering, and marker gene identification. Additional tools are integrated to support advanced analysis tasks, including doublet detection, batch correction, and automated cell type annotation using both tissue-agnostic and tissue-specific models. All analytical steps are executed sequentially under centralized control, with parameters fully configurable via a comprehensive input schema. 
 
-> Designed for flexible deployment, **CellExpress** operates as a fully standalone pipeline for comprehensive scRNA-seq data analysis and can be orchestrated either through an agentic system - as incorporated into the CellAtria framework - or via direct command-line execution.
+Designed for flexible deployment, **CellExpress** operates as a fully standalone pipeline for comprehensive scRNA-seq data analysis and can be orchestrated either through an agentic system - as incorporated into the CellAtria framework - or via direct command-line execution.
 
-For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/azu-oncology-rd/cellatria/blob/main/cellexpress/README.md).
+> For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/azu-oncology-rd/cellatria/blob/main/cellexpress/README.md).
 
 </details>
 
