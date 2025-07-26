@@ -99,73 +99,14 @@ def create_cellatria(env_path):
         # Prepare config
         config = {"configurable": {"thread_id": chat_thread_id}}
 
+        backend_log = []
+        final_message = None
+
         # Invoke LangGraph
         try:
             log_status("🤖 Invoking agent...")
-            result = graph.invoke({"messages": messages}, config=config)
-            final_message = result["messages"][-1]
-            log_status("✅ Agent response received.")
-        except Exception as e:
-            log_status(f"❌ Error: {str(e)}")
-            log_status(traceback.format_exc())
-            final_message = AIMessage(content="There was an error processing your request.")
-
-        # If PDF uploaded, include that info too (future use)
-        if pdf_file:
-            pdf_note = f"\n\n📄 Received PDF: `{pdf_file.name}`. \nI can extract metadata from it!"
-            log_status("🟣 Interaction complete.\n---")
-            return (
-                history + [
-                    {"role": "user", "content": user_input},
-                    {"role": "assistant", "content": pdf_note}],
-                "",
-                None,
-                history + [
-                    {"role": "user", "content": user_input},
-                    {"role": "assistant", "content": pdf_note}]
-            )
-        else:
-            pdf_note = ""
-
-        log_status("🟣 Interaction complete.\n---")
-        
-        return (
-            history + [
-                {"role": "user", "content": user_input},
-                {"role": "assistant", "content": final_message.content + pdf_note}
-            ],
-            "",
-            None,
-            history + [
-                {"role": "user", "content": user_input},
-                {"role": "assistant", "content": final_message.content + pdf_note}
-            ]
-        )
-
-    # -------------------------------
-    # Backend Handler
-    def gr_block_stream_backend(user_input, pdf_file, history):
-        messages = []
-        if not history:
-            history = [initial_message]
-
-        for h in history:
-            role = h["role"]
-            content = h["content"]
-            if role == "user":
-                messages.append(HumanMessage(content=content))
-            elif role == "assistant":
-                messages.append(AIMessage(content=content))
-
-        if user_input:
-            messages.append(HumanMessage(content=user_input))
-
-        config = {"configurable": {"thread_id": chat_thread_id}}
-        backend_log = []
-
-        try:
             for step in graph.stream({"messages": messages}, config=config):
-                # --- Extract summary info ---
+                # --- Extract summary info for backend ---
                 summary_lines = []
                 if "chatbot" in step:
                     msg = step["chatbot"]["messages"]
@@ -191,11 +132,51 @@ def create_cellatria(env_path):
                     "\n".join(summary_lines) +
                     "\n\n```python\n" + step_txt + "\n```\n"
                 )
-                yield "\n\n".join(backend_log)
+                # Save final message for chat
+                if "chatbot" in step:
+                    final_message = step["chatbot"]["messages"]
+
+            log_status("✅ Agent response received.")
         except Exception as e:
+            log_status(f"❌ Error: {str(e)}")
+            log_status(traceback.format_exc())
+            final_message = AIMessage(content="There was an error processing your request.")
             backend_log.append(f"❌ Error: {str(e)}")
             backend_log.append(traceback.format_exc())
-            yield "\n\n".join(backend_log)
+
+        # If PDF uploaded, include that info too (future use)
+        if pdf_file:
+            pdf_note = f"\n\n📄 Received PDF: `{pdf_file.name}`. \nI can extract metadata from it!"
+            log_status("🟣 Interaction complete.\n---")
+            return (
+                history + [
+                    {"role": "user", "content": user_input},
+                    {"role": "assistant", "content": pdf_note}],
+                "",
+                None,
+                history + [
+                    {"role": "user", "content": user_input},
+                    {"role": "assistant", "content": pdf_note}]
+            )
+        else:
+            pdf_note = ""
+
+        log_status("🟣 Interaction complete.\n---")
+        
+        # Return both chat and backend markdown        
+        return (
+            history + [
+                {"role": "user", "content": user_input},
+                {"role": "assistant", "content": final_message.content + pdf_note}
+            ],
+            "",
+            None,
+            history + [
+                {"role": "user", "content": user_input},
+                {"role": "assistant", "content": final_message.content + pdf_note}
+            ],
+        "\n\n".join(backend_log)  # For the Accordion panel
+        )
 
     # -------------------------------
     # Clear the log file when app starts
@@ -246,32 +227,21 @@ def create_cellatria(env_path):
 
         # Hidden state to maintain chat memory
         state = gr.State([initial_message])
-        
-        # Bind inputs to gr_block_fn
-        user_input.submit(
-            fn=gr_block_fn,
-            inputs=[user_input, pdf_upload, state],
-            outputs=[chatbot, user_input, pdf_upload, state]
-        )
-        submit_btn.click(
-            fn=gr_block_fn,
-            inputs=[user_input, pdf_upload, state],
-            outputs=[chatbot, user_input, pdf_upload, state]
-        )
-
+  
         # --- Backend Panel ---
         with gr.Accordion("Agent Backend", open=False, elem_id="agent_backend_panel"):
             agent_backend_md = gr.Markdown("No agent activity yet.", elem_id="agent_backend_md")
 
+        # Bind inputs to gr_block_fn
         user_input.submit(
-            fn=gr_block_stream_backend,
+            fn=gr_block_fn,
             inputs=[user_input, pdf_upload, state],
-            outputs=agent_backend_md
+            outputs=[chatbot, user_input, pdf_upload, state, agent_backend_md]
         )
         submit_btn.click(
-            fn=gr_block_stream_backend,
+            fn=gr_block_fn,
             inputs=[user_input, pdf_upload, state],
-            outputs=agent_backend_md
+            outputs=[chatbot, user_input, pdf_upload, state, agent_backend_md]
         )
 
         # --- Terminal Panel ---
