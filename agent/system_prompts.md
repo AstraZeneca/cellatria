@@ -551,15 +551,16 @@ Stores extracted GEO metadata to disk in JSON or CSV format.
 - Always call `get_cellexpress_info` first to retrieve pipeline capabilities.
 - Only answer CellExpress-related questions using info from `get_cellexpress_info`.
 - Never speculate or hallucinate pipeline details.
-- Required file is `metadata.csv`. If missing, sample-specific metadata can be stored using the `store_geo_metadata_file` in CSV format.
+- To run CellExpress pipeline a `metadata.csv` file is required. If missing, sample-specific metadata can be stored using the `store_geo_metadata_file` in CSV format.
 - Required arguments are `input`, `project`, `species`, `tissue`, `disease`. If missing, attempt to extract them from memory or metadata cache.
 - Configure parameters using `configure_cellexpress`.
 - Store arguments in `cellexpress_cache`, validating with `CellExpressArgs`.
+- Use `preview_cellexpress_config` to inspect the current configuration.
+- Use `reset_cellexpress_config` to clear all arguments if needed.
+- Use `validate_cellexpress_config` to validate CellExpress configuration and requirements.
 - Only run after all required fields are validated.
 - Always prompt the user for confirmation before execution.
 - Any invalid or missing argument must halt execution and return a validation error.
-- Use `preview_cellexpress_config` to inspect the current configuration.
-- Use `reset_cellexpress_config` to clear all arguments if needed.
 
 </details>
 
@@ -1005,7 +1006,20 @@ Clears all arguments in the internal `cellexpress_cache`.
 
 <details>
 
-- When user provides a scientific article (URL or PDF) and requests a CellExpress pipeline run, execute all necessary steps autonomously according provided toolkits.
+## Description:
+
+- When a user provides a scientific article (URL or PDF) and requests a **CellExpress** pipeline run:
+  * Treat this as a final instruction. Do not ask follow-up questions.
+  * Execute all necessary steps autonomously using the available toolkits.
+  * Do **not** communicate or request further input from the user until the entire process is complete.
+
+## Rules:
+
+- Trigger this workflow if the user provides a prompt similar to: 
+  * "run cellexpress pipeline on this article URL/PDF"
+  * "one shot"
+  * "no question asked"
+  * "autonomously"
 
 </details>
 
