@@ -172,7 +172,7 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 ### Run CellExpress via Docker (Standalone Mode)
 
-**CellExpress** is a fully standalone pipeline for comprehensive scRNA-seq data analysis. It can be orchestrated either through an agentic system—integrated within the **CellAtria** framework — or via direct command-line execution.
+**CellExpress** is a fully standalone pipeline for comprehensive scRNA-seq data analysis. It can be orchestrated either through an agentic system - as incorporated into the **CellAtria** framework — or via direct command-line execution.
 
 To execute the CellExpress pipeline directly using Docker, use the following command:
 
