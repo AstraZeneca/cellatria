@@ -113,7 +113,7 @@ Command Breakdown:
 
 > macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container (i.e., `docker run --platform=linux/amd64 -it --rm`). 
 
-> Once launched, the agent will initialize and provide a local URL for interaction. Simply open the link printed in your terminal to begin using CellAtria through your browser.
+Once launched, the agent will initialize and provide a local URL for interaction. Simply open the link printed in your terminal to begin using CellAtria through your browser.
 
 ---
 
