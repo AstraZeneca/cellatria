@@ -1,4 +1,4 @@
-# cellAtria Tool Reference Guide
+# CellAtria Tool Reference Guide
 
 **Metadata Analysis (7 tools)**
 - `fetch_article_metadata_url`: Extracts structured metadata from a scientific article at a given URL.
