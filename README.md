@@ -53,7 +53,7 @@
 <br>
 
 - **Flexible Input**: Accepts primary research articles as **PDFs** or **URLs** for seamless integration.
-- **Automated Metadata Extraction**: Accurately extracts structured metadata, including sample annotations, organism, tissue type, and GEO (Gene Expression Omnibus) accession identifiers.
+- **Automated Metadata Extraction**: Extracts structured metadata, including sample annotations, organism, tissue type, and GEO (Gene Expression Omnibus) accession identifiers.
 - **Intelligent Data Retrieval**: Resolves and organizes GEO datasets by accessing both **GSE (study-level)** and **GSM (sample-level)** records, ensuring structured and comprehensive data retrieval.
 - **Integrated Analysis Pipeline**: Orchestrates full pipeline configuration and launches [**CellExpress**](#cellexpress), a containerized framework for standardized scRNA-seq analysis, ensuring reproducible results.
 - **Enhanced User Control**: Enables metadata editing, secure file transfers, and direct file system management within the agent session.
