@@ -1,4 +1,4 @@
-# CellAtria – AUTHORS
+# AUTHORS
 
 This project is developed and maintained by the following contributors.
 

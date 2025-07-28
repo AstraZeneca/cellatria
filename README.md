@@ -9,6 +9,7 @@
   <a href="#"><img src="https://img.shields.io/badge/lifecycle-Stable-brightgreen.svg" alt="Lifecycle"/></a>
   <a href="#"><img src="https://img.shields.io/badge/docs-latest-brightgreen?style=flat" alt="Docs"/></a>
   <a href="#"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat" alt="Contributions welcome"/></a>
+  <img src="https://img.shields.io/badge/Maturity%20Level-ML--0-red" alt="Maturity level-0"/>
 </p>
 
 <!-- Version Banner -->
@@ -17,6 +18,8 @@
   <br>
   <img width="15%" src="https://img.shields.io/badge/release-v1.0.0-4444AA.svg?style=for-the-badge" alt="Release v1.0.0"/>
 </p>
+
+<!-- CellAtria Infographic -->
 <p align="center" width="100%">
   <img width="100%" src="cellatria_git_logo.png"> 
 </p>
@@ -242,10 +245,6 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 
 <details>
 <br>
-
-We welcome community contributions! If you'd like to help improve **cellAtria**, please feel free to 
-suggest enhancements.
-
 
 | Role         | Name               | Contact                                     |
 |--------------|--------------------|---------------------------------------------|
