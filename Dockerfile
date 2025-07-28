@@ -130,13 +130,20 @@ ARG R_DEPS="c('ggplot2', 'dplyr', 'gtools', 'grid', 'gridtext', \
                 'gridExtra', 'tidyr', 'DescTools')"	
 RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(${R_DEPS}, clean=TRUE)"
 # -----------------------------------
+# Copy all files into Docker
 RUN mkdir -p /opt/cellatria
 WORKDIR /opt/cellatria
 COPY . /opt/cellatria/
+# -----------------------------------
+# Make cellatria CLI callable via `cellatria`
 RUN chmod +x /opt/cellatria/agent/chatbot.py
 RUN ln /opt/cellatria/agent/chatbot.py /usr/local/bin/cellatria
 # -----------------------------------
-# The VOLUME instruction and the -v option to docker run tell docker to store 
+# Make cellexpress CLI callable via `cellexpress`
+RUN chmod +x /opt/cellatria/cellexpress/main.py
+RUN ln -s /opt/cellatria/cellexpress/main.py /usr/local/bin/cellexpress
+# -----------------------------------
+# The VOLUME instruction and the -v option to docker run 
 VOLUME /data
 WORKDIR /data
 # -----------------------------------

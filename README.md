@@ -168,7 +168,22 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 > Designed to lower bioinformatics barriers, **CellExpress** implements a comprehensive set of state-of-the-art, Scanpy-based processing stages, including quality control (performed globally or per sample), data transformation (including normalization, highly variable gene selection, and scaling), dimensionality reduction (UMAP and t-SNE), graph-based clustering, and marker gene identification. Additional tools are integrated to support advanced analysis tasks, including doublet detection, batch correction, and automated cell type annotation using both tissue-agnostic and tissue-specific models. All analytical steps are executed sequentially under centralized control, with parameters fully configurable via a comprehensive input schema. 
 
-Designed for flexible deployment, **CellExpress** operates as a fully standalone pipeline for comprehensive scRNA-seq data analysis and can be orchestrated either through an agentic system - as incorporated into the **CellAtria** framework - or via direct command-line execution.
+**CellExpress** is a fully standalone pipeline for comprehensive scRNA-seq data analysis. It can be orchestrated either through an agentic system—integrated within the **CellAtria** framework — or via direct command-line execution.
+
+To execute the CellExpress pipeline directly using Docker, use the following command:
+
+```bash
+# Run this command in your terminal
+docker run --platform=linux/amd64 -it --rm \
+  -v /path/to/your/local/data:/data \
+  ghcr.io/azu-oncology-rd/cellatria:v1.0.0 \
+  python /opt/cellatria/cellexpress/main.py \
+    --input /data \
+    --project your_project_name \
+    --species hs \
+    --tissue pbmc \
+    --disease healthy
+```
 
 > For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/azu-oncology-rd/cellatria/blob/main/cellexpress/README.md).
 
