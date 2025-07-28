@@ -9,7 +9,7 @@
   <a href="#"><img src="https://img.shields.io/badge/lifecycle-Stable-brightgreen.svg" alt="Lifecycle"/></a>
   <a href="#"><img src="https://img.shields.io/badge/docs-latest-brightgreen?style=flat" alt="Docs"/></a>
   <a href="#"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat" alt="Contributions welcome"/></a>
-  <img src="https://img.shields.io/badge/Maturity%20Level-ML--0-red" alt="Maturity level-0"/>
+  <img src="https://img.shields.io/badge/Maturity%20Level-ML--0-brightgreen" alt="Maturity level-0"/>
 </p>
 
 <!-- Version Banner -->
