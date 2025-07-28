@@ -10,12 +10,13 @@
   <a href="#"><img src="https://img.shields.io/badge/docs-latest-brightgreen?style=flat" alt="Docs"/></a>
   <a href="#"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat" alt="Contributions welcome"/></a>
   <img src="https://img.shields.io/badge/Maturity%20Level-ML--0-brightgreen" alt="Maturity level-0"/>
+  <br>
+  <a href="https://github.com/azu-oncology-rd/cellatria/actions/workflows/docker.yml"><img src="https://github.com/azu-oncology-rd/cellatria/actions/workflows/docker.yml/badge.svg?branch=main" alt="cellatria image"/></a>
+  <br>
 </p>
 
 <!-- Version Banner -->
-<p align="center" width="100%">
-  <a href="https://github.com/azu-oncology-rd/cellatria/actions/workflows/docker.yml"><img src="https://github.com/azu-oncology-rd/cellatria/actions/workflows/docker.yml/badge.svg?branch=main" alt="cellatria image"/></a>
-  <br>
+<p align="center" width="100%">  
   <img width="15%" src="https://img.shields.io/badge/release-v1.0.0-4444AA.svg?style=for-the-badge" alt="Release v1.0.0"/>
 </p>
 
