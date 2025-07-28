@@ -118,8 +118,8 @@ RUN apt-get update && \
     apt-get install -y \
     r-base \
     r-base-core \
-	r-base-dev \
-	r-recommended
+    r-base-dev \
+    r-recommended
 # -----------------------------------
 ### Install repos from CRAN
 RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages('devtools', clean=TRUE)"
