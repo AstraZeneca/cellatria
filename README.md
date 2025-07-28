@@ -129,9 +129,7 @@ For example, the following command:
 
 makes the contents of `/absolute/path/on/host` on your host machine available inside the container at `/data`.
 
-> If you set a working directory inside the container (e.g., `my_project`), make sure to reference it using the container’s path — for instance: `/data/my_project`.
-
-> Attempting to access files or directories outside the mounted path from within the container will fail, as they are not visible to the container’s filesystem.
+> If you set a working directory inside the container (e.g., `my_project`), make sure to reference it using the container’s path — for instance: `/data/my_project`. Attempting to access files or directories outside the mounted path from within the container will fail, as they are not visible to the container’s filesystem.
 
 </details>
 
