@@ -193,7 +193,6 @@ Command Breakdown:
 
 - `-v /path/to/your/local/data:/data`: Mounts your project directory into the container.
 - `ghcr.io/azu-oncology-rd/cellatria:v1.0.0 cellexpress`: Specifies the Docker image and the entrypoint command to launch **CellExpress** inside the container.
-- `--env_path /envdir`: Tells agent where to find the `.env` file for provider setup.
 -  [--additional `options`...]: arguments to configure pipeline.
 
 > macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container (i.e., `docker run --platform=linux/amd64 -it --rm`). 
