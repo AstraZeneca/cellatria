@@ -31,11 +31,10 @@
 <details>
 <br>
 
-**CellAtria** is an agentic AI system that enables full-lifecycle, document-to-analysis automation in single-cell research. 
 
-> By integrating natural language interaction with a graph-based, multi-actor execution framework, the system orchestrates tasks ranging from literature parsing and metadata extraction to dataset retrieval and downstream scRNA-seq analysis via co-developed [**CellExpress**](#cellexpress) pipeline. 
+**CellAtria** is an agentic AI system that enables **full-lifecycle, document-to-analysis automation** in single-cell research. It integrates natural language interaction with a robust, graph-based, multi-actor execution framework. The system orchestrates diverse tasks, ranging from literature parsing and metadata extraction to dataset retrieval and downstream scRNA-seq analysis via the co-developed [**CellExpress**](#cellexpress) pipeline.
 
-> Through a comprehensive interface, **CellAtria** enables users to engage with a language model augmented by task-specific tools, eliminating the need for manual command-line operations and accelerating data onboarding and the reuse of public single-cell resources.
+> Through its comprehensive interface, **CellAtria** empowers users to engage with a language model augmented by task-specific tools. This eliminates the need for manual command-line operations, accelerating data onboarding and the reuse of public single-cell resources.
 
 <p align="center" width="100%">
   <img width="55%" src="cellatria_git_fig1.png"> 
@@ -53,12 +52,12 @@
 <details>
 <br>
 
-- Accepts primary research articles as **PDFs** or **URLs**.
-- Extracts structured metadata, including sample annotations, organism, tissue type, and GEO (Gene Expression Omnibus) accession identifiers.
-- Resolves and organizes GEO datasets by accessing both **GSE (study-level)** and **GSM (sample-level)** records, ensuring structured data retrieval across studies and samples.
-- Orchestrates full pipeline configuration and launches [**CellExpress**](#cellexpress), a containerized and integrated framework for standardized scRNA-seq analysis.
-- Enables metadata editing, secure file transfers, and file system management.
-- Composes all actions into reusable, graph-based tools that operate as callable agent nodes.
+- **Flexible Input**: Accepts primary research articles as **PDFs** or **URLs** for seamless integration.
+- **Automated Metadata Extraction**: Accurately extracts structured metadata, including sample annotations, organism, tissue type, and GEO (Gene Expression Omnibus) accession identifiers.
+- **Intelligent Data Retrieval**: Resolves and organizes GEO datasets by accessing both **GSE (study-level)** and **GSM (sample-level)** records, ensuring structured and comprehensive data retrieval.
+- **Integrated Analysis Pipeline**: Orchestrates full pipeline configuration and launches [**CellExpress**](#cellexpress), a containerized framework for standardized scRNA-seq analysis, ensuring reproducible results.
+- **Enhanced User Control**: Enables metadata editing, secure file transfers, and direct file system management within the agent session.
+- **Modular & Reusable Architecture**: Composes all core actions into reusable, graph-based tools that serve as callable agent nodes, fostering extensibility.
 
 > Additional details on the underlying toolkits can be found in the [toolkit reference](https://github.com/azu-oncology-rd/cellatria/blob/main/agent/toolkit.md)
 
@@ -78,16 +77,16 @@
 
 ### (2) Docker Images
 
-The **cellAtria** repository includes a GitHub Actions workflow that builds and publishes a preconfigured Docker image to the [GitHub Container Registry](https://github.com/azu-oncology-rd/cellatria/pkgs/container/cellatria).
+The **CellAtria** repository includes a GitHub Actions workflow that builds and publishes a preconfigured Docker image to the [GitHub Container Registry](https://github.com/azu-oncology-rd/cellatria/pkgs/container/cellatria).
 
-Pull the latest **cellAtria** Docker image using:
+Pull the latest **CellAtria** Docker image using:
 
 ```bash
 # Run this command in your terminal
 docker pull ghcr.io/azu-oncology-rd/cellatria:v1.0.0
 ```
 
-> This image contains all dependencies needed to run  the **cellAtria** agent in a consistent environment.
+> This image contains all dependencies needed to run  the **CellAtria** agent in a consistent environment.
 
 ---
 
@@ -114,7 +113,7 @@ Command Breakdown:
 
 > macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container (i.e., `docker run --platform=linux/amd64 -it --rm`). 
 
-> Once launched, the agent will initialize and provide a local URL for interaction. Simply open the link printed in your terminal to begin using cellAtria through your browser.
+> Once launched, the agent will initialize and provide a local URL for interaction. Simply open the link printed in your terminal to begin using CellAtria through your browser.
 
 ---
 
@@ -145,7 +144,7 @@ makes the contents of `/absolute/path/on/host` on your host machine available in
 
 ### Quick Start
 
-cellAtria requires a `.env` file to configure access to your chosen LLM provider. You can download the template [`.env`](https://github.com/azu-oncology-rd/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
+CellAtria requires a `.env` file to configure access to your chosen LLM provider. You can download the template [`.env`](https://github.com/azu-oncology-rd/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
 
 ### Supported LLM Backends
 
@@ -168,7 +167,7 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 <details>
 <br>
 
-**CellExpress** is a companion pipeline embedded within the **cellAtria** framework. It delivers a reproducible and automated workflow for processing single-cell RNA-seq datasets (scRNA-seq) - from raw count matrices to comprehensive cell type annotations and report generation.
+**CellExpress** is a companion pipeline embedded within the **CellAtria** framework. It delivers a reproducible and automated workflow for processing single-cell RNA-seq datasets (scRNA-seq) - from raw count matrices to comprehensive cell type annotations and report generation.
 
 > Designed to lower bioinformatics barriers, **CellExpress** implements a comprehensive set of state-of-the-art, Scanpy-based processing stages, including quality control (performed globally or per sample), data transformation (including normalization, highly variable gene selection, and scaling), dimensionality reduction (UMAP and t-SNE), graph-based clustering, and marker gene identification. Additional tools are integrated to support advanced analysis tasks, including doublet detection, batch correction, and automated cell type annotation using both tissue-agnostic and tissue-specific models. All analytical steps are executed sequentially under centralized control, with parameters fully configurable via a comprehensive input schema. 
 
@@ -225,16 +224,16 @@ pipeline execution.
 <details>
 <br>
 
-While **cellAtria** supports flexible, user-driven interactions, its functionality is governed by an underlying **execution narrative** — a structured flow of modular actions that define how tasks are interpreted, routed, and executed. Users may invoke any module independently; however, for optimal results and seamless orchestration, we recommend following the intended workflow trajectory below.
+While **CellAtria** supports flexible, user-driven interactions, its functionality is governed by an underlying **execution narrative** — a structured flow of modular actions that define how tasks are interpreted, routed, and executed. Users may invoke any module independently; however, for optimal results and seamless orchestration, we recommend following the intended workflow trajectory below.
 
-**cellAtria's internal logic integrates:**
+**CellAtria's internal logic integrates the following key stages:**
 
-1. **Document Parsing** — Extracts structured metadata from narrative-formatted scientific documents (article URL or PDF).  
-2. **Accession Resolution** — Identifies relevant GEO (Gene Expression Omnibus) accession IDs from parsed metadata.  
-3. **Dataset Retrieval** — Downloads datasets directly from public repositories.  
-4. **File & Data Organization** — Structures downloaded content into a consistent directory schema.  
-5. **Pipeline Configuration** — Prepares **CellExpress** arguments and environmental parameters for execution.  
-6. **CellExpress Execution** — Launches the standardized single-cell analysis pipeline in a detached mode.  
+1.  **Document Parsing** — Extracts structured metadata from narrative-formatted scientific documents (article URL or PDF).
+2.  **Accession Resolution** — Identifies relevant GEO (Gene Expression Omnibus) accession IDs from parsed metadata.
+3.  **Dataset Retrieval** — Downloads datasets directly from public repositories.
+4.  **File & Data Organization** — Structures downloaded content into a consistent directory schema for analysis.
+5.  **Pipeline Configuration** — Prepares **CellExpress** arguments and environmental parameters for execution.
+6.  **CellExpress Execution** — Launches the standardized single-cell analysis pipeline in a detached mode. 
 
 > This modular, agent-guided framework allows users to begin at any point while preserving logical consistency across steps.
 
