@@ -13,6 +13,7 @@
 !*.env
 !README.md
 !NEWS.md
+!AUTHORS.md
 !Dockerfile
 !LICENSE.txt
 

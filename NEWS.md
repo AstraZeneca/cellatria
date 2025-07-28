@@ -6,8 +6,8 @@
 
 ## v1.0.0 – August 01, 2025
 
-Initial public release of **CellAtria** 
+Initial public release of **CellAtria**. 
 
 ---
 
-*Last updated: July 28, 2025*
+*Last updated: August 01, 2025*
