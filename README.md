@@ -168,6 +168,10 @@ cellAtria requires a `.env` file to configure access to your chosen LLM provider
 
 > Designed to lower bioinformatics barriers, **CellExpress** implements a comprehensive set of state-of-the-art, Scanpy-based processing stages, including quality control (performed globally or per sample), data transformation (including normalization, highly variable gene selection, and scaling), dimensionality reduction (UMAP and t-SNE), graph-based clustering, and marker gene identification. Additional tools are integrated to support advanced analysis tasks, including doublet detection, batch correction, and automated cell type annotation using both tissue-agnostic and tissue-specific models. All analytical steps are executed sequentially under centralized control, with parameters fully configurable via a comprehensive input schema. 
 
+---
+
+### Run CellExpress via Docker (Standalone Mode)
+
 **CellExpress** is a fully standalone pipeline for comprehensive scRNA-seq data analysis. It can be orchestrated either through an agentic system—integrated within the **CellAtria** framework — or via direct command-line execution.
 
 To execute the CellExpress pipeline directly using Docker, use the following command:
