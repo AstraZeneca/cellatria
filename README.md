@@ -108,7 +108,7 @@ Command Breakdown:
 - `ghcr.io/azu-oncology-rd/cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
 - `--env_path /envdir`: Tells agent where to find the `.env` file for provider setup.
 
-> macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container. 
+> macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container (i.e., `docker run --platform=linux/amd64 -it --rm`). 
 
 > Once launched, the agent will initialize and provide a local URL for interaction. Simply open the link printed in your terminal to begin using cellAtria through your browser.
 
@@ -174,16 +174,25 @@ To execute the CellExpress pipeline directly using Docker, use the following com
 
 ```bash
 # Run this command in your terminal
-docker run --platform=linux/amd64 -it --rm \
+docker run -it --rm \
   -v /path/to/your/local/data:/data \
-  ghcr.io/azu-oncology-rd/cellatria:v1.0.0 \
-  python /opt/cellatria/cellexpress/main.py \
+  ghcr.io/azu-oncology-rd/cellatria:v1.0.0 cellexpress \
     --input /data \
     --project your_project_name \
-    --species hs \
-    --tissue pbmc \
-    --disease healthy
+    --species `species` \
+    --tissue `tissue` \
+    --disease `disease` \
+    [--additional `options`...]
 ```
+
+Command Breakdown:
+
+- `-v /path/to/your/local/data:/data`: Mounts your project directory into the container.
+- `ghcr.io/azu-oncology-rd/cellatria:v1.0.0 cellexpress`: Specifies the Docker image and the entrypoint command to launch **CellExpress** inside the container.
+- `--env_path /envdir`: Tells agent where to find the `.env` file for provider setup.
+-  [--additional `options`...]: arguments to configure pipeline.
+
+> macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container (i.e., `docker run --platform=linux/amd64 -it --rm`). 
 
 > For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/azu-oncology-rd/cellatria/blob/main/cellexpress/README.md).
 
