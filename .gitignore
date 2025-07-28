@@ -12,6 +12,7 @@
 !*.png
 !*.env
 !README.md
+!NEWS.md
 !Dockerfile
 !LICENSE.txt
 
