@@ -26,3 +26,5 @@ We welcome ideas to improve features, usability, or functionality.
 - Optionally suggest a possible implementation.
 
 If you want to contribute code or documentation please contact [nima.nouri@astrazeneca.com](mailto:nima.nouri@astrazeneca.com).
+
+---
