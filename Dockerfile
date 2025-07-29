@@ -11,7 +11,7 @@ FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 # -----------------------------------
 # OCI-compliant image metadata
-LABEL org.opencontainers.image.title="cellAtria"
+LABEL org.opencontainers.image.title="CellAtria"
 LABEL org.opencontainers.image.version="v1.0.0"
 LABEL org.opencontainers.image.description="CellAtria: Agentic Triage of Regulated single-cell data Ingestion and Analysis."
 LABEL org.opencontainers.image.authors="Nima Nouri <nima.nouri@astrazeneca.com>"
