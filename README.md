@@ -11,7 +11,7 @@
   <a href="#"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat" alt="Contributions welcome"/></a>
   <img src="https://img.shields.io/badge/Maturity%20Level-ML--0-brightgreen" alt="Maturity level-0"/>
   <br>
-  <a href="https://github.com/azu-oncology-rd/cellatria/actions/workflows/docker.yml"><img src="https://github.com/azu-oncology-rd/cellatria/actions/workflows/docker.yml/badge.svg?branch=main" alt="cellatria image"/></a>
+  <a href="https://github.com/AstraZeneca/cellatria/actions/workflows/docker.yml"><img src="https://github.com/AstraZeneca/cellatria/actions/workflows/docker.yml/badge.svg?branch=main" alt="cellatria image"/></a>
   <br>
 </p>
 
@@ -77,13 +77,13 @@
 
 ### (2) Docker Images
 
-The **CellAtria** repository includes a GitHub Actions workflow that builds and publishes a preconfigured Docker image to the [GitHub Container Registry](https://github.com/azu-oncology-rd/cellatria/pkgs/container/cellatria).
+The **CellAtria** repository includes a GitHub Actions workflow that builds and publishes a preconfigured Docker image to the [GitHub Container Registry](https://github.com/AstraZeneca/cellatria/pkgs/container/cellatria).
 
 Pull the latest **CellAtria** Docker image using:
 
 ```bash
 # Run this command in your terminal
-docker pull ghcr.io/azu-oncology-rd/cellatria:v1.0.0
+docker pull ghcr.io/AstraZeneca/cellatria:v1.0.0
 ```
 
 > This image contains all dependencies needed to run  the **CellAtria** agent in a consistent environment.
@@ -99,7 +99,7 @@ docker run -it --rm \
   -p 7860:7860 \
   -v /path/to/your/project/directory:/data \
   -v /path/to/your/env/directory:/envdir \
-  ghcr.io/azu-oncology-rd/cellatria:v1.0.0 cellatria \
+  ghcr.io/AstraZeneca/cellatria:v1.0.0 cellatria \
   --env_path /envdir
 ```
 
@@ -108,7 +108,7 @@ Command Breakdown:
 - `-p 7860:7860`: Exposes the agent user interface (UI) on port 7860.
 - `-v /path/to/your/project/directory:/data`: Mounts your project directory into the container.
 - `-v /path/to/your/env/directory:/envdir`: Mounts your `.env` directory for configuration (see [LLM Configuration](#env_setup) section below).
-- `ghcr.io/azu-oncology-rd/cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
+- `ghcr.io/AstraZeneca/cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
 - `--env_path /envdir`: Tells agent where to find the `.env` file for provider setup.
 
 > macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container (i.e., `docker run --platform=linux/amd64 -it --rm`). 
@@ -142,7 +142,7 @@ makes the contents of `/absolute/path/on/host` on your host machine available in
 
 ### Quick Start
 
-CellAtria requires a `.env` file to configure access to your chosen LLM provider. You can download the template [`.env`](https://github.com/azu-oncology-rd/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
+CellAtria requires a `.env` file to configure access to your chosen LLM provider. You can download the template [`.env`](https://github.com/AstraZeneca/cellatria/blob/main/.env), fill in the necessary credentials and parameters. Ensure the directory containing the `.env` file is mounted into the container.
 
 ### Supported LLM Backends
 
@@ -181,7 +181,7 @@ To execute the CellExpress pipeline directly using Docker, use the following com
 # Run this command in your terminal
 docker run -it --rm \
   -v /path/to/your/local/data:/data \
-  ghcr.io/azu-oncology-rd/cellatria:v1.0.0 cellexpress \
+  ghcr.io/AstraZeneca/cellatria:v1.0.0 cellexpress \
     --input /data \
     --project your_project_name \
     --species `species` \
@@ -193,12 +193,12 @@ docker run -it --rm \
 Command Breakdown:
 
 - `-v /path/to/your/local/data:/data`: Mounts your project directory into the container.
-- `ghcr.io/azu-oncology-rd/cellatria:v1.0.0 cellexpress`: Specifies the Docker image and the entrypoint command to launch **CellExpress** inside the container.
+- `ghcr.io/AstraZeneca/cellatria:v1.0.0 cellexpress`: Specifies the Docker image and the entrypoint command to launch **CellExpress** inside the container.
 -  [--additional `options`...]: arguments to configure pipeline.
 
 > macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container (i.e., `docker run --platform=linux/amd64 -it --rm`). 
 
-For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/azu-oncology-rd/cellatria/blob/main/cellexpress/README.md).
+For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/README.md).
 
 </details>
 

@@ -11,7 +11,7 @@ Thank you for your interest in contributing to **CellAtria** and **CellExpress**
 If you encounter a bug, unexpected behavior, or documentation inconsistency:
 
 1. **Search first** to see if your issue has already been reported.
-2. If not found, [open a new issue](https://github.com/azu-oncology-rd/cellatria/issues/new) and provide:
+2. If not found, [open a new issue](https://github.com/AstraZeneca/cellatria/issues/new) and provide:
    - A clear and descriptive title.
    - Steps to reproduce the problem.
    - Relevant error messages, logs, or screenshots.

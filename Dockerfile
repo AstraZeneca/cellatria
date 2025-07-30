@@ -15,7 +15,7 @@ LABEL org.opencontainers.image.title="CellAtria"
 LABEL org.opencontainers.image.version="v1.0.0"
 LABEL org.opencontainers.image.description="CellAtria: Agentic Triage of Regulated single-cell data Ingestion and Analysis."
 LABEL org.opencontainers.image.authors="Nima Nouri <nima.nouri@astrazeneca.com>"
-LABEL org.opencontainers.image.source="https://github.com/azu-oncology-rd/cellatria"
+LABEL org.opencontainers.image.source="https://github.com/AstraZeneca/cellatria"
 # -----------------------------------
 # System package installation
 RUN apt-get update --fix-missing && \ 
