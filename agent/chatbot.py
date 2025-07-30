@@ -29,7 +29,7 @@ graph, cellatria = create_cellatria(args.env_path)
 # -------------------------------
 
 print("\n")
-print("✅ cellAtria successfully initialized.")
+print("✅ CellAtria successfully initialized.")
 print("📍 Copy and paste the link below in your browser to interact with the agent:")
 print("👉 http://0.0.0.0:7860\n")
 
