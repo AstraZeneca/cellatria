@@ -296,14 +296,14 @@ If you're using the **cellAtria** container (which includes `CellTypist` preinst
 
 First, pull the latest **cellAtria** Docker image using:
 ```bash
-docker pull ghcr.io/azu-oncology-rd/cellatria:v1.0.0
+docker pull ghcr.io/AstraZeneca/cellatria:v1.0.0
 ```
 
 Then, run the following one-liner, which uses the containerized environment:
 ```bash
 docker run --rm -it \
   -v /path/to/your/celltypist_models:/data \  
-  ghcr.io/azu-oncology-rd/cellatria:v1.0.0 \
+  ghcr.io/aAstraZeneca/cellatria:v1.0.0 \
   python -c "
 import os
 os.environ['CELLTYPIST_FOLDER'] = '/data'
