@@ -59,7 +59,7 @@
 - **Enhanced User Control**: Enables metadata editing, secure file transfers, and direct file system management within the agent session.
 - **Modular & Reusable Architecture**: Composes all core actions into reusable, graph-based tools that serve as callable agent nodes, fostering extensibility.
 
-> Additional details on the underlying toolkits can be found in the [toolkit reference](https://github.com/azu-oncology-rd/cellatria/blob/main/agent/toolkit.md)
+> Additional details on the underlying toolkits can be found in the [toolkit reference](https://github.com/AstraZeneca/cellatria/blob/main/agent/toolkit.md)
 
 </details>
 
