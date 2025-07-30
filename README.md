@@ -83,7 +83,7 @@ Pull the latest **CellAtria** Docker image using:
 
 ```bash
 # Run this command in your terminal
-docker pull ghcr.io/AstraZeneca/cellatria:v1.0.0
+docker pull ghcr.io/astrazeneca/cellatria:v1.0.0
 ```
 
 > This image contains all dependencies needed to run  the **CellAtria** agent in a consistent environment.
@@ -99,7 +99,7 @@ docker run -it --rm \
   -p 7860:7860 \
   -v /path/to/your/project/directory:/data \
   -v /path/to/your/env/directory:/envdir \
-  ghcr.io/AstraZeneca/cellatria:v1.0.0 cellatria \
+  ghcr.io/astrazeneca/cellatria:v1.0.0 cellatria \
   --env_path /envdir
 ```
 
@@ -108,7 +108,7 @@ Command Breakdown:
 - `-p 7860:7860`: Exposes the agent user interface (UI) on port 7860.
 - `-v /path/to/your/project/directory:/data`: Mounts your project directory into the container.
 - `-v /path/to/your/env/directory:/envdir`: Mounts your `.env` directory for configuration (see [LLM Configuration](#env_setup) section below).
-- `ghcr.io/AstraZeneca/cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
+- `ghcr.io/astrazeneca/cellatria:v1.0.0 cellatria`: Specifies the Docker image and the entrypoint command to launch the app inside the container.
 - `--env_path /envdir`: Tells agent where to find the `.env` file for provider setup.
 
 > macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container (i.e., `docker run --platform=linux/amd64 -it --rm`). 
@@ -181,7 +181,7 @@ To execute the CellExpress pipeline directly using Docker, use the following com
 # Run this command in your terminal
 docker run -it --rm \
   -v /path/to/your/local/data:/data \
-  ghcr.io/AstraZeneca/cellatria:v1.0.0 cellexpress \
+  ghcr.io/astrazeneca/cellatria:v1.0.0 cellexpress \
     --input /data \
     --project your_project_name \
     --species `species` \
@@ -193,7 +193,7 @@ docker run -it --rm \
 Command Breakdown:
 
 - `-v /path/to/your/local/data:/data`: Mounts your project directory into the container.
-- `ghcr.io/AstraZeneca/cellatria:v1.0.0 cellexpress`: Specifies the Docker image and the entrypoint command to launch **CellExpress** inside the container.
+- `ghcr.io/astrazeneca/cellatria:v1.0.0 cellexpress`: Specifies the Docker image and the entrypoint command to launch **CellExpress** inside the container.
 -  [--additional `options`...]: arguments to configure pipeline.
 
 > macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container (i.e., `docker run --platform=linux/amd64 -it --rm`). 

@@ -36,7 +36,9 @@ jobs:
 
       # Step 3: Set the Docker image tag as an environment variable
       - name: Set up Docker image tag
-        run: echo "IMAGE_TAG=ghcr.io/${{ github.repository }}:v1.0.0" >> $GITHUB_ENV
+        run: |
+          IMAGE_REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_TAG=ghcr.io/${IMAGE_REPO}:v1.0.0" >> $GITHUB_ENV
 
       # Step 4: Build the Docker image with the specified tag
       - name: Build Docker image
