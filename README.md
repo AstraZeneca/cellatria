@@ -252,7 +252,6 @@ If you use this repository, please cite:
 ---
 
 ## 📬 Contact
-
 <details>
 <br>
 
