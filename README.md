@@ -209,7 +209,7 @@ For full details, usage instructions, and configuration options, refer to the [C
 <details>
 <br>
 
-The `Dockerfile` defines the dedicated computing environment for executing **cellatria** and the co-developed **CellExpress** pipelie in a consistent and reproducible manner. 
+The `Dockerfile` defines the dedicated computing environment for executing **CellAtria** and the co-developed **CellExpress** pipelie in a consistent and reproducible manner. 
 It includes all required Python and R dependencies, along with support for HTML reporting and visualization. 
 Built on an Ubuntu-based system, the environment also provides essential system-level packages to support end-to-end 
 pipeline execution. 
@@ -245,7 +245,17 @@ While **CellAtria** supports flexible, user-driven interactions, its functionali
 
 If you use this repository, please cite:
 
-> Nima Nouri, et al. (2025). An Agentic AI Framework for Ingestion and Standardization of Single-Cell RNA-seq Data Analysis. *bioRxiv*. https://doi.org/xx.xxxx/2025.xx.xx.667880
+> Nima Nouri, et al. (2025). An Agentic AI Framework for Ingestion and Standardization of Single-Cell RNA-seq Data Analysis. *bioRxiv*. https://doi.org/10.1101/2025.07.31.667880
+
+```
+@article{nouri2025agentic,
+  title={An Agentic AI Framework for Ingestion and Standardization of Single-Cell RNA-seq Data Analysis},
+  author={Nouri, Nima and Artzi, Ronen and Savova, Virginia},
+  journal={bioRxiv},
+  year={2025},
+  publisher={Cold Spring Harbor Laboratory}
+}
+```
 
 </details>
 
