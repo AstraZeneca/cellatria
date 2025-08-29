@@ -22,7 +22,7 @@
 
 <!-- CellAtria Infographic -->
 <p align="center" width="100%">
-  <img width="100%" src="cellatria_git_logo.png"> 
+  <img width="100%" src="cellatria_git_fig0.png"> 
 </p>
 
 ---
