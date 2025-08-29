@@ -1,7 +1,7 @@
 # CellExpress
 
 <p align="center" width="100%">
-  <img width="100%" src="cellexpress_git_logo.png"> 
+  <img width="100%" src="cellexpress_git_fig0.png"> 
 </p>
 
 ---
