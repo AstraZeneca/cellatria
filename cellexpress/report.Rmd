@@ -458,7 +458,7 @@ mt_per_cell %>%
                    aes(x = feature, color = sample_id, feature = feature), 
                    show.legend = FALSE, na.rm = TRUE) +
       geom_vline(data = filter(filters, type == tp),
-                   aes(xintercept = threshold, color = sample_id),
+                   aes(xintercept = threshold, color = "black"),
                    linetype = 2, size = 0.45, na.rm = TRUE) +
       scale_color_manual(values = smpl_colrs) +
       guides(fill = "none", color = "none")
@@ -481,10 +481,10 @@ mt_per_cell %>%
         geom_smooth(aes(group = sample_id), 
                     method = "loess", se = FALSE, size = 0.5, fullrange = FALSE) +
         geom_vline(data = filter(filters, type == "nFeature_RNA", threshold != 0),
-                 aes(xintercept = threshold, color = sample_id),
+                 aes(xintercept = threshold, color = "black"),
                  linetype = 2, size = 0.45, na.rm = TRUE) +
         geom_hline(data = filter(filters, type == "nCount_RNA", threshold != 0),
-                 aes(yintercept = threshold, color = sample_id),
+                 aes(yintercept = threshold, color = "black"),
                  linetype = 2, size = 0.45, na.rm = TRUE) +
         geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray") +
         scale_x_continuous(trans = scales::log10_trans(),
@@ -532,7 +532,7 @@ ggplotly(Q[[3]], tooltip = c("sample_id", "feature"))
 The gray dashed line indicates the identity line (y = x)
 
 <center>
-```{r pqc, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.75, 4.5), fig.align = 'center'}
+```{r pqc, eval=FALSE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.75, 4.5), fig.align = 'center'}
 # plot(pqc)
 ggplotly(pqc, tooltip = c("sample_id", "nFeature_RNA", "nCount_RNA"))
 ```

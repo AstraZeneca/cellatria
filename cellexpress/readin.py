@@ -4,10 +4,9 @@
 import os
 import sys
 import argparse
-import glob
 import pandas as pd
 import scanpy as sc
-from helper import fix_duplicate_gene_names, check_gene_names_format, fix_gene_names
+from helper import check_gene_names_format, fix_gene_names, try_load_sample_from_path, fix_file_format
 
 # -------------------------------
 
@@ -56,39 +55,22 @@ def read_in(args):
         if not os.path.exists(sample_path):
             raise FileNotFoundError(f"🚨 Sample directory not found: {sample_path}")
 
-        # Define supported input formats
-        h5_file = glob.glob(os.path.join(sample_path, "*.h5"))
-        matrix_file = os.path.join(sample_path, "matrix.mtx.gz")
-        features_file = os.path.join(sample_path, "features.tsv.gz")
-        barcodes_file = os.path.join(sample_path, "barcodes.tsv.gz")
-        h5ad_files = glob.glob(os.path.join(sample_path, "*.h5ad"))
+        # this function makes sure data is compatible
+        fix_log = fix_file_format(sample_path)
+        print(fix_log)
 
-        # -------------------------------
-        # Load AnnData object from supported file type
-        if len(h5_file) == 1 and os.path.exists(h5_file[0]):
-            print(f"*** 🔄 Loading sample from H5 file: {h5_file[0]} -> {sample_id}.")
-            adata = sc.read_10x_h5(h5_file[0])            
-            adata = fix_duplicate_gene_names(adata) # Fix duplicate gene names, if any
+        # 1️⃣ Try flat structure first
+        adata = try_load_sample_from_path(sample_path, sample_id)
 
-        elif all(os.path.exists(f) for f in [matrix_file, features_file, barcodes_file]):
-            print(f"*** 🔄 Loading sample from CSV files: {sample_path} -> {sample_id}.")
-            adata = sc.read_10x_mtx(sample_path, var_names="gene_symbols", cache=False)
-            adata = fix_duplicate_gene_names(adata) # Fix duplicate gene names, if any
+        # 2️⃣ Try nested directory if flat failed
+        if adata is None:
+            subdirs = [os.path.join(sample_path, d) for d in os.listdir(sample_path)
+                    if os.path.isdir(os.path.join(sample_path, d))]
+            if len(subdirs) == 1:
+                adata = try_load_sample_from_path(subdirs[0], sample_id)
 
-        elif len(h5ad_files) == 1:
-            print(f"*** 🔄 Loading sample from h5ad file: {h5ad_files[0]} -> {sample_id}.")
-            adata = sc.read_h5ad(h5ad_files[0])
-            # Show available metadata fields
-            metadata_cols = list(adata.obs.columns)
-            if metadata_cols:
-                print(f"*** 📋 Metadata fields available in `.obs`: {', '.join(metadata_cols)}")
-            else:
-                print("*** ⚠️  No metadata fields found in `.obs`.")
-
-        elif len(h5ad_files) > 1:
-            raise FileExistsError(f"🚨 Multiple .h5ad files found in {sample_path}. Unable to determine which one to use.")
-
-        else:
+        # 3️⃣ Fail if nothing worked
+        if adata is None:
             raise FileNotFoundError(f"🚨 No valid files found for sample {sample_name} in {sample_path}.")
 
         # -------------------------------
@@ -123,7 +105,7 @@ def read_in(args):
             adata.var["mito"] = adata.var_names.str.startswith("mt-")
         # Calculate QC metrics, including pct_counts_mito
         sc.pp.calculate_qc_metrics(adata, qc_vars=["mito"], percent_top=None, log1p=False, inplace=True)
-
+        sc.pp.calculate_qc_metrics(adata, qc_vars=["mito"], percent_top=None, log1p=False, inplace=True)
         # -------------------------------
         # Store loaded object
         adatas[sample_id] = adata

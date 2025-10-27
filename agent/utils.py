@@ -587,3 +587,62 @@ initial_message = {
 }
 
 # -------------------------------
+
+import json, time, uuid, psutil
+from datetime import datetime
+from langchain_core.messages import HumanMessage
+import tiktoken
+
+def count_tokens(text: str, model_name="gpt-4"):
+    try:
+        enc = tiktoken.encoding_for_model(model_name)
+    except KeyError:
+        enc = tiktoken.get_encoding("cl100k_base")
+    return len(enc.encode(text))
+
+def run_graph_with_metrics(graph, human_messages: list, config: dict):
+    import psutil, time, json
+    from datetime import datetime
+    from langchain_core.messages import HumanMessage
+
+    proc = psutil.Process()
+    proc.cpu_percent(interval=None)  # Prime CPU meter
+    start_ts = time.perf_counter()
+
+    # Prepare input
+    partial_state = {"messages": human_messages}
+    full_text = "\n".join([m.content for m in human_messages])
+    msg_bytes = len(full_text.encode("utf-8"))
+    msg_tokens = count_tokens(full_text)
+
+    steps = []
+    try:
+        print(f"\n🧾 Processing message block: {full_text[:80]}...")
+        for step in graph.stream(partial_state, config=config):
+            steps.append(step)
+            print(step)  # ✅ Real-time streaming output
+
+        status = "success"
+        output_text = "".join(str(s) for s in steps)
+        output_bytes = len(output_text.encode("utf-8"))
+        output_tokens = count_tokens(output_text)
+
+    except Exception as e:
+        print(f"🚨 Error: {e}")
+        status = "error"
+        output_bytes = 0
+        output_tokens = 0
+
+    duration = round(time.perf_counter() - start_ts, 2)
+    message_metrics = {
+        "input_size_bytes": msg_bytes,
+        "input_token_count": msg_tokens,
+        "output_size_bytes": output_bytes,
+        "output_token_count": output_tokens,
+        "duration_sec": duration,
+        "status": status
+    }
+
+    return steps, message_metrics
+
+# -------------------------------

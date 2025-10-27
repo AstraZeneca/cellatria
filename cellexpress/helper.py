@@ -14,7 +14,11 @@ import urllib3
 import scanpy as sc
 import pandas as pd
 import numpy as np
+import anndata as ad
 import json
+import gzip
+import shutil
+import glob
 
 # -------------------------------
 
@@ -269,6 +273,9 @@ def compute_qc_stats_objs(metadata_df, adatas):
     for i in range(len(metadata_df)):
         sample_name = metadata_df.loc[i, "sample"]
         sample_id = metadata_df.loc[i, "sample_id"]
+        if sample_id not in adatas:
+            print(f"*** ⚠️ Sample '{sample_id}' was removed during QC and will be skipped.")
+            continue
         adata = adatas[sample_id]
 
         # Extract QC summary statistics
@@ -431,6 +438,9 @@ def generate_qc_plots_and_filters(adatas, metadata_df, args):
 
     # Combine all samples into a single DataFrame
     db_plots = pd.concat(db_plots, ignore_index=True)
+
+    # Sanitize NaNs BEFORE converting to records (JSON cannot handle NaN)
+    db_plots = db_plots.replace({np.nan: None})
 
     # Convert to JSON-serializable list
     db_plots = db_plots.to_dict(orient="records")
@@ -1733,5 +1743,253 @@ def sanitize_inf(obj):
         return "Inf"  # JSON-safe string, will be handled in R
     else:
         return obj
+
+# -------------------------------
+
+def upgrade_features_to_v3(features_path: str) -> bool:
+
+    # Read first few lines
+    with gzip.open(features_path, "rt") as f:
+        lines = [line.strip().split("\t") for line in f if line.strip()]
+        col_count = len(lines[0]) if lines else 0
+
+    if col_count == 3:
+        return False  # Already v3-style
+    elif col_count == 2:
+        print(f"🧬 Detected 2-column v2-style features.tsv.gz — upgrading to v3-compatible format.")
+        df = pd.read_csv(features_path, sep="\t", header=None)
+        df["feature_type"] = "Gene Expression"
+        df.to_csv(features_path, sep="\t", header=False, index=False, compression="gzip")
+        return True
+    elif col_count == 1:
+        print(f"🧬 Detected 1-column legacy file — upgrading to full 3-column features.tsv.gz.")
+        gene_ids = [row[0] for row in lines]
+        df = pd.DataFrame({
+            0: gene_ids,
+            1: gene_ids,  # duplicate as gene_symbol
+            2: "Gene Expression"
+        })
+        df.to_csv(features_path, sep="\t", header=False, index=False, compression="gzip")
+        return True
+    else:
+        raise ValueError(f"❌ Unexpected column count in {features_path}: found {col_count} columns")
+
+# -------------------------------
+
+def try_load_sample_from_path(path: str, sample_id: str):
+    """Attempt to load sample from path via supported formats."""
+    # 10x single h5
+    h5_file = glob.glob(os.path.join(path, "*.h5"))
+    # processed h5ad
+    h5ad_files = glob.glob(os.path.join(path, "*.h5ad"))
+    # 10x triple
+    matrix_file = os.path.join(path, "matrix.mtx.gz")
+    features_file = os.path.join(path, "features.tsv.gz")
+    barcodes_file = os.path.join(path, "barcodes.tsv.gz")
+    # ParseBio triple 
+    parsebio_genes = os.path.join(path, "all_genes.csv")
+    parsebio_cells = os.path.join(path, "cell_metadata.csv")
+    parsebio_mtx   = os.path.join(path, "count_matrix.mtx")
+
+    # (1) HDF5
+    if len(h5_file) == 1 and os.path.exists(h5_file[0]):
+        print(f"*** 🔄 Loading sample from H5 file: {h5_file[0]} -> {sample_id}.")
+        adata = sc.read_10x_h5(h5_file[0])
+        return fix_duplicate_gene_names(adata)
+
+    # (2) 10X-style Matrix
+    if all(os.path.exists(f) for f in [matrix_file, features_file, barcodes_file]):
+        print(f"*** 🔄 Loading sample from CSV files: {path} -> {sample_id}.")
+        upgraded = upgrade_features_to_v3(features_file)
+        try:
+            # Try sparse first
+            adata = sc.read_10x_mtx(path, var_names="gene_symbols", cache=False)
+            return fix_duplicate_gene_names(adata)
+        except Exception as e:
+            print(f"⚠️ `matrix.mtx.gz` is not a Matrix Market file — falling back to dense TSV parsing.")
+            # dense matrix load
+            df = pd.read_csv(matrix_file, sep="\t", compression="gzip", index_col=0)
+            adata = ad.AnnData(X=df.T)
+            adata.var_names = df.index.astype(str)
+            adata.obs_names = df.columns.astype(str)
+            return fix_duplicate_gene_names(adata)
+
+    # (3) ParseBio
+    if all(os.path.exists(f) for f in [parsebio_genes, parsebio_cells, parsebio_mtx]):
+            print(f"*** 🔄 Loading sample from ParseBio triple: {path} -> {sample_id}.")            
+            # Read matrix, genes, and barcodes
+            adata = sc.read_mtx(parsebio_mtx)
+            gene_data = pd.read_csv(parsebio_genes)
+            cell_meta = pd.read_csv(parsebio_cells)
+            # Filter genes with NaN names and subset matrix columns
+            if "gene_name" not in gene_data.columns:
+                raise KeyError("ParseBio genes file must contain a 'gene_name' column.")
+            gene_data = gene_data[gene_data.gene_name.notnull()].reset_index(drop=True)
+            valid_gene_indices = gene_data.index.to_list()
+            adata = adata[:, valid_gene_indices]
+            # Assign var (genes)
+            adata.var = gene_data
+            adata.var.set_index('gene_name', inplace=True)
+            adata.var.index.name = None
+            adata.var_names_make_unique()
+            # Assign obs (cells)
+            if "bc_wells" not in cell_meta.columns:
+                raise KeyError("ParseBio cell metadata must contain a 'bc_wells' column.")
+            adata.obs = cell_meta
+            adata.obs.set_index('bc_wells', inplace=True)
+            adata.obs.index.name = None
+            adata.obs_names_make_unique()
+            return adata
+
+    # (4) AnnData (.h5ad)
+    if len(h5ad_files) == 1:
+        print(f"*** 🔄 Loading sample from h5ad file: {h5ad_files[0]} -> {sample_id}.")
+        adata = sc.read_h5ad(h5ad_files[0])
+        metadata_cols = list(adata.obs.columns)
+        if metadata_cols:
+            print(f"*** 📋 Metadata fields available in `.obs`: {', '.join(metadata_cols)}")
+        else:
+            print("*** ⚠️  No metadata fields found in `.obs`.")
+        return adata
+
+    if len(h5ad_files) > 1:
+        raise FileExistsError(f"🚨 Multiple `.h5ad` files found in {path}. Cannot determine which one to use.")
+
+    # (5) Plain .txt.gz matrix 
+    txtgz_files = glob.glob(os.path.join(path, "*.txt.gz"))
+    if len(txtgz_files) == 1:
+        print(f"*** 🔄 Loading matrix from plain txt.gz file: {txtgz_files[0]} -> {sample_id}.")
+        df = pd.read_csv(txtgz_files[0], sep="\t", index_col=0)
+        df = df.apply(pd.to_numeric, errors="coerce").fillna(0)
+        adata = ad.AnnData(X=df.T)
+        adata.var_names = df.index.astype(str)
+        adata.obs_names = df.columns.astype(str)
+        return fix_duplicate_gene_names(adata)
+
+    # (6) CSV-style matrix (.csv.gz)
+    csvgz_files = glob.glob(os.path.join(path, "*.csv.gz"))
+    if len(csvgz_files) == 1:
+        print(f"*** 🔄 Loading matrix from csv.gz file: {csvgz_files[0]} -> {sample_id}.")
+        df = pd.read_csv(csvgz_files[0], index_col=0)
+        adata = ad.AnnData(X=df.T)
+        adata.var_names = df.index.astype(str)
+        adata.obs_names = df.columns.astype(str)
+        return fix_duplicate_gene_names(adata)
+
+    return None
+
+# -------------------------------
+
+import os, re, glob, tarfile, gzip, shutil
+
+# Canonical file expectations
+expected_patterns = {
+    "matrix.mtx.gz": re.compile(r".*matrix.*\.mtx(\.gz)?$|.*matrix\.tsv$"),
+    "features.tsv.gz": re.compile(r".*(features|genes).*\.tsv(\.gz)?$|.*genes\.tsv$"),
+    "barcodes.tsv.gz": re.compile(r".*barcodes.*\.tsv(\.gz)?$|.*barcode\.tsv$"),
+}
+
+alt_to_canonical = {
+    # 🔹 Legacy TSV file patterns
+    "count_matrix_sparse.mtx": "matrix.mtx.gz",
+    "count_matrix_genes.tsv": "features.tsv.gz",
+    "count_matrix_barcodes.tsv": "barcodes.tsv.gz",
+
+    # 🔹 GEO/GSM-style CSV variants
+    "genes.csv.gz": "features.tsv.gz",
+    "barcode.csv.gz": "barcodes.tsv.gz",
+    "counts.mtx.gz": "matrix.mtx.gz",
+
+    # 🔹 Uncompressed 10X-style .tsv variants
+    "genes.tsv": "features.tsv.gz",
+    "barcode.tsv": "barcodes.tsv.gz",
+    "matrix.tsv": "matrix.mtx.gz",
+
+    # 🔹 Common spelling alternates
+    "barcodes.tsv": "barcodes.tsv.gz",
+    "features.tsv": "features.tsv.gz",
+    "matrix.mtx": "matrix.mtx.gz",
+}
+
+def extract_tar_gz(file_path: str, extract_dir: str) -> None:
+    """Extracts a .tar.gz file to the given directory."""
+    with tarfile.open(file_path, "r:gz") as tar:
+        tar.extractall(path=extract_dir)
+
+# -------------------------------
+
+def fix_file_format(sample_path: str) -> str:
+    """
+    Ensures 10X-style format in sample_dir:
+    - Extracts .tar.gz if present
+    - Converts legacy names to canonical
+    - Renames pattern-matched files to canonical names
+    - Removes original mismatched files
+    """
+
+    report = []
+
+    # 1️⃣ Extract TAR if present
+    tar_files = glob.glob(os.path.join(sample_path, "*.tar.gz"))
+    if len(tar_files) == 1:
+        report.append(f"*** 📦 Extracting TAR file: {os.path.basename(tar_files[0])}")
+        extract_tar_gz(tar_files[0], extract_dir=sample_path)
+    elif len(tar_files) > 1:
+        raise ValueError(f"🚨 Multiple .tar.gz files found in `{sample_path}`")
+
+    # 2️⃣ Check for early exit: if any non-10X format exists, skip
+    if glob.glob(os.path.join(sample_path, "*.h5")) \
+    or glob.glob(os.path.join(sample_path, "*.h5ad")) \
+    or glob.glob(os.path.join(sample_path, "*.txt.gz")) \
+    or len(glob.glob(os.path.join(sample_path, "*.csv.gz"))) == 1:
+        report.append(f"✅ Non-10X format detected — skipping format fix for `{sample_path}`")
+        return "\n".join(report)
+
+    # 3️⃣ Scan all subdirectories
+    found_valid_dir = False
+    for subdir, _, files in os.walk(sample_path):
+        canonical_found = {k: None for k in expected_patterns}
+        renamed = []
+
+        # 2a — Legacy count_matrix_* renaming + gzipping
+        for alt_name, canonical_name in alt_to_canonical.items():
+            alt_path = os.path.join(subdir, alt_name)
+            if os.path.exists(alt_path):
+                gz_path = os.path.join(subdir, canonical_name)
+                with open(alt_path, "rb") as f_in, gzip.open(gz_path, "wb") as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+                os.remove(alt_path)
+                renamed.append(f"*** - Gzipped & renamed `{alt_name}` → `{canonical_name}`")
+                canonical_found[canonical_name] = canonical_name
+
+        # 2b — Regex-match nonstandard canonical files and rename
+        for f in files:
+            full_path = os.path.join(subdir, f)
+            for canonical, pattern in expected_patterns.items():
+                if canonical_found[canonical] is None and pattern.match(f):
+                    new_path = os.path.join(subdir, canonical)
+                    if f != canonical:
+                        shutil.copy2(full_path, new_path)
+                        os.remove(full_path)
+                        renamed.append(f"*** - Renamed & removed `{f}` → `{canonical}`")
+                    canonical_found[canonical] = canonical
+
+        # 2c — Final validation
+        if all(canonical_found.values()):
+            if renamed:
+                report.append(f"📁 `{subdir}`")
+                report.extend(renamed)
+            found_valid_dir = True
+            break
+
+    # 3️⃣ Fail gracefully if no valid dir
+    if not found_valid_dir:
+        raise FileNotFoundError(
+            f"🚨 Could not locate a directory under `{sample_path}` containing all required 10X files: "
+            "`matrix.mtx.gz`, `features.tsv.gz` (or `genes.tsv.gz`), `barcodes.tsv.gz`."
+        )
+
+    report.insert(0, f"✅ File format validated and fixed under `{sample_path}`")
+    return "\n".join(report)
 
 # -------------------------------

@@ -255,5 +255,5 @@ if args.only_qc.lower() == "no":
     control_pipe(args)
 else:
     control_onlyqc_pipe(args)
- 
+
 # -------------------------------
