@@ -2,7 +2,6 @@
 # -------------------------------
 
 from langchain_core.tools import tool
-from langchain.agents import Tool
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Comment
