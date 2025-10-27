@@ -45,8 +45,13 @@ def checks_args(args):
         raise ValueError("*** 🚨 Please provide an absolute path for --input (e.g., /path-to/project), not a relative one like ./project")
 
     # Ensure no trailing slash
+    # if args.input.endswith("/") or args.input.endswith("\\"):
+    #     raise ValueError("*** 🚨 The input path should not have a trailing slash. Use /path-to/project instead of /path-to/project/")
+
     if args.input.endswith("/") or args.input.endswith("\\"):
-        raise ValueError("*** 🚨 The input path should not have a trailing slash. Use /path-to/project instead of /path-to/project/")
+        original = args.input
+        args.input = args.input.rstrip("/\\")  # removes all trailing slashes
+        print(f"*** ⚠️  Warning: Trailing slash detected in input path. Automatically changed from '{original}' to '{args.input}'")
 
     # Ensure input directory exists
     if not os.path.exists(args.input):

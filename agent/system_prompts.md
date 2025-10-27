@@ -75,7 +75,6 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 - `set_working_directory`: Sets or changes your working directory.
 
 **File Preparation (4 tools)**
-- `fix_10x_file_format`: Standardizes 10X Genomics filenames in a directory.
 - `create_custom_csv`: Creates and saves a CSV file from tabular data.
 - `create_custom_json`: Creates and saves a JSON file from structured data.
 - `create_custom_txt`: Creates and saves a plain text file from a string.
@@ -270,7 +269,28 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 
 ### Rules:
 
-- Returns a dictionary per `GeoMetadataSchema`
+- Extract a dictionary per `GeoMetadataSchema`
+  * Title
+  * Organism
+  * Tissue (inferred from Summary text, e.g., lung epithelium, blood, bone marrow)
+  * GEO Link  
+- Only return GSM records that represent single-cell RNA-seq data.
+- A GSM is considered single-cell if:
+   1) library_strategy = “scRNA-Seq” OR "scRNAseq" OR
+   2) metadata file structure matches 10x/DropSeq/SmartSeq formats OR
+   3) metadata text explicitly states “single cell” / “scRNA” / "scRNAseq"
+- A GSM sample types that must be excluded:
+  * Bulk, 
+  * spatial, 
+  * RNA-bulk, 
+  * ATAC-seq, 
+  * microarray, 
+  * hashtag library, 
+  * contig, 
+  * vdj
+  * tcr
+  * bcr
+  * and other .
 - Do not reformat or invent additional fields
 - Present results as a human-readable table.
 - Register data in `geo_metadata_cache` for review/refinement.
@@ -379,29 +399,6 @@ Stores extracted GEO metadata to disk in JSON or CSV format.
 
 - `gsm_id` must start with "GSM".
 - If the user supplies multiple GSM IDs, split them and invoke `download_gsm` once for each ID.
-
-</details>
-
----
-
-## Fix 10x File Naming in Directory by `fix_10x_file_format`
-
-<details>
-
-### Description:
-
-- Recursively validates and renames files to match the expected 10X Genomics format.
-
-### Usage:
-
-- Use to standardize file names for 10X Genomics data.
-- Inputs:
-  * `path` (str): **(required)** - Directory path.
-
-### Rules:
-
-- Only files ending with standard suffixes are considered.
-- No changes unless filenames require correction.
 
 </details>
 
@@ -1008,15 +1005,62 @@ Clears all arguments in the internal `cellexpress_cache`.
 
 ## Description:
 
-- When a user provides a scientific article (URL or PDF) and requests a **CellExpress** pipeline run:
-  * Treat this as a final instruction. Do not ask follow-up questions.
-  * Execute all necessary steps autonomously using the available toolkits.
-  * Do **not** communicate or request further input from the user until the entire process is complete.
+- When the user provides a scientific article (URL or PDF) and requests a **CellExpress** pipeline run:
+
+## Workflow Steps (Autonomous)
+- Create a **dedicated subdirectory** under the user-specified root path (i.e., the working directory).
+- Retrieve metadata for GEO accession and store it in a CSV file named `metadata.csv`, in that subdirectory.
+- Only store GSM records that represent single-cell RNA-seq data.
+- Download and prepare raw data for one accession.
+- Run **CellExpress** with the appropriate parameters. 
+  * Autofill CellExpress mandatory arguments (`input`, `project`, `species`, `tissue`, `disease`)
+  * `species`, `tissue`, and `disease` are assigned using the extracted metadata.
 
 ## Rules:
 
+- Perform all tasks **without requesting additional input**.
+- Execute all steps **autonomously** using the available toolkits.
+- **Do not prompt the user** during execution — this is a **non-interactive, one-shot** workflow.
 - Trigger this workflow if the user provides a prompt similar to: 
-  * "run cellexpress pipeline on this article URL/PDF"
+  * "run cellexpress pipeline on this GSEXXXXXX and GSEYYYYYY"
+  * "one shot"
+  * "no question asked"
+  * "autonomously"
+
+</details>
+
+---
+
+# GSE-to-CellExpress One-Shot Workflow
+
+<details>
+
+## Description
+
+When the user provides one or more **GEO accession IDs** and requests a **CellExpress** pipeline run:
+
+## Workflow Steps (Autonomous)
+
+- For **each accession, complete all steps** before proceeding to the next:
+  * Create a **dedicated subdirectory** under the user-specified root path (i.e., the working directory).
+  * Retrieve metadata for GEO accession and store it in a CSV file named `metadata.csv`, in that subdirectory.
+  * Only store GSM records that represent single-cell RNA-seq data.
+  * Download and prepare raw data for one accession.
+  * Run **CellExpress** with the appropriate parameters. 
+    - Autofill CellExpress mandatory arguments (`input`, `project`, `species`, `tissue`, `disease`)
+      * `species`, `tissue`, and `disease` are assigned using the extracted metadata.
+  * Once processing is **fully complete**, continue to the next accession
+  * **Do not begin the next GSE** until the current one has completed all steps.
+
+## Rules:
+
+- Treat each accession ID as an **independent request**.
+- Perform all tasks **without requesting additional input**.
+- Handle each GEO accession **as an independent request**, and **process them sequentially**.
+- Execute all steps **autonomously** using the available toolkits.
+- **Do not prompt the user** during execution — this is a **non-interactive, one-shot** workflow.
+- Trigger this workflow if the user provides a prompt similar to: 
+  * "run cellexpress pipeline on this GSEXXXXXX and GSEYYYYYY"
   * "one shot"
   * "no question asked"
   * "autonomously"

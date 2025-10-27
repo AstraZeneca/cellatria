@@ -90,11 +90,16 @@ def qc_filter(adatas, metadata_df, args):
             elif species == "mm":
                 adata.var["mito"] = adata.var_names.str.startswith("mt-")
 
+            # -------------------------------
+            # Calculate QC metrics
             sc.pp.calculate_qc_metrics(adata, qc_vars=["mito"], percent_top=None, log1p=False, inplace=True)
 
             # -------------------------------
-             # Filter cells with high mitochondrial content
-            adata = adata[adata.obs["pct_counts_mito"] <= max_mt_percent, :].copy()   # copy() ensures adata is a full copy before modifying it           
+            # Filter cells with high mitochondrial content
+            adata = adata[adata.obs["pct_counts_mito"] <= max_mt_percent, :].copy()   # copy() ensures adata is a full copy before modifying it
+
+            # Force recalculation to ensure consistency
+            sc.pp.calculate_qc_metrics(adata, qc_vars=["mito"], percent_top=None, log1p=False, inplace=True)           
 
             # -------------------------------
             # Convergence check (no change in shape)

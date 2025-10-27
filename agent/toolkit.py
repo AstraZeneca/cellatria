@@ -23,6 +23,7 @@ import glob
 import uuid
 import argparse
 import subprocess
+import time
 from utils import (csv_filename, json_filename, txt_filename, base_path, checks_args)
 
 # -------------------------------
@@ -188,6 +189,9 @@ def fetch_geo_metadata(gse_id: str) -> dict:
         geo_title = title_cell.find_next_sibling("td").get_text(strip=True) if title_cell else "N/A"
         geo_organism = organism_cell.find_next_sibling("td").get_text(strip=True) if organism_cell else "N/A"
 
+        summary_cell = soup.find("td", string="Summary")
+        geo_summary = summary_cell.find_next_sibling("td").get_text(strip=True) if summary_cell else "N/A"
+
         # Extract GSM sample metadata
         sample_rows = []
         for row in soup.find_all("tr"):
@@ -228,6 +232,7 @@ def fetch_geo_metadata(gse_id: str) -> dict:
         metadata = {
                 "geo_title": geo_title,
                 "geo_organism": geo_organism,
+                "geo_summary": geo_summary, 
                 "geo_link": geo_url,
                 "geo_samples": sample_rows
         }
@@ -248,9 +253,10 @@ class GeoSampleMetadata(BaseModel):
     sra_ids: Optional[str]  # comma-separated string
 
 class GeoMetadataSchema(BaseModel):
-    geo_title: str
-    geo_organism: str
-    geo_link: str
+    Title: str
+    Organism: str
+    Tissue: str   # Optional helper for LLM use
+    Link: str
     geo_samples: List[GeoSampleMetadata]
     
 geo_metadata_cache = {}
@@ -749,38 +755,47 @@ def fix_10x_file_format(path: str) -> str:
     """
     Recursively checks and fixes subdirectories under `path` to ensure each contains
     10x Genomics files: `matrix.mtx.gz`, `features.tsv.gz`, and `barcodes.tsv.gz`.
-    Files ending in these names will be renamed accordingly.
+    Accepts older `genes.tsv.gz` as valid and renames it to `features.tsv.gz`.
     """
-    expected_files = {
-        "matrix.mtx.gz",
-        "features.tsv.gz",
-        "barcodes.tsv.gz"
+
+    expected_patterns = {
+        "matrix.mtx.gz": re.compile(r".*matrix.*\.mtx\.gz$"),
+        "features.tsv.gz": re.compile(r".*(features|genes).*\.tsv\.gz$"),
+        "barcodes.tsv.gz": re.compile(r".*barcodes.*\.tsv\.gz$")
     }
 
-    for subdir, dirs, files in os.walk(path):
+    report = []
+
+    for subdir, _, files in os.walk(path):
         renamed = []
         missing = []
-        found_suffixes = {f for f in files if any(f.endswith(suffix) for suffix in expected_files)}
 
-        for expected in expected_files:
-            matched = [f for f in files if f.endswith(expected)]
+        for canonical_name, pattern in expected_patterns.items():
+            matched = [f for f in files if pattern.match(f)]
             if not matched:
-                missing.append(f"- Missing `{expected}`")
-            else:
-                actual = matched[0]
-                if actual != expected:
-                    old_path = os.path.join(subdir, actual)
-                    new_path = os.path.join(subdir, expected)
-                    try:
-                        os.rename(old_path, new_path)
-                        renamed.append(f"- Renamed `{actual}` → `{expected}`")
-                    except Exception as e:
-                        renamed.append(f"- ❌ Failed to rename `{actual}`: {e}")
+                missing.append(f"- ❌ Missing `{canonical_name}`")
+                continue
 
-        if not found_suffixes:
-            continue
+            # Use the first match
+            actual_name = matched[0]
+            if actual_name != canonical_name:
+                old_path = os.path.join(subdir, actual_name)
+                new_path = os.path.join(subdir, canonical_name)
+                try:
+                    os.rename(old_path, new_path)
+                    renamed.append(f"- Renamed `{actual_name}` → `{canonical_name}`")
+                except Exception as e:
+                    renamed.append(f"- ❌ Failed to rename `{actual_name}`: {e}")
 
-    return f"✅ Validation and renaming complete under `{path}`."
+        if renamed or missing:
+            report.append(f"\n📁 `{subdir}`")
+            report.extend(renamed + missing)
+
+    if not report:
+        return f"✅ All subdirectories under `{path}` are already in correct format."
+
+    return f"✅ Validation and renaming complete under `{path}`:\n" + "\n".join(report)
+
 
 # -------------------------------
 # Shows an overview of CellExpress pipeline capabilities.
@@ -970,8 +985,14 @@ def run_cellexpress(**kwargs) -> str:
     Launches CellExpress with the provided arguments. Runs in detached mode with logging and PID tracking.
     """
     try:
-        args = CellExpressArgs(**cellexpress_cache.get_args())  # Validate arguments
+        # args = CellExpressArgs(**cellexpress_cache.get_args())  # Validate arguments
+        # Use directly passed args if available, else fallback to cache
+        resolved_args = kwargs if kwargs else cellexpress_cache.get_args()
+        args = CellExpressArgs(**resolved_args)
         args_dict = args.dict()
+        # Update cache so other tools stay in sync
+        cellexpress_cache.set_args(resolved_args)
+
     except ValidationError as e:
         return f"❌ Cannot launch CellExpress. Argument validation failed:\n{str(e)}"
 
@@ -988,13 +1009,16 @@ def run_cellexpress(**kwargs) -> str:
     for key, val in args_dict.items():
         if val is not None:
             if key in {"project", "tissue", "disease"}:
-                val = str(val).replace(" ", "_")
+                # val = str(val).replace(" ", "_")                
+                val = re.sub(r"[^A-Za-z0-9_]", "_", str(val))   # Replace all unsafe characters with underscore
+                val = re.sub(r"_+", "_", val)                   # collapse multiple underscores
+                val = val.strip("_")                            # remove leading/trailing underscores
             base_cmd.append(f"--{key}")
             base_cmd.append(str(val))
 
     try:
         # Construct log file path
-        uid = uuid.uuid4().hex[:8]
+        uid = uuid.uuid4().hex[:6]
         log_path = os.path.join(input_path, f"cellexpress_{uid}.log")
         err_path = os.path.join(input_path, f"cellexpress_{uid}.err")
 
@@ -1145,7 +1169,7 @@ tools = [
     get_file_size,
     get_working_directory,
     set_working_directory,
-    fix_10x_file_format,
+    # fix_10x_file_format,
     get_cellexpress_info,
     configure_cellexpress,
     preview_cellexpress_config,

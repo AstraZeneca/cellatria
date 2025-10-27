@@ -97,7 +97,10 @@ def create_cellatria(env_path):
             messages.append(HumanMessage(content=user_input))
 
         # Prepare config
-        config = {"configurable": {"thread_id": chat_thread_id}}
+        config = {
+            "configurable": {"thread_id": chat_thread_id},
+            "recursion_limit": 1000
+        }
 
         backend_log = []
         final_message = None
@@ -156,7 +159,8 @@ def create_cellatria(env_path):
                 None,
                 history + [
                     {"role": "user", "content": user_input},
-                    {"role": "assistant", "content": pdf_note}]
+                    {"role": "assistant", "content": pdf_note}],
+                pdf_note
             )
         else:
             pdf_note = ""
