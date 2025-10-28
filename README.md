@@ -234,6 +234,7 @@ While **CellAtria** supports flexible, user-driven interactions, its functionali
 6.  **CellExpress Execution** - Launches the standardized single-cell analysis pipeline in a detached mode. 
 
 > This modular, agent-guided framework allows users to begin at any point while preserving logical consistency across steps.
+
 > See the [CellAtria Walkthrough (PDF)](https://github.com/AstraZeneca/cellatria/blob/main/docs/cellatria_walkthrough_git.pdf)
  for a step-by-step visual tutorial.
 
