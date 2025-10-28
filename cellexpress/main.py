@@ -28,12 +28,18 @@ print(f"*** 🔒 Thread limits applied: {n_threads} thread(s) per library.")
 # -------------------------------
 
 import argparse
-from helper import none_or_int, none_or_float, none_or_str
+from helper import none_or_int, none_or_float, none_or_str, parse_config_json
 
 # -------------------------------
 
 # Argument parser setup
 parser = argparse.ArgumentParser(description="Pipeline for single-cell data processing")
+
+# settings
+parser.add_argument("--config", 
+                    type=str, 
+                    required=False,
+                    help="Path to JSON config file. Can be a minimal param set or a full CellExpress generated config summary with 'settings'.")
 
 # General arguments
 parser.add_argument("--input",    
@@ -228,6 +234,7 @@ parser.add_argument("--only_qc",
                     help=("Options: 'yes' or 'no'. Set to 'yes' to generate an overview of quality control (QC) metrics"
                            "prior to running the main pipeline (default: 'no')."))
 
+# helpers
 parser.add_argument("--fix_gene_names",
                     type=none_or_str,
                     default="no",
@@ -240,8 +247,18 @@ parser.add_argument("--limit_threads",
 
 # -------------------------------
 
-# Parse arguments
-args = parser.parse_args()
+# Pre-parse sys.argv manually to check for --config
+if "--config" in sys.argv:
+    config_idx = sys.argv.index("--config") + 1
+    try:
+        config_path = sys.argv[config_idx]
+    except IndexError:
+        print("*** 🚨 Error: --config must be followed by a path to a JSON file.")
+        sys.exit(1)
+
+    args = parse_config_json(config_path)
+else:
+    args = parser.parse_args()
 
 # -------------------------------
 

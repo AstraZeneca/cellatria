@@ -19,6 +19,8 @@ import json
 import gzip
 import shutil
 import glob
+import argparse
+import types
 
 # -------------------------------
 
@@ -1991,5 +1993,27 @@ def fix_file_format(sample_path: str) -> str:
 
     report.insert(0, f"✅ File format validated and fixed under `{sample_path}`")
     return "\n".join(report)
+
+# -------------------------------
+
+def parse_config_json(config_path):
+    """
+    Load JSON config and extract CellExpress parameters.
+    Accepts:
+      - a full CellExpress run log (with "settings" block)
+      - a minimal standalone JSON file with flat parameters
+    """
+    with open(config_path, "r") as f:
+        config = json.load(f)
+
+    # If full CellExpress run log with settings block
+    if "settings" in config:
+        settings = config["settings"]
+    else:
+        settings = config
+
+    # Convert to argparse.Namespace for compatibility
+    args = types.SimpleNamespace(**settings)
+    return args
 
 # -------------------------------

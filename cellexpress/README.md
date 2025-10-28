@@ -61,7 +61,7 @@ Example of a `metadata.csv` structure
 
 - **10X Genomics Cell Ranger Output:**  
   - Standard 3-file output:  
-    - `matrix.mtx.gz` (UMI count matrix)  
+    - `matrix.mtx.gz`   (UMI count matrix)  
     - `barcodes.tsv.gz` (cell barcodes)  
     - `features.tsv.gz` or `genes.tsv.gz` (gene annotations)
 <br><br>
@@ -74,6 +74,25 @@ Example of a `metadata.csv` structure
 - **AnnData Object (`.h5ad`):**  
   - Preprocessed `.h5ad` files  
   - 📍**Note:** Only **one `.h5ad` file per sample folder** is supported
+
+
+- **Parse Biosciences Matrices (new):**
+
+- Parse-compatible gene-by-cell matrices 
+  - Standard 3-file output:
+    - `count_matrix.mtx`  (UMI count matrix)
+    - `cell_metadata.csv` (cell barcodes)  
+    - `all_genes.csv`     (gene annotations)
+<br><br>
+
+Plain Text Matrices (.txt.gz) (new):
+
+Tab-delimited format with genes as rows and cells as columns
+<br><br>
+
+CSV-Style Matrices (.csv.gz) (new):
+
+Comma-separated format with genes as rows and cells as columns
 
 ---
 
@@ -97,6 +116,33 @@ inputs
 └── metadata.csv
 ```
 
+---
+
+### Configuration Options
+
+CellExpress supports two modes for supplying pipeline parameters:
+
+#### 1. Command-Line Mode
+Parameters can be passed directly via command-line arguments.
+
+Example:
+```bash
+python main.py --input /path/to/data --project MyProject --species hs --tissue Lung ...
+```
+
+#### 2. JSON Configuration File
+
+Users can optionally provide a configuration file using the `--config` flag. This file should contain all desired parameters in JSON format.
+
+Example:
+```bash
+python main.py --config /path/to/config.json
+```
+
+- You may use the auto-generated config file from a previous run, or start from the provided [config_template.json](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/config_template.json).
+- The JSON file is parsed and mapped to the full argument interface at runtime.
+- Useful for reproducibility, programmatic execution, and cleaner experiment tracking.
+
 </details>
 
 ---
@@ -116,6 +162,7 @@ inputs
 | `--species` | ✅ | `str` | Organism species: `hs` for human or `mm` for mouse. Determines how mitochondrial genes are identified. |
 | `--tissue` | ✅ | `str` | Tissue name. |
 | `--disease` | ✅ | `str` | Disease name. |
+| `--config` | ❌ | `str` | Path to JSON config file. Can be a minimal param set or a full CellExpress generated config summary with 'settings'. |
 
 **To ensure consistency and compliance with data governance:**
 

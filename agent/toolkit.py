@@ -920,6 +920,7 @@ def validate_cellexpress_config() -> str:
 
 class CellExpressArgs(BaseModel):
     # General arguments
+    config: Optional[str] = Field(None, description="Path to JSON config file. Can be a minimal param set or a full CellExpress-generated config summary with 'settings'.")
     input: str = Field(..., description="Input directory containing the sample folders and metadata.csv.")
     project: str = Field(..., description="Project name.")
     species: str = Field(..., description="Species: 'hs' for human, 'mm' for mouse.")
