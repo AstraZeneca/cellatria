@@ -74,6 +74,7 @@ Example of a `metadata.csv` structure
 - **AnnData Object (`.h5ad`):**  
   - Preprocessed `.h5ad` files  
   - 📍**Note:** Only **one `.h5ad` file per sample folder** is supported
+<br><br>
 
 - **Parse Biosciences Matrices (new):**
   - Standard 3-file output:
