@@ -6,6 +6,8 @@
 !agent/**
 !cellexpress/
 !cellexpress/**
+!docs/
+!docs/**
 !.github/
 !.github/**
 !.gitignore
@@ -23,7 +25,7 @@
 **/.gradio/
 
 
-# Ignore specific files in agent/
+# Ignore specific files in agent and cellexpress
 agent/sandbox.py
 agent/sandbox.txt
 cellexpress/sandbox.py
