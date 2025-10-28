@@ -1,0 +1,56 @@
+{
+    "input": "/path/to/project_input",
+    "project": "MyProjectName",
+    "species": "hs",
+    "tissue": "PBMC",
+    "disease": "healthy",
+    // Global value (applies to all samples)
+    "min_umi_per_cell": 750,
+    // OR (optional): per-sample overrides. Same for max_umi_per_cell, min_genes_per_cell, max_genes_per_cell, min_cell, and max_mt_percent
+    // "min_umi_per_cell": {
+    //     "S1": 750,
+    //     "S2": 750,
+    //     "S3": 750,
+    // },
+    "max_umi_per_cell": null,
+    "min_genes_per_cell": 250,
+    "max_genes_per_cell": null,
+    "min_cell": 3,
+    "max_mt_percent": 15.0,
+
+    "doublet_method": "scrublet",
+    "scrublet_cutoff": 0.25,
+
+    "norm_target_sum": 10000,
+    "n_top_genes": 2000,
+    "regress_out": "no",
+    "scale_max_value": 10,
+    "n_pcs": 30,
+
+    "batch_correction": "harmony",
+    "batch_vars": "sample_id",
+
+    "n_neighbors": 15,
+    "resolution": 0.6,
+    "compute_tsne": "no",
+
+    "annotation_method": null,
+    "sci_model_path": null,
+    "cty_model_path": null,
+    "cty_model_name": null,
+
+    "pval_threshold": 0.05,
+    "logfc_threshold": 0.25,
+    "dea_method": "wilcoxon",
+    "top_n_deg_leidn": 100,
+    "top_n_deg_scim": 100,
+    "top_n_deg_cltpst": 100,
+    "pts_threshold": 0.1,
+
+    "doc_url": null,
+    "data_url": null,
+
+    "only_qc": "no",
+    "fix_gene_names": "no",
+    "limit_threads": 1
+}
