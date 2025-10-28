@@ -85,14 +85,14 @@ Example of a `metadata.csv` structure
     - `all_genes.csv`     (gene annotations)
 <br><br>
 
-Plain Text Matrices (.txt.gz) (new):
+- **Plain Text Matrices (.txt.gz) (new):**
 
-Tab-delimited format with genes as rows and cells as columns
+  - Tab-delimited format with genes as rows and cells as columns
 <br><br>
 
-CSV-Style Matrices (.csv.gz) (new):
+- **CSV-Style Matrices (.csv.gz) (new):**
 
-Comma-separated format with genes as rows and cells as columns
+  - Comma-separated format with genes as rows and cells as columns
 
 ---
 
