@@ -75,10 +75,7 @@ Example of a `metadata.csv` structure
   - Preprocessed `.h5ad` files  
   - 📍**Note:** Only **one `.h5ad` file per sample folder** is supported
 
-
 - **Parse Biosciences Matrices (new):**
-
-- Parse-compatible gene-by-cell matrices 
   - Standard 3-file output:
     - `count_matrix.mtx`  (UMI count matrix)
     - `cell_metadata.csv` (cell barcodes)  
@@ -86,12 +83,10 @@ Example of a `metadata.csv` structure
 <br><br>
 
 - **Plain Text Matrices (.txt.gz) (new):**
-
   - Tab-delimited format with genes as rows and cells as columns
 <br><br>
 
 - **CSV-Style Matrices (.csv.gz) (new):**
-
   - Comma-separated format with genes as rows and cells as columns
 
 ---
