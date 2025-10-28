@@ -4,14 +4,8 @@
     "species": "hs",
     "tissue": "PBMC",
     "disease": "healthy",
-    // Global value (applies to all samples)
+
     "min_umi_per_cell": 750,
-    // OR (optional): per-sample overrides. Same for max_umi_per_cell, min_genes_per_cell, max_genes_per_cell, min_cell, and max_mt_percent
-    // "min_umi_per_cell": {
-    //     "S1": 750,
-    //     "S2": 750,
-    //     "S3": 750,
-    // },
     "max_umi_per_cell": null,
     "min_genes_per_cell": 250,
     "max_genes_per_cell": null,
