@@ -121,7 +121,6 @@ CellExpress supports two modes for supplying pipeline parameters:
 #### 1. Command-Line Mode
 Parameters can be passed directly via command-line arguments.
 
-Example:
 ```bash
 python main.py --input /path/to/data --project MyProject --species hs --tissue Lung ...
 ```
@@ -130,12 +129,11 @@ python main.py --input /path/to/data --project MyProject --species hs --tissue L
 
 Users can optionally provide a configuration file using the `--config` flag. This file should contain all desired parameters in JSON format.
 
-Example:
 ```bash
 python main.py --config /path/to/config.json
 ```
 
-- You may use the auto-generated config file from a previous run, or start from the provided [config_template.json](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/config_template.json).
+- You may use the auto-generated config file from a previous **CellExpress** run, or start from the provided [config_template.json](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/config_template.json).
 - The JSON file is parsed and mapped to the full argument interface at runtime.
 - Useful for reproducibility, programmatic execution, and cleaner experiment tracking.
 
