@@ -675,6 +675,7 @@ Clears all arguments in the internal `cellexpress_cache`.
   - `cellexpress`
   - `scrublet`
   - `harmony`
+  - `scvi`
   - `celltypist`
   - `scimilarity`
   - `quality control`

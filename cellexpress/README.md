@@ -221,15 +221,15 @@ Example metadata file with sample-based QC:
 | `--regress_out` | `str` | `no` | Regress out total counts and mitochondrial percentage (`yes`/`no`). |
 | `--scale_max_value` | `float` | 10 | Clip (truncate) to this value after scaling. |
 | `--n_pcs` | `int` | 30 | Number of principal components to retain for PCA. |
-| `--batch_correction` | `str` | `None` | Batch correction method: currently supports [`harmony`](https://github.com/slowkow/harmonypy). |
-| `--batch_vars` | `str` | `None` | Comma-separated obs columns to use for batch correction. |
+| `--batch_correction` | `str` | `None` | Batch correction method: currently supports [`harmony`](https://github.com/slowkow/harmonypy) or [`scvi`](https://docs.scvi-tools.org/en/1.3.3/user_guide/models/scvi.html#). |
+| `--batch_vars` | `str` | `None` | Comma-separated obs columns to use for batch correction. Note: scVI uses a single batch key|
 | `--n_neighbors` | `int` | 15 | Number of neighbors for graph construction. |
 | `--resolution` | `float` | 0.6 | Resolution parameter for Leiden clustering. |
 | `--compute_tsne` | `str` | `no` | Whether to compute t-SNE embedding (`yes`/`no`). |
 
 > `--regress_out` is recommended for smaller datasets (<20k cells) where technical noise could distort biological signals. Consider enabling this if your data comes from different platforms, batches, or protocols with variable sequencing depth. For larger datasets, skipping this step significantly improves speed and reduces memory usage."
 
-> Batch correction is supported via Harmony as the currently implemented method. When batch correction is enabled, the `--batch_vars` argument must be provided to specify one or more comma-separated columns from adata.obs (e.g., donor_id,sample_id). 
+> Batch correction is supported via either Harmony or scVI as the currently implemented methods. When batch correction is enabled by `harmony`, the `--batch_vars` argument must be provided to specify one or more comma-separated columns from adata.obs (e.g., donor_id,sample_id). if `scvi` mode is activated, only one variable is allowed
 
 ---
 

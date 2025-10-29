@@ -133,12 +133,13 @@ parser.add_argument("--n_pcs",
 parser.add_argument("--batch_correction",
                     type=none_or_str,
                     default=None,
-                    help="Choose batch correction method: 'harmony'. Default is None.")
+                    help="Batch correction method: 'harmony' or 'scvi'. Default: None (no correction).")
 parser.add_argument("--batch_vars", 
                     type=none_or_str, 
                     default=None,
                     help="Column(s) in adata.obs to use for Harmony batch correction "
-                         "(comma-separated if multiple, e.g., 'sample_id,time_point').")
+                         "(comma-separated if multiple, e.g., 'sample_id,time_point')."
+                         "Note: scVI uses a single batch key. scVI performs slow on large data.")
 parser.add_argument("--n_neighbors", 
                     type=none_or_int, 
                     default=15,
