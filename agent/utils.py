@@ -324,12 +324,37 @@ def checks_args(args):
 
     # -------------------------------
     # Batch correction check
-    if args.batch_correction is not None: 
-        if args.batch_correction.lower() == "harmony":
-            if not args.batch_vars:
-                raise ValueError(f"*** 🚨 Batch correction selected, but --batch_vars was not provided. "
-                                 "Specify column(s) in adata.obs to use for Harmony batch correction. "
-                                "(comma-separated if multiple, e.g., 'sample_id,time_point').")
+    if args.batch_correction:
+        method = args.batch_correction.strip().lower()
+        if method not in {"harmony", "scvi"}:
+            raise ValueError(
+                "*** 🚨 Invalid --batch_correction value. "
+                "Choose one of: 'harmony', 'scvi', or omit the flag."
+            )
+
+        if not args.batch_vars or not args.batch_vars.strip():
+            raise ValueError(
+                "*** 🚨 Batch correction selected, but --batch_vars was not provided. "
+                "For Harmony, provide one or more columns (comma-separated). "
+                "For scVI, provide exactly one column."
+            )
+
+        # Parse list (without accessing adata yet)
+        btchvrs = [v.strip() for v in args.batch_vars.split(",") if v.strip()]
+
+        if method == "harmony":
+            if len(btchvrs) < 1:
+                raise ValueError(
+                    "*** 🚨 Harmony requires at least one batch variable in --batch_vars "
+                    "(e.g., 'sample_id' or 'donor_id,sample_id')."
+                )
+
+        elif method == "scvi":
+            if len(btchvrs) != 1:
+                raise ValueError(
+                    "*** 🚨 scVI supports exactly one batch variable in --batch_vars "
+                    "(e.g., '--batch_vars donor_id')."
+                )
 
     # -------------------------------
      # Annotation method check

@@ -21,6 +21,7 @@ import shutil
 import glob
 import argparse
 import types
+import scipy.sparse as sp
 
 # -------------------------------
 
@@ -180,9 +181,16 @@ def graph_pipeline(adata, args, label=""):
     """
     suffix = f" ({label})" if label else ""
 
+    # Decide which representation to use
+    use_rep = None
+    if "X_scVI" in adata.obsm:
+        use_rep = "X_scVI"
+    elif "X_pca" in adata.obsm:
+        use_rep = "X_pca"
+
     # Step 1: Build k-NN graph
     print(f"*** 🔄 Computing neighborhood graph{suffix}...")
-    sc.pp.neighbors(adata, n_neighbors=args.n_neighbors, n_pcs=args.n_pcs)
+    sc.pp.neighbors(adata, n_neighbors=args.n_neighbors, n_pcs=args.n_pcs, use_rep=use_rep)
 
     # Step 2: Perform Leiden clustering
     print(f"*** 🔄 Running Leiden clustering with resolution {args.resolution}{suffix} ...")
@@ -208,8 +216,13 @@ def graph_pipeline(adata, args, label=""):
 
     # Step 7: Optionally compute t-SNE
     if args.compute_tsne.lower() == "yes":
-        print(f"*** 🔄 Computing TSNE{suffix}...")
-        sc.tl.tsne(adata, n_pcs=args.n_pcs)
+        # Use same rep as neighbors when possible for consistency
+        if use_rep is not None:
+            print(f"*** 🔄 Computing t-SNE from `{use_rep}`{suffix}...")
+            sc.tl.tsne(adata, use_rep=use_rep, n_pcs=None)
+        else:
+            print(f"*** 🔄 Computing t-SNE from PCs (n_pcs={args.n_pcs}){suffix}...")
+            sc.tl.tsne(adata, n_pcs=args.n_pcs)
     else:
         print(f"*** 🚫 Skipping TSNE embedding (per user input){suffix}.")
 
@@ -2015,5 +2028,33 @@ def parse_config_json(config_path):
     # Convert to argparse.Namespace for compatibility
     args = types.SimpleNamespace(**settings)
     return args
+
+# -------------------------------
+
+def _ensure_counts_matrix(adata):
+    # make sure counts are numeric, non-negative, CSR
+    if sp.issparse(adata.X):
+        X = adata.X.tocsr()
+    else:
+        X = np.asarray(adata.X)
+    # coerce to float64 then back to csr to avoid weird dtypes
+    if not sp.issparse(X):
+        X = sp.csr_matrix(X)
+    # clip negatives that sometimes arise from prior ops
+    X.data = np.clip(X.data, 0, None)
+    adata.X = X
+
+# -------------------------------
+
+def _prepare_scvi_adata(raw_counts, hvg_mask, batch_key):
+    # subset to HVGs to speed up CPU training (optional but practical)
+    scvi_adata = raw_counts[:, hvg_mask].copy()
+    _ensure_counts_matrix(scvi_adata)
+    # batch key: single categorical column
+    if batch_key is not None:
+        if batch_key not in scvi_adata.obs.columns:
+            raise ValueError(f"*** 🚨 The batch variable '{batch_key}' is not present in adata.obs.")
+        scvi_adata.obs[batch_key] = scvi_adata.obs[batch_key].astype("category")
+    return scvi_adata
 
 # -------------------------------

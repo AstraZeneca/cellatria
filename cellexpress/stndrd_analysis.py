@@ -5,7 +5,9 @@ import os
 import sys
 import scanpy as sc
 import harmonypy as hm
-from helper import parse_vars, graph_pipeline
+import numpy as np
+import scvi
+from helper import parse_vars, graph_pipeline, _ensure_counts_matrix, _prepare_scvi_adata
 
 # -------------------------------
 
@@ -36,7 +38,8 @@ def run_analysis(adata, args):
     # -------------------------------
     # 0. Store Raw Data (preprocessing snapshot)
     # This preserves the raw expression for celltype annotation later
-    raw_counts = adata.copy()  
+    raw_counts = adata.copy()
+    _ensure_counts_matrix(raw_counts)  # normalize dtype/format up front  
 
     # -------------------------------
     # 1. Normalization (log1p)
@@ -55,7 +58,8 @@ def run_analysis(adata, args):
 
     # -------------------------------
     # 4. Filter dataset to only keep highly variable genes (can be skipped if desired)
-    adata = adata[:, adata.var['highly_variable']]
+    hvg_mask = adata.var["highly_variable"].values
+    adata = adata[:, hvg_mask].copy()
 
     # -------------------------------
     # 5. Regress Out Technical Effects (optional)
@@ -82,7 +86,10 @@ def run_analysis(adata, args):
     # 8. Batch Correction
     # Initialize adata_nohm to None — this will be returned if no batch correction happens
     adata_nohm = None
-    if args.batch_correction and args.batch_correction.lower() == "harmony":        
+    bc = (getattr(args, "batch_correction", None) or "").lower()
+
+    if bc == "harmony": 
+
         btchvrs = parse_vars(args.batch_vars) # Parse and validate vars_batch (comma-separated columns).        
         missing_vars = [var for var in btchvrs if var not in adata.obs.columns] # Ensure all specified columns exist in adata.obs.
         if missing_vars:
@@ -95,6 +102,31 @@ def run_analysis(adata, args):
         harmony_out = hm.run_harmony(adata.obsm['X_pca'], adata.obs, btchvrs)        
         adata.obsm['X_pca'] = harmony_out.Z_corr.T # Replace PCA embeddings in adata with Harmony-corrected version
         print("*** ✅ Harmony correction complete.")
+    
+    elif bc == "scvi":
+       
+        btchvrs = parse_vars(args.batch_vars)
+        if len(btchvrs) > 1: # scVI uses a single batch key
+            raise ValueError(f"*** 🚨 scVI only supports a single batch variable. You provided: {', '.join(btchvrs)}")
+        bkey = btchvrs[0] if btchvrs else None
+        if bkey not in adata.obs.columns:
+            raise ValueError(f"*** 🚨 The batch variable '{bkey}' is not present in adata.obs. Available columns: {', '.join(adata.obs.columns)}")
+
+        adata_nohm = adata.copy() # Store a copy of adata before batch correction
+        
+        print("*** 🔄 Training scVI on counts (CPU-friendly settings)...")        
+        scvi_adata = _prepare_scvi_adata(raw_counts, hvg_mask, bkey)
+        scvi.model.SCVI.setup_anndata(scvi_adata, batch_key=bkey)
+        model = scvi.model.SCVI(scvi_adata, n_latent=args.n_pcs)
+        model.train(
+            max_epochs=30,
+            check_val_every_n_epoch=None,
+            early_stopping=True,
+            enable_progress_bar=True
+        )
+        # Latent → main AnnData (same cell order, since we didn’t drop cells)
+        adata.obsm["X_scVI"] = model.get_latent_representation()
+        print("*** ✅ scVI correction complete. Using X_scVI for neighbors/UMAP.")
 
     else:
         print("*** 🚫 No batch correction applied (per user input).")
