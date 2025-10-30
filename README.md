@@ -68,6 +68,14 @@
 ## 🚀  Getting Started
 <details>
 
+Users can initiate CellAtria agent in just three simple steps:
+
+1. Open a Terminal,
+2. Pull the preconfigured Docker image (which includes all necessary dependencies), and
+3. Run the container, specifying the path to the file that contains credentials or access tokens for your preferred LLM provider.
+
+This minimal setup ensures consistent execution across environments—whether on a laptop, workstation, or HPC—without requiring users to manage dependencies manually. Detailed instructions follow below.
+
 ### (1) Prerequisites
 
 - **Docker**: Install [Docker](https://docs.docker.com/get-docker/) and ensure the Docker daemon is running.
