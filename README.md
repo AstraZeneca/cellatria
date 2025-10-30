@@ -77,6 +77,8 @@ Users can initiate CellAtria agent in just three simple steps:
 
 This minimal setup ensures consistent execution across environments—whether on a laptop, workstation, or HPC—without requiring users to manage dependencies manually. Detailed instructions follow below.
 
+---
+
 ### (1) Prerequisites
 
 - **Docker**: Install [Docker](https://docs.docker.com/get-docker/) and ensure the Docker daemon is running.
