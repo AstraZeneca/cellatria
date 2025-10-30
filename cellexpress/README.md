@@ -29,7 +29,6 @@ reduction, clustering, identification of cell markers, and cell type annotation.
 ## 📂 Input Folder Structure
 
 <details>
-<br>
 
 ### **Metadata File (Required)**  
 A file named `metadata.csv` must be present in the input directory and contain relevant **demographic** and **experimental** metadata.
@@ -76,18 +75,18 @@ Example of a `metadata.csv` structure
   - 📍**Note:** Only **one `.h5ad` file per sample folder** is supported
 <br><br>
 
-- **Parse Biosciences Matrices (new):**
+- **Parse Biosciences Matrices:**
   - Standard 3-file output:
     - `count_matrix.mtx`  (UMI count matrix)
     - `cell_metadata.csv` (cell barcodes)  
     - `all_genes.csv`     (gene annotations)
 <br><br>
 
-- **Plain Text Matrices (.txt.gz) (new):**
+- **Plain Text Matrices (.txt.gz):**
   - Tab-delimited format with genes as rows and cells as columns
 <br><br>
 
-- **CSV-Style Matrices (.csv.gz) (new):**
+- **CSV-Style Matrices (.csv.gz):**
   - Comma-separated format with genes as rows and cells as columns
 
 ---
