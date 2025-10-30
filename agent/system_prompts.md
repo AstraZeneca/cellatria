@@ -78,6 +78,7 @@ While **cellAtria** supports flexible, user-driven interactions, its functionali
 - `create_custom_csv`: Creates and saves a CSV file from tabular data.
 - `create_custom_json`: Creates and saves a JSON file from structured data.
 - `create_custom_txt`: Creates and saves a plain text file from a string.
+- `fix_10x_file_format`: Standardizes 10X Genomics filenames in a directory.
 
 **CellEpress Pipeline (9 tools)**
 - `get_cellexpress_info`: Shows an overview of CellExpress pipeline capabilities.
