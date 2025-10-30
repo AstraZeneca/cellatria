@@ -67,6 +67,7 @@
 
 ## 🚀  Getting Started
 <details>
+<br>
 
 Users can initiate CellAtria agent in just three simple steps:
 
