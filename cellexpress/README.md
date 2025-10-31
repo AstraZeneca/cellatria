@@ -89,7 +89,7 @@ Example of a `metadata.csv` structure
 - **CSV-Style Matrices (.csv.gz):**
   - Comma-separated format with genes as rows and cells as columns
 
-> CellExpress assumes standardized gene symbols. Automatic alias harmonization across datasets is not currently supported.
+> **Note:** CellExpress assumes standardized gene symbols. Automatic alias harmonization across datasets is not currently supported.
 
 ---
 
