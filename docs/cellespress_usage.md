@@ -56,5 +56,5 @@ Then, execute the CellExpress pipeline directly:
 docker run -it --rm \
   -v ~/cellexpress_data/GSE204716:/data \
   ghcr.io/astrazeneca/cellatria:v1.0.0 cellexpress \
-  --config ~/cellexpress_data/config_cellexpress_v1-0-0_ziFzM4S.json
+  --config ~/cellexpress_data/config_cellexpress.json
 ```
