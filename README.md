@@ -209,7 +209,9 @@ Command Breakdown:
 
 > macOS users with Apple Silicon (M1/M2): You may encounter a warning due to platform mismatch. To ensure compatibility, add `--platform=linux/amd64` when running the container (i.e., `docker run --platform=linux/amd64 -it --rm`). 
 
-For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/README.md).
+> For full details, usage instructions, and configuration options, refer to the [CellExpress README](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/README.md).
+
+> See [CellExpress in Action](https://github.com/AstraZeneca/cellatria/blob/main/docs/cellespress_usage.md) for a Docker-based execution walkthrough.
 
 </details>
 

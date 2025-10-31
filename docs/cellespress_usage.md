@@ -1,4 +1,4 @@
-## CellExpress Benchmark
+## CellExpress in Action
 
 This example demonstrates how to execute the CellExpress pipeline using the publicly available **GSE204716** dataset.
 
