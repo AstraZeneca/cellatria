@@ -272,6 +272,8 @@ Example metadata file with sample-based QC:
 
 > If *.h5ad input dataset uses Ensembl IDs or unnamed features as gene identifiers, use this option to replace `adata.var_names` with gene symbols from a specific column in `adata.var`. This is especially useful when gene symbols are stored in an alternate column (e.g., `gene_symbol`, `hgnc_symbol`, or `SYMBOL`). The provided string should match the name of the column to be used as the new gene identifiers. 
 
+> CellExpress assumes standardized gene symbols. Automatic alias harmonization across datasets is not currently supported.
+
 </details>
 
 ---
