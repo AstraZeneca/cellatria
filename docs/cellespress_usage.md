@@ -31,11 +31,11 @@ Before running CellExpress, make sure to download the required pre-trained model
 
 **SCimilarity model (v1.1)**: Place it in: `~/scimilarity/model_v1.1`
 
-> Read [SCimilarity Configuration](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/README.md#:~:text=Downloading%20Pretrained%20SCimilarity%20Models)
+> Read [SCimilarity Configuration](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/README.md#:~:text=SCimilarity%20Configuration)
 
 **CellTypist model (v1.6.3)**: Place it in: `~/celltypist/model_v1.6.3`
 
-> Read [CellTypist Configuration](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/README.md#:~:text=Downloading%20Pretrained%20CellTypist%20Models)
+> Read [CellTypist Configuration](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/README.md#:~:text=CellTypist%20Configuration)
 
 **Note**: These paths must match the `input`, `sci_model_path`, and `cty_model_path` fields in your config file.
 If needed, modify the config to reflect your local download paths.
