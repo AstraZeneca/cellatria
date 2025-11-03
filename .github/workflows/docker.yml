@@ -51,26 +51,23 @@ jobs:
           echo "VCS_REF=${VCS_REF}"         >> $GITHUB_ENV
           echo "TREE_STATE=${TREE_STATE}"   >> $GITHUB_ENV
 
-      # Step 4: Set up QEMU for cross-arch emulation
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      # Step 5: Set up Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # Build and Push Docker image (multi-platform)
+      # Step 4: single multi-arch build+push step (replaces separate build/push)
       - name: Build & Push Docker image (linux/amd64, linux/arm64)
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64   # <— multi-arch
           tags: ${{ env.IMAGE_REF }}
-          build-args: |
+          build-args: |                       # <— preserve your args
             IMAGE_REPO=${{ env.IMAGE_REPO }}
             IMAGE_TAG=${{ env.IMAGE_VERSION }}
             IMAGE_VERSION=${{ env.IMAGE_VERSION }}
             VCS_REF=${{ env.VCS_REF }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             TREE_STATE=${{ env.TREE_STATE }}
+          labels: |                            # <— OCI labels (optional but nice)
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ env.IMAGE_VERSION }}
+            org.opencontainers.image.revision=${{ env.VCS_REF }}
+            org.opencontainers.image.created=${{ env.BUILD_DATE }}
