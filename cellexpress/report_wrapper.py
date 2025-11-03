@@ -12,7 +12,7 @@ from helper import (compute_qc_stats_objs, generate_qc_plots_and_filters, comput
                     scrublet_data, computed_metadata_description, qc_impact_data, compute_qc_stats_obj,
                     prepare_visNetwork, ontology_map, get_python_environment, pipeline_arguments, 
                     extract_pipeline_arguments, prepare_qc_density_data, parse_vars, degs_json,
-                    r_sanitize, sanitize_inf)
+                    r_sanitize, sanitize_inf, get_image_build_info)
 
 # -------------------------------
 
@@ -165,6 +165,7 @@ def generate_report(adatas, raw_counts, qc_adatas, adata, adata_nohm, metadata_d
     # Environment and config metadata
     rprt["python_environment"] = get_python_environment()
     rprt["pipeline_arguments"] = extract_pipeline_arguments(args, pipeline_arguments)
+    rprt["image_build_info"] = get_image_build_info()  # dict or None if file missing
 
     # -------------------------------
     # Prepare density plot data

@@ -221,6 +221,7 @@ qc_impact <- dplyr::bind_rows(rprt$qc_impact)
 # Convert Python environment info to a data frame
 python_env <- dplyr::bind_rows(rprt$python_environment$packages)  # No need for do.call
 python_version <- rprt$python_environment$python_version
+image_info <- rprt$image_build_info
 
 # Convert JSON list into a data frame
 pipe_args <- dplyr::bind_rows(rprt$pipeline_arguments)
@@ -1422,6 +1423,29 @@ kableExtra::kable(session_packages, caption = paste("R Environment (R", r_versio
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                               full_width = FALSE, fixed_thead = TRUE) %>%
     kableExtra::scroll_box(width = "100%", height = "300px")
+```
+
+## Docker
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, max.height='300px'}
+if (is.null(image_info)) {
+  cat("Container build metadata not embedded in this image (image-meta.json not found).")
+} else {
+  # Convert named list to a 2-column data frame
+  
+  image_df <- data.frame(
+    Key = names(image_info),
+    Value = unlist(image_info, use.names = FALSE),
+    row.names = NULL,
+    check.names = FALSE
+  )
+  
+  kableExtra::kable(mage_df, caption = "Container Build Metadata (from /usr/local/share/cellatria/image-meta.json)") %>%
+    kableExtra::kable_classic(full_width = FALSE, html_font = "Cambria") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                              full_width = FALSE, fixed_thead = TRUE) %>%
+    kableExtra::scroll_box(width = "100%", height = "300px")
+}
 ```
 
 # {-}
