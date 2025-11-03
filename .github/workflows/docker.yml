@@ -56,17 +56,18 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          builder: ${{ steps.buildx.outputs.name }}   
           push: true
-          platforms: linux/amd64,linux/arm64   # <— multi-arch
+          platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_REF }}
-          build-args: |                       # <— preserve your args
+          build-args: |
             IMAGE_REPO=${{ env.IMAGE_REPO }}
             IMAGE_TAG=${{ env.IMAGE_VERSION }}
             IMAGE_VERSION=${{ env.IMAGE_VERSION }}
             VCS_REF=${{ env.VCS_REF }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             TREE_STATE=${{ env.TREE_STATE }}
-          labels: |                            # <— OCI labels (optional but nice)
+          labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.version=${{ env.IMAGE_VERSION }}
             org.opencontainers.image.revision=${{ env.VCS_REF }}
