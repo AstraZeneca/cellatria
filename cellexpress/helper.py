@@ -22,6 +22,8 @@ import glob
 import argparse
 import types
 import scipy.sparse as sp
+import pathlib
+from typing import Dict, Any, List, Optional
 
 # -------------------------------
 
@@ -2056,5 +2058,86 @@ def _prepare_scvi_adata(raw_counts, hvg_mask, batch_key):
             raise ValueError(f"*** 🚨 The batch variable '{batch_key}' is not present in adata.obs.")
         scvi_adata.obs[batch_key] = scvi_adata.obs[batch_key].astype("category")
     return scvi_adata
+
+# -------------------------------
+
+def get_image_build_info(meta_path: str = "/usr/local/share/cellatria/image-meta.json") -> Dict[str, Any]:
+    """
+    Collects immutable build metadata about the running container image, if available.
+
+    The function looks for an embedded JSON manifest (by default at
+    /usr/local/share/cellatria/image-meta.json) and also inspects IMAGE_*
+    environment variables. It returns a normalized structure suitable for
+    inclusion in reports alongside get_python_environment() outputs.
+
+    Args:
+        meta_path (str): Absolute path to the embedded image metadata JSON.
+
+    Returns:
+        dict: A dictionary containing:
+            - 'meta_path' (str): The path probed for the embedded JSON.
+            - 'found' (bool): Whether the JSON file was found and parsed.
+            - 'meta' (dict or None): Raw JSON content if found, else None.
+            - 'env' (dict): Selected IMAGE_* environment variables.
+            - 'summary' (dict): Resolved fields (prefer file → env → None):
+                - 'image_repo'
+                - 'image_tag'
+                - 'image_version'
+                - 'vcs_ref'
+                - 'build_date'
+                - 'tree_state'
+            - 'errors' (list[str]): Any parsing or I/O errors encountered.
+    """
+    p = pathlib.Path(meta_path)
+    if not p.is_file():
+        return None
+
+    try:
+        meta = json.loads(p.read_text())
+        if not isinstance(meta, dict):
+            return None
+    except Exception:
+        return None
+
+    # Environment fallbacks
+    env_map = {
+        "image_repo": os.environ.get("IMAGE_REPO"),
+        "image_tag": os.environ.get("IMAGE_TAG"),
+        "image_version": os.environ.get("IMAGE_VERSION"),
+        "vcs_ref": os.environ.get("IMAGE_VCS_REF"),
+        "build_date": os.environ.get("IMAGE_BUILD_DATE"),
+        "tree_state": os.environ.get("IMAGE_TREE_STATE"),
+    }
+
+    def coalesce(key: str) -> Optional[str]:
+        v = meta.get(key)
+        if v is None or str(v).strip() == "":
+            v = env_map.get(key)
+        return str(v) if v is not None else None
+
+    summary = {
+        "image_repo":   coalesce("image_repo"),
+        "image_tag":    coalesce("image_tag"),
+        "image_version":coalesce("image_version"),
+        "vcs_ref":      coalesce("vcs_ref"),
+        "build_date":   coalesce("build_date"),
+        "tree_state":   coalesce("tree_state"),
+    }
+
+    env_out = {
+        "IMAGE_REPO": os.environ.get("IMAGE_REPO"),
+        "IMAGE_TAG": os.environ.get("IMAGE_TAG"),
+        "IMAGE_VERSION": os.environ.get("IMAGE_VERSION"),
+        "IMAGE_VCS_REF": os.environ.get("IMAGE_VCS_REF"),
+        "IMAGE_BUILD_DATE": os.environ.get("IMAGE_BUILD_DATE"),
+        "IMAGE_TREE_STATE": os.environ.get("IMAGE_TREE_STATE"),
+    }
+
+    return {
+        "meta_path": meta_path,
+        "meta": meta,
+        "env": env_out,
+        "summary": summary,
+    }
 
 # -------------------------------
