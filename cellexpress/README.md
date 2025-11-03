@@ -232,7 +232,7 @@ Example metadata file with sample-based QC:
 
 > `--regress_out` is recommended for smaller datasets (<20k cells) where technical noise could distort biological signals. Consider enabling this if your data comes from different platforms, batches, or protocols with variable sequencing depth. For larger datasets, skipping this step significantly improves speed and reduces memory usage."
 
-> Batch correction is supported via either Harmony or scVI as the currently implemented methods. When batch correction is enabled by `harmony`, the `--batch_vars` argument must be provided to specify one or more comma-separated columns from adata.obs (e.g., donor_id,sample_id). if `scvi` mode is activated, only one variable is allowed
+> Batch correction is supported via either Harmony or scVI (Single-cell Variational Inference) as the currently implemented methods. When batch correction is enabled by `harmony`, the `--batch_vars` argument must be provided to specify one or more comma-separated columns from adata.obs (e.g., donor_id,sample_id). if `scvi` mode is activated, only one variable is allowed
 
 ---
 

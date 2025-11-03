@@ -1044,7 +1044,7 @@ When the user provides one or more **GEO accession IDs** and requests a **CellEx
 ## Workflow Steps (Autonomous)
 
 - For **each accession, complete all steps** before proceeding to the next:
-  * Create a **dedicated subdirectory** under the user-specified root path (i.e., the working directory).
+  * Create a **dedicated subdirectory** under the user-specified working directory (e.g. the GSEXXXXXX).
   * Retrieve metadata for GEO accession and store it in a CSV file named `metadata.csv`, in that subdirectory.
   * Only store GSM records that represent single-cell RNA-seq data.
   * Download and prepare raw data for one accession.
