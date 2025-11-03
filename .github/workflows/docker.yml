@@ -34,29 +34,42 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Step 2.5: Set up QEMU for cross-arch emulation
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      # Step 2.6: Set up Docker Buildx with docker-container driver
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+          install: true
+          use: true
+
       # Step 3: Set the Docker image tag as an environment variable
       - name: Set up Docker image metadata
         run: |
           IMAGE_REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          IMAGE_VERSION="v1.0.0"                                        
-          IMAGE_REF="ghcr.io/${IMAGE_REPO}:${IMAGE_VERSION}"            
+          IMAGE_VERSION="v1.0.0"
+          IMAGE_REF="ghcr.io/${IMAGE_REPO}:${IMAGE_VERSION}"
           BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           VCS_REF="${{ github.sha }}"
           TREE_STATE="clean"
 
-          echo "IMAGE_REPO=${IMAGE_REPO}"   >> $GITHUB_ENV
-          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
-          echo "IMAGE_REF=${IMAGE_REF}"     >> $GITHUB_ENV
-          echo "BUILD_DATE=${BUILD_DATE}"   >> $GITHUB_ENV
-          echo "VCS_REF=${VCS_REF}"         >> $GITHUB_ENV
-          echo "TREE_STATE=${TREE_STATE}"   >> $GITHUB_ENV
+          echo "IMAGE_REPO=${IMAGE_REPO}"        >> $GITHUB_ENV
+          echo "IMAGE_VERSION=${IMAGE_VERSION}"  >> $GITHUB_ENV
+          echo "IMAGE_REF=${IMAGE_REF}"          >> $GITHUB_ENV
+          echo "BUILD_DATE=${BUILD_DATE}"        >> $GITHUB_ENV
+          echo "VCS_REF=${VCS_REF}"              >> $GITHUB_ENV
+          echo "TREE_STATE=${TREE_STATE}"        >> $GITHUB_ENV
 
       # Step 4: single multi-arch build+push step (replaces separate build/push)
       - name: Build & Push Docker image (linux/amd64, linux/arm64)
         uses: docker/build-push-action@v6
         with:
           context: .
-          builder: ${{ steps.buildx.outputs.name }}   
+          builder: ${{ steps.buildx.outputs.name }}   # ensure docker-container builder is used
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_REF }}
