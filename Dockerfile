@@ -127,7 +127,7 @@ RUN apt-get update && apt-get install -y pandoc
 # Python Package Installation
 RUN pip install --no-cache-dir --upgrade setuptools wheel
 RUN pip install --no-cache-dir numpy pandas scipy
-RUN pip install --no-cache-dir plotly matplotlib seaborn anndata scanpy tqdm scikit-learn h5py networkx scrublet nose annoy 'zarr<3'
+RUN pip install --no-cache-dir plotly matplotlib seaborn anndata scanpy tqdm scikit-learn h5py networkx scrublet nose annoy
 RUN pip install --no-cache-dir torch torchvision torchaudio torchsummary torchopt entmax
 RUN pip install --no-cache-dir harmonypy igraph leidenalg celltypist scimilarity
 RUN pip install --no-cache-dir fa2_modified
