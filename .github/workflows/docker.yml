@@ -61,7 +61,7 @@ jobs:
             --build-arg VCS_REF="${VCS_REF}" \
             --build-arg BUILD_DATE="${BUILD_DATE}" \
             --build-arg TREE_STATE="${TREE_STATE}" \
-            -t "${IMAGE_TAG}" .
+            -t "${IMAGE_REF}" .
 
       # Step 5: Push the Docker image to GitHub Container Registry
       - name: Push Docker image
