@@ -58,6 +58,7 @@ RUN apt-get update --fix-missing && \
         python3-pip \
         python3-dev \
         python3-setuptools \
+        python3-numcodecs \
         python-is-python3 \
         apt-utils \
         ed \
