@@ -16,7 +16,7 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
 import traceback
-import json
+import json, tempfile
 import pprint
 import gradio as gr
 from toolkit import tools
@@ -24,7 +24,8 @@ from utils import (gr_css, get_llm_from_env, chatbot_theme, base_path,
                     log_status, read_log, 
                     TerminalSession, clean_ansi, terminal_interface, 
                     fb_initial_refresh, fb_navigate_subdir, 
-                    export_chat_history, initial_message)
+                    export_chat_history, initial_message, get_llm_metadata,
+                    export_llm_metadata)
 
 # -------------------------------
 def create_cellatria(env_path):
@@ -33,6 +34,10 @@ def create_cellatria(env_path):
     if not os.path.isfile(env_file):
         raise FileNotFoundError(f"*** 🚨 .env file not found at: {env_file}")
     llm = get_llm_from_env(env_path)
+
+    # -------------------------------
+
+    llm_meta = get_llm_metadata(llm)
 
     # -------------------------------
     # Define prompt template
@@ -287,16 +292,27 @@ def create_cellatria(env_path):
             )
 
         # --- History Panel ---
-        with gr.Accordion("Export Chat", open=False, elem_id="logs_history_panel"):
-            export_btn = gr.Button("Download Chat", variant="primary")
-            chat_file = gr.File(file_types=[".json"], label=".json", show_label=True, interactive=False)
+        with gr.Accordion("Export Chat / Model", open=False, elem_id="logs_history_panel"):
+            with gr.Row():
+                with gr.Column(scale=1):
+                    export_btn = gr.Button("Download Chat", variant="secondary", elem_id="btn_export")
+                    chat_file = gr.File(file_types=[".json"], label="Chat .json", interactive=False, show_label=True)
+                with gr.Column(scale=1):
+                    llm_meta_btn = gr.Button("Download LLM Metadata", variant="secondary", elem_id="btn_llm_meta")
+                    llm_meta_file = gr.File(file_types=[".json"], label="LLM .json", interactive=False, show_label=True)
 
         # Bind inputs to gr_block_fn
         export_btn.click(
             fn=export_chat_history,
             inputs=[state],
             outputs=[chat_file]
-        )   
+        )
+
+        llm_meta_btn.click(
+            fn=lambda: export_llm_metadata(llm_meta),
+            inputs=[],
+            outputs=[llm_meta_file]
+        )
 
     return graph, cellatria
 

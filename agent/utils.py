@@ -26,7 +26,7 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 # -------------------------------
 
 def get_llm_from_env(path_to_env):
-    load_dotenv(dotenv_path=os.path.join(path_to_env, ".env"))
+    load_dotenv(dotenv_path=os.path.join(path_to_env, ".env"), override=True)
     provider = os.getenv("PROVIDER", "").strip()
 
     if provider == "Azure OpenAI":
@@ -35,6 +35,8 @@ def get_llm_from_env(path_to_env):
             openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+            temperature = os.getenv("AZURE_OPENAI_TEMPERATURE"),
+            top_p = os.getenv("AZURE_OPENAI_TOP_P")   
         )
     elif provider == "OpenAI":
         return ChatOpenAI(
@@ -190,6 +192,15 @@ gr_css = """
     overflow: hidden;         /* Optional: prevents stretching */
     align-items: stretch !important; /* Force columns to fill height */
 }
+}
+
+#btn_export button, #btn_llm_meta button {
+  background-color: #2d6cdf !important;
+  color: #ffffff !important;
+  border-color: #2d6cdf !important;
+}
+#btn_export button:hover, #btn_llm_meta button:hover {
+  background-color: #1f56b3 !important;
 }
 """
 
@@ -593,6 +604,17 @@ def export_chat_history(state_data):
     return filepath
 
 # -------------------------------
+
+# Provide export function inside closure
+def export_llm_metadata(llm_meta):
+    uid = uuid.uuid4().hex[:8]
+    filename = f"llm_{uid}.json"
+    filepath = os.path.join(tempfile.gettempdir(), filename)
+    with open(filepath, "w") as f:
+        json.dump(llm_meta, f, indent=2)
+    return filepath
+
+# -------------------------------
 # Initial message
 initial_message = {
     "role": "assistant",
@@ -669,5 +691,77 @@ def run_graph_with_metrics(graph, human_messages: list, config: dict):
     }
 
     return steps, message_metrics
+
+# -------------------------------
+
+def get_llm_metadata(llm):
+    """
+    Return a provider-agnostic dict describing the LLM that was actually constructed.
+    Tries to be robust across Azure OpenAI, OpenAI, Anthropic, Google/Gemini, and HF/local.
+    """
+    meta = {
+        "provider": None,
+        "model": None,
+        "version": None,
+        "temperature": None,
+        "top_p": None,
+        "raw_class": llm.__class__.__name__,
+        "raw_module": llm.__class__.__module__,
+    }
+
+    # ---- Azure OpenAI / LangChain AzureChatOpenAI ----
+    if hasattr(llm, "deployment_name") or hasattr(llm, "azure_endpoint"):
+        meta["provider"] = "azure-openai"
+        # Azure: deployment_name is effectively the model we care about
+        meta["model"] = getattr(llm, "deployment_name", None)
+        meta["version"] = getattr(llm, "openai_api_version", None)
+        meta["temperature"] = getattr(llm, "temperature", None)
+        meta["top_p"] = getattr(llm, "top_p", None)
+        return meta
+
+    # ---- OpenAI (non-Azure) ----
+    # e.g. langchain_openai.ChatOpenAI
+    if hasattr(llm, "model_name"):
+        meta["provider"] = "openai"
+        meta["model"] = getattr(llm, "model_name", None)
+        meta["temperature"] = getattr(llm, "temperature", None)
+        meta["top_p"] = getattr(llm, "top_p", None)
+        # OpenAI rarely exposes a separate "version" here, so leave None
+        return meta
+
+    # ---- Anthropic ----
+    # e.g. langchain_anthropic.ChatAnthropic
+    if llm.__class__.__module__.startswith("langchain_anthropic") or llm.__class__.__name__.lower().startswith("chatanthropic"):
+        meta["provider"] = "anthropic"
+        # Anthropic models are usually specified as .model or .model_name
+        model = getattr(llm, "model", None) or getattr(llm, "model_name", None)
+        meta["model"] = model
+        meta["temperature"] = getattr(llm, "temperature", None)
+        # Anthropic may not have top_p in the same way
+        return meta
+
+    # ---- Google / Gemini (very wrapper-dependent) ----
+    # if the user returned a google.generativeai model
+    if llm.__class__.__module__.startswith("google") or "genai" in llm.__class__.__module__.lower():
+        meta["provider"] = "google-genai"
+        # many Gemini wrappers have .model_name or .model
+        model = getattr(llm, "model_name", None) or getattr(llm, "model", None)
+        meta["model"] = model
+        return meta
+
+    # ---- Hugging Face / local pipeline ----
+    # most HF pipelines have .model and .tokenizer attrs
+    if hasattr(llm, "model") and hasattr(llm, "__call__"):
+        meta["provider"] = "local"
+        # try to get model id
+        try:
+            meta["model"] = getattr(llm.model, "name_or_path", None)
+        except Exception:
+            meta["model"] = None
+        return meta
+
+    # ---- fallback ----
+    meta["provider"] = "unknown"
+    return meta
 
 # -------------------------------
