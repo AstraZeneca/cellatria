@@ -35,15 +35,34 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Step 3: Set the Docker image tag as an environment variable
-      - name: Set up Docker image tag
+      - name: Set up Docker image metadata
         run: |
           IMAGE_REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo "IMAGE_TAG=ghcr.io/${IMAGE_REPO}:v1.0.0" >> $GITHUB_ENV
+          IMAGE_VERSION="v1.0.0"                                        
+          IMAGE_REF="ghcr.io/${IMAGE_REPO}:${IMAGE_VERSION}"            
+          BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          VCS_REF="${{ github.sha }}"
+          TREE_STATE="clean"
+
+          echo "IMAGE_REPO=${IMAGE_REPO}"   >> $GITHUB_ENV
+          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
+          echo "IMAGE_REF=${IMAGE_REF}"     >> $GITHUB_ENV
+          echo "BUILD_DATE=${BUILD_DATE}"   >> $GITHUB_ENV
+          echo "VCS_REF=${VCS_REF}"         >> $GITHUB_ENV
+          echo "TREE_STATE=${TREE_STATE}"   >> $GITHUB_ENV
 
       # Step 4: Build the Docker image with the specified tag
       - name: Build Docker image
-        run: docker build -t $IMAGE_TAG .
+        run: |
+          docker build \
+            --build-arg IMAGE_REPO="${IMAGE_REPO}" \
+            --build-arg IMAGE_TAG="${IMAGE_VERSION}" \
+            --build-arg IMAGE_VERSION="${IMAGE_VERSION}" \
+            --build-arg VCS_REF="${VCS_REF}" \
+            --build-arg BUILD_DATE="${BUILD_DATE}" \
+            --build-arg TREE_STATE="${TREE_STATE}" \
+            -t "${IMAGE_TAG}" .
 
       # Step 5: Push the Docker image to GitHub Container Registry
       - name: Push Docker image
-        run: docker push $IMAGE_TAG
+        run: docker push "${IMAGE_TAG}"

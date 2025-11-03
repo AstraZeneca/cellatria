@@ -9,13 +9,46 @@
 FROM ubuntu:22.04
 # Set non-interactive frontend
 ARG DEBIAN_FRONTEND=noninteractive
+
 # -----------------------------------
-# OCI-compliant image metadata
+
+# ---- Build-time arguments with safe defaults ----
+ARG IMAGE_REPO="AstraZeneca/cellatria"
+ARG IMAGE_TAG="v1.0.0"
+ARG IMAGE_VERSION="v1.0.0"
+ARG VCS_REF="unknown"
+ARG BUILD_DATE="1970-01-01T00:00:00Z"
+ARG TREE_STATE="clean"
+# or "dirty" if uncommitted changes 
+
+# ---- OCI-compliant image metadata ----
 LABEL org.opencontainers.image.title="CellAtria"
-LABEL org.opencontainers.image.version="v1.0.0"
 LABEL org.opencontainers.image.description="CellAtria: Agentic Triage of Regulated single-cell data Ingestion and Analysis."
 LABEL org.opencontainers.image.authors="Nima Nouri <nima.nouri@astrazeneca.com>"
-LABEL org.opencontainers.image.source="https://github.com/AstraZeneca/cellatria"
+LABEL org.opencontainers.image.version="${IMAGE_VERSION}"
+LABEL org.opencontainers.image.revision="${VCS_REF}" 
+LABEL org.opencontainers.image.created="${BUILD_DATE}" 
+LABEL org.opencontainers.image.source="https://github.com/${IMAGE_REPO}"
+LABEL org.opencontainers.image.url="https://github.com/${IMAGE_REPO}"
+LABEL org.opencontainers.image.ref.name="ghcr.io/${IMAGE_REPO}:${IMAGE_TAG}" 
+LABEL org.opencontainers.image.tree_state="${TREE_STATE}"
+
+# ---- Propagate to runtime ENV for in-container inspection ----
+ENV IMAGE_REPO="${IMAGE_REPO}"
+ENV IMAGE_TAG="${IMAGE_TAG}"
+ENV IMAGE_VERSION="${IMAGE_VERSION}"
+ENV IMAGE_VCS_REF="${VCS_REF}"
+ENV IMAGE_BUILD_DATE="${BUILD_DATE}"
+ENV IMAGE_TREE_STATE="${TREE_STATE}"
+
+# ---- Embed a JSON manifest inside the image ----
+    RUN mkdir -p /usr/local/share/cellatria && \
+    printf '{\n  "image_repo": "%s",\n  "image_tag": "%s",\n  "image_version": "%s",\n  "vcs_ref": "%s",\n  "build_date": "%s",\n  "tree_state": "%s"\n}\n' \
+      "$IMAGE_REPO" "$IMAGE_TAG" "$IMAGE_VERSION" "$VCS_REF" "$BUILD_DATE" "$TREE_STATE" \
+    > /usr/local/share/cellatria/image-meta.json
+
+ENV IMAGE_META_PATH=/usr/local/share/cellatria/image-meta.json
+
 # -----------------------------------
 # System package installation
 RUN apt-get update --fix-missing && \ 
