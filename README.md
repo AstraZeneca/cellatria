@@ -161,7 +161,6 @@ CellAtria requires a `.env` file to configure access to your chosen LLM provider
 - `openai`: Standard OpenAI API (e.g., GPT-4, GPT-3.5)
 - `anthropic`: Claude models via the Anthropic API
 - `google`: Gemini models via Google Cloud / Vertex AI
-- `local`: Offline models (e.g., Llama.cpp, Ollama, Hugging Face)
 
 > Set the `PROVIDER` variable in your `.env` file to one of the supported values above. Only one provider can be active at a time. 
 

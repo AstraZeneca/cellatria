@@ -154,13 +154,13 @@ RUN apt-get update && \
     r-recommended
 # -----------------------------------
 # Install R packages
-# RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages('devtools', clean=TRUE)"
-# RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(c('progress','Rcpp','Rcpp11','RcppAnnoy'), clean=TRUE)"
-# ARG R_DEPS="c('ggplot2', 'dplyr', 'gtools', 'grid', 'gridtext', \
-#                 'jsonlite', 'kableExtra', 'DT', 'scales','RColorBrewer', \
-#                 'plotly', 'visNetwork', 'ggrepel', 'gtools', 'viridis', \
-#                 'gridExtra', 'tidyr', 'DescTools')"	
-# RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(${R_DEPS}, clean=TRUE)"
+RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages('devtools', clean=TRUE)"
+RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(c('progress','Rcpp','Rcpp11','RcppAnnoy'), clean=TRUE)"
+ARG R_DEPS="c('ggplot2', 'dplyr', 'gtools', 'grid', 'gridtext', \
+                'jsonlite', 'kableExtra', 'DT', 'scales','RColorBrewer', \
+                'plotly', 'visNetwork', 'ggrepel', 'gtools', 'viridis', \
+                'gridExtra', 'tidyr', 'DescTools')"	
+RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(${R_DEPS}, clean=TRUE)"
 # -----------------------------------
 # Copy the CellAtria application files into the container
 # and set up the working directory structure
