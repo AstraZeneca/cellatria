@@ -58,7 +58,6 @@ RUN apt-get update --fix-missing && \
         python3-pip \
         python3-dev \
         python3-setuptools \
-        python3-numcodecs \
         python-is-python3 \
         apt-utils \
         ed \
@@ -128,13 +127,12 @@ RUN apt-get update && apt-get install -y pandoc
 # Python Package Installation
 RUN pip install --no-cache-dir --upgrade setuptools wheel
 RUN pip install --no-cache-dir numpy pandas scipy
-RUN pip install --no-cache-dir plotly matplotlib seaborn anndata scanpy tqdm scikit-learn h5py networkx scrublet nose annoy
+RUN pip install --no-cache-dir plotly matplotlib seaborn anndata scanpy scvi-tools tqdm scikit-learn h5py networkx scrublet nose annoy 'zarr<3'
 RUN pip install --no-cache-dir torch torchvision torchaudio torchsummary torchopt entmax
 RUN pip install --no-cache-dir harmonypy igraph leidenalg celltypist scimilarity
 RUN pip install --no-cache-dir fa2_modified
 RUN pip install --no-cache-dir --upgrade openai langchain langchainhub langchain-community langchain-openai langchain-core langchain-anthropic
 RUN pip install --no-cache-dir --upgrade transformers accelerate gradio langgraph PyMuPDF GEOparse beautifulsoup4 google-generativeai
-RUN pip install --no-cache-dir scvi-tools
 # -----------------------------------
 # R Installation and Configuration
 # Update indices
@@ -156,13 +154,13 @@ RUN apt-get update && \
     r-recommended
 # -----------------------------------
 # Install R packages
-# RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages('devtools', clean=TRUE)"
-# RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(c('progress','Rcpp','Rcpp11','RcppAnnoy'), clean=TRUE)"
-# ARG R_DEPS="c('ggplot2', 'dplyr', 'gtools', 'grid', 'gridtext', \
-#                 'jsonlite', 'kableExtra', 'DT', 'scales','RColorBrewer', \
-#                 'plotly', 'visNetwork', 'ggrepel', 'gtools', 'viridis', \
-#                 'gridExtra', 'tidyr', 'DescTools')"	
-# RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(${R_DEPS}, clean=TRUE)"
+RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages('devtools', clean=TRUE)"
+RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(c('progress','Rcpp','Rcpp11','RcppAnnoy'), clean=TRUE)"
+ARG R_DEPS="c('ggplot2', 'dplyr', 'gtools', 'grid', 'gridtext', \
+                'jsonlite', 'kableExtra', 'DT', 'scales','RColorBrewer', \
+                'plotly', 'visNetwork', 'ggrepel', 'gtools', 'viridis', \
+                'gridExtra', 'tidyr', 'DescTools')"	
+RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(${R_DEPS}, clean=TRUE)"
 # -----------------------------------
 # Copy the CellAtria application files into the container
 # and set up the working directory structure

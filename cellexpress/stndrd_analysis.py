@@ -6,7 +6,6 @@ import sys
 import scanpy as sc
 import harmonypy as hm
 import numpy as np
-import scvi
 from helper import parse_vars, graph_pipeline, _ensure_counts_matrix, _prepare_scvi_adata
 
 # -------------------------------
@@ -104,7 +103,9 @@ def run_analysis(adata, args):
         print("*** ✅ Harmony correction complete.")
     
     elif bc == "scvi":
-       
+
+        import scvi
+        
         btchvrs = parse_vars(args.batch_vars)
         if len(btchvrs) > 1: # scVI uses a single batch key
             raise ValueError(f"*** 🚨 scVI only supports a single batch variable. You provided: {', '.join(btchvrs)}")
