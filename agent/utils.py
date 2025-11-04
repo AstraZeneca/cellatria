@@ -17,7 +17,6 @@ from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from langchain_anthropic import ChatAnthropic  
 from dotenv import load_dotenv
 import google.generativeai as genai
-from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
 
 # -------------------------------
 
@@ -51,14 +50,6 @@ def get_llm_from_env(path_to_env):
         model_name = os.getenv("GOOGLE_MODEL", "gemini-pro")
         # You may need to adjust this based on your actual Gemini integration
         return genai.GenerativeModel(model_name)
-    elif provider == "Local":
-        # Example using Hugging Face Transformers for a local model
-        model_path = os.getenv("LOCAL_MODEL_PATH")
-        if not model_path:
-            raise ValueError("LOCAL_MODEL_PATH must be set for Local provider.")
-        tokenizer = AutoTokenizer.from_pretrained(model_path)
-        model = AutoModelForCausalLM.from_pretrained(model_path)
-        return pipeline("text-generation", model=model, tokenizer=tokenizer)
     else:
         raise ValueError("Invalid or unsupported PROVIDER in .env")
 
@@ -747,17 +738,6 @@ def get_llm_metadata(llm):
         # many Gemini wrappers have .model_name or .model
         model = getattr(llm, "model_name", None) or getattr(llm, "model", None)
         meta["model"] = model
-        return meta
-
-    # ---- Hugging Face / local pipeline ----
-    # most HF pipelines have .model and .tokenizer attrs
-    if hasattr(llm, "model") and hasattr(llm, "__call__"):
-        meta["provider"] = "local"
-        # try to get model id
-        try:
-            meta["model"] = getattr(llm.model, "name_or_path", None)
-        except Exception:
-            meta["model"] = None
         return meta
 
     # ---- fallback ----

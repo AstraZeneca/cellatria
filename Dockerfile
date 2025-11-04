@@ -132,7 +132,7 @@ RUN pip install --no-cache-dir torch torchvision torchaudio torchsummary torchop
 RUN pip install --no-cache-dir harmonypy igraph leidenalg celltypist scimilarity
 RUN pip install --no-cache-dir fa2_modified
 RUN pip install --no-cache-dir --upgrade openai langchain langchainhub langchain-community langchain-openai langchain-core langchain-anthropic
-RUN pip install --no-cache-dir --upgrade "transformers==4.56.2" accelerate gradio langgraph PyMuPDF GEOparse beautifulsoup4 google-generativeai
+RUN pip install --no-cache-dir --upgrade accelerate gradio langgraph PyMuPDF GEOparse beautifulsoup4 google-generativeai
 # -----------------------------------
 # R Installation and Configuration
 # Update indices
