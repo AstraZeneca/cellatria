@@ -165,7 +165,7 @@ def generate_report(adatas, raw_counts, qc_adatas, adata, adata_nohm, metadata_d
     # Environment and config metadata
     rprt["python_environment"] = get_python_environment()
     rprt["pipeline_arguments"] = extract_pipeline_arguments(args, pipeline_arguments)
-    rprt["image_build_info"] = get_image_build_info()  # dict or None if file missing
+    rprt["image_build_info"] = get_image_build_info("/mnt/work/projects/cellatria/image-meta.json")  # dict or None if file missing
 
     # -------------------------------
     # Prepare density plot data

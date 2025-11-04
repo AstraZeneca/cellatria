@@ -245,6 +245,13 @@ parser.add_argument("--limit_threads",
                     type=none_or_int,
                     default=1,
                     help="Apply thread limits to avoid OpenBLAS/OMP crashes (recommended for large datasets (>500K)).")
+parser.add_argument("--plot_alpha",
+                    type=float,
+                    default=0.7,
+                    help=("Opacity level for plotted cells in UMAP and other projections. "
+                          "Specify a float between 0 (fully transparent) and 1 (fully opaque). "
+                          "Adjusting this parameter can help mitigate overplotting in dense regions "
+                          "(default: 0.7)."))
 
 # -------------------------------
 

@@ -269,10 +269,11 @@ Example metadata file with sample-based QC:
 
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
-| `--paper_url` | `str` | `None` | Link to associated documentation. |
+| `--doc_url` | `str` | `None` | Link to associated documentation. |
 | `--data_url` | `str` | `None` | Link to dataset. |
 | `--only_qc` | `str` | `no` | Set to `yes` to only compute and report QC metrics. |
 | `--fix_gene_names` | `str` | `no` | Replace Ensembl IDs with gene symbols using given column name. |
+| `--plot_alpha` | `float` | `0.7` | Opacity level for UMAP and projection plots. Set between `0.0` (transparent) and `1.0` (opaque). |
 
 > If *.h5ad input dataset uses Ensembl IDs or unnamed features as gene identifiers, use this option to replace `adata.var_names` with gene symbols from a specific column in `adata.var`. This is especially useful when gene symbols are stored in an alternate column (e.g., `gene_symbol`, `hgnc_symbol`, or `SYMBOL`). The provided string should match the name of the column to be used as the new gene identifiers. 
 

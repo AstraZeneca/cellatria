@@ -790,22 +790,22 @@ mtd_desc %>%
 
 ### UMAP Projection
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(fobj, "UMAP1", "UMAP2", "sample_id", smpl_colrs, geomLabelRepel = TRUE)
+ plot_projection(fobj, "UMAP1", "UMAP2", "sample_id", smpl_colrs, geomLabelRepel = TRUE, plot_alpha = params$opt$plot_alpha)
 ```
 
 `r if (keyval_batch) { "### UMAP Projection (no-batch correction)" }`
 ```{r, eval=keyval_batch, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(obj_noharm, "UMAP1", "UMAP2", "sample_id", smpl_colrs, geomLabelRepel = TRUE)
+ plot_projection(obj_noharm, "UMAP1", "UMAP2", "sample_id", smpl_colrs, geomLabelRepel = TRUE, plot_alpha = params$opt$plot_alpha)
 ```
 
 `r if (keyval_tsne) { "### TSNE Projection" }`
 ```{r, eval=keyval_tsne, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(fobj, "TSNE1", "TSNE2", "sample_id", smpl_colrs, geomLabelRepel = TRUE)
+ plot_projection(fobj, "TSNE1", "TSNE2", "sample_id", smpl_colrs, geomLabelRepel = TRUE, plot_alpha = params$opt$plot_alpha)
 ```
 
 `r if (keyval_tsne & keyval_batch) {"### TSNE Projection (no-batch correction)"}`
 ```{r, eval=keyval_tsne & keyval_batch, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(obj_noharm, "TSNE1", "TSNE2", "sample_id", smpl_colrs, geomLabelRepel = TRUE)
+ plot_projection(obj_noharm, "TSNE1", "TSNE2", "sample_id", smpl_colrs, geomLabelRepel = TRUE, plot_alpha = params$opt$plot_alpha)
 ```
 
 ## {-}
@@ -881,22 +881,22 @@ collectively support interpretation of cellular heterogeneity and clustering rob
 ### UMAP Projection
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(fobj, "UMAP1", "UMAP2", "cluster", clstr_colrs, geomLabelRepel = TRUE)
+ plot_projection(fobj, "UMAP1", "UMAP2", "cluster", clstr_colrs, geomLabelRepel = TRUE, plot_alpha = params$opt$plot_alpha)
 ```
 
 `r if (keyval_batch) { "### UMAP Projection (no-batch correction)" }`
 ```{r, eval=keyval_batch, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(obj_noharm, "UMAP1", "UMAP2", "cluster", clstr_colrs_btch, geomLabelRepel = TRUE)
+ plot_projection(obj_noharm, "UMAP1", "UMAP2", "cluster", clstr_colrs_btch, geomLabelRepel = TRUE, plot_alpha = params$opt$plot_alpha)
 ```
 
 `r if (keyval_tsne) { "### TSNE Projection" }`
 ```{r, eval=keyval_tsne, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(fobj, "TSNE1", "TSNE2", "cluster", clstr_colrs, geomLabelRepel = TRUE)
+ plot_projection(fobj, "TSNE1", "TSNE2", "cluster", clstr_colrs, geomLabelRepel = TRUE, plot_alpha = params$opt$plot_alpha)
 ```
 
 `r if (keyval_tsne & keyval_batch) {"### TSNE Projection (no-batch correction)"}`
 ```{r, eval=keyval_tsne && keyval_batch, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(obj_noharm, "TSNE1", "TSNE2", "cluster", clstr_colrs_btch, geomLabelRepel = TRUE)
+ plot_projection(obj_noharm, "TSNE1", "TSNE2", "cluster", clstr_colrs_btch, geomLabelRepel = TRUE, plot_alpha = params$opt$plot_alpha)
 ```
 
 ## {-}
@@ -1106,23 +1106,23 @@ Together, these views provide biological context to clustering results and suppo
 `r if (keyval_scim) "### scimilarity UMAP Projection"`
 
 ```{r, eval=keyval_scim, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(8.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(fobj, "UMAP1", "UMAP2", "celltype_scimilarity", cltyp_colrs)
+ plot_projection(fobj, "UMAP1", "UMAP2", "celltype_scimilarity", cltyp_colrs, plot_alpha = params$opt$plot_alpha)
 ```
 
 `r if (keyval_scim && keyval_tsne) { "### scimilarity TSNE Projection" }`
 ```{r, eval=keyval_scim && keyval_tsne, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(8.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(fobj, "TSNE1", "TSNE2", "celltype_scimilarity", cltyp_colrs)
+ plot_projection(fobj, "TSNE1", "TSNE2", "celltype_scimilarity", cltyp_colrs, plot_alpha = params$opt$plot_alpha)
 ```
 
 `r if (keyval_cltpst) "### Celltypist UMAP Projection"`
 
 ```{r, eval=keyval_cltpst, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(8.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(fobj, "UMAP1", "UMAP2", "celltype_celltypist", cltyp_colrs)
+ plot_projection(fobj, "UMAP1", "UMAP2", "celltype_celltypist", cltyp_colrs, plot_alpha = params$opt$plot_alpha)
 ```
 
 `r if (keyval_cltpst && keyval_tsne) { "### Celltypist TSNE Projection" }`
 ```{r, eval=keyval_cltpst && keyval_tsne, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(8.0, 5.0), fig.align = 'center', results='asis'}
- plot_projection(fobj, "TSNE1", "TSNE2", "celltype_celltypist", cltyp_colrs)
+ plot_projection(fobj, "TSNE1", "TSNE2", "celltype_celltypist", cltyp_colrs, plot_alpha = params$opt$plot_alpha)
 ```
 
 `r if (keyval_scim || keyval_cltpst) "## {-}"`
@@ -1431,19 +1431,27 @@ kableExtra::kable(session_packages, caption = paste("R Environment (R", r_versio
 if (is.null(image_info)) {
   cat("Container build metadata not embedded in this image (image-meta.json not found).")
 } else {
-  # Convert named list to a 2-column data frame
-  
+  # enforce deterministic key order
+  key_order <- c("image_repo", "image_tag", "image_version", "vcs_ref", "build_date", "tree_state")
+
+  # keep only expected keys (gracefully handles extras/missing)
+  ks <- intersect(key_order, names(image_info))
+  vals <- vapply(ks, function(k) {
+    v <- image_info[[k]]
+    if (is.null(v) || is.na(v) || length(v) == 0) "" else as.character(v)
+  }, character(1))
+
   image_df <- data.frame(
-    Key = names(image_info),
-    Value = unlist(image_info, use.names = FALSE),
+    Key = ks,
+    Value = vals,
     row.names = NULL,
     check.names = FALSE
   )
-  
-  kableExtra::kable(mage_df, caption = "Container Build Metadata (from /usr/local/share/cellatria/image-meta.json)") %>%
+
+  kableExtra::kable(image_df, caption = "Container Build Metadata") %>%
     kableExtra::kable_classic(full_width = FALSE, html_font = "Cambria") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-                              full_width = FALSE, fixed_thead = TRUE) %>%
+          full_width = FALSE, fixed_thead = TRUE) %>%
     kableExtra::scroll_box(width = "100%", height = "300px")
 }
 ```

@@ -1220,6 +1220,7 @@ pipeline_arguments = {
     "date": "Date when the pipeline was executed.",
     "outputs_path": "Directory path where all pipeline-generated outputs will be stored.",
     "ui": "Unique identifier for the pipeline execution instance.",
+    "config": "Path to JSON config file.",
     
     # QC parameters
     "min_umi_per_cell": "Minimum UMI counts required per cell.",
@@ -1267,6 +1268,7 @@ pipeline_arguments = {
     "data_url": "URL to the publicly available dataset or repository.",
     "limit_threads": "Apply thread limits to avoid memory crashes",
     "fix_gene_names": "Fix gene names if Ensembl IDs are detected.",
+    "plot_alpha": "Opacity level for projection plots."
 }
 
 # -------------------------------
@@ -1293,7 +1295,7 @@ def extract_pipeline_arguments(args, argument_dict):
     # Arguments to be excluded from the report (e.g., internal references, non-user facing)
     SKIP_ARGS = {
         "project", "metadata", "genesets", "docker", "input", "help", "ui", "pipe_version", "date", "outputs_path",  
-        "only_qc", "paper_url", "data_url", "package_path", "runtime_minute", "pre_qc_cells", "post_qc_cells", 
+        "only_qc", "doc_url", "data_url", "package_path", "runtime_minute", "pre_qc_cells", "post_qc_cells", 
         "num_samples", "database_path"
     }
 
@@ -2061,83 +2063,37 @@ def _prepare_scvi_adata(raw_counts, hvg_mask, batch_key):
 
 # -------------------------------
 
-def get_image_build_info(meta_path: str = "/usr/local/share/cellatria/image-meta.json") -> Dict[str, Any]:
+_ALLOWED_KEYS = {
+    "image_repo",
+    "image_tag",
+    "image_version",
+    "vcs_ref",
+    "build_date",
+    "tree_state",
+}
+
+def get_image_build_info(meta_path: str = "/usr/local/share/cellatria/image-meta.json") -> Optional[Dict[str, Any]]:
     """
-    Collects immutable build metadata about the running container image, if available.
-
-    The function looks for an embedded JSON manifest (by default at
-    /usr/local/share/cellatria/image-meta.json) and also inspects IMAGE_*
-    environment variables. It returns a normalized structure suitable for
-    inclusion in reports alongside get_python_environment() outputs.
-
-    Args:
-        meta_path (str): Absolute path to the embedded image metadata JSON.
-
-    Returns:
-        dict: A dictionary containing:
-            - 'meta_path' (str): The path probed for the embedded JSON.
-            - 'found' (bool): Whether the JSON file was found and parsed.
-            - 'meta' (dict or None): Raw JSON content if found, else None.
-            - 'env' (dict): Selected IMAGE_* environment variables.
-            - 'summary' (dict): Resolved fields (prefer file → env → None):
-                - 'image_repo'
-                - 'image_tag'
-                - 'image_version'
-                - 'vcs_ref'
-                - 'build_date'
-                - 'tree_state'
-            - 'errors' (list[str]): Any parsing or I/O errors encountered.
+    Read image build metadata from a JSON file and return a flat dict with
+    the expected keys. Returns None if the file is missing or invalid.
     """
     p = pathlib.Path(meta_path)
     if not p.is_file():
         return None
 
     try:
-        meta = json.loads(p.read_text())
-        if not isinstance(meta, dict):
+        data = json.loads(p.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
             return None
     except Exception:
         return None
 
-    # Environment fallbacks
-    env_map = {
-        "image_repo": os.environ.get("IMAGE_REPO"),
-        "image_tag": os.environ.get("IMAGE_TAG"),
-        "image_version": os.environ.get("IMAGE_VERSION"),
-        "vcs_ref": os.environ.get("IMAGE_VCS_REF"),
-        "build_date": os.environ.get("IMAGE_BUILD_DATE"),
-        "tree_state": os.environ.get("IMAGE_TREE_STATE"),
-    }
+    # Keep only the allowed keys; coerce values to str (or None) for stability
+    out: Dict[str, Optional[str]] = {}
+    for k in _ALLOWED_KEYS:
+        v = data.get(k, None)
+        out[k] = None if v is None else str(v).strip()
 
-    def coalesce(key: str) -> Optional[str]:
-        v = meta.get(key)
-        if v is None or str(v).strip() == "":
-            v = env_map.get(key)
-        return str(v) if v is not None else None
-
-    summary = {
-        "image_repo":   coalesce("image_repo"),
-        "image_tag":    coalesce("image_tag"),
-        "image_version":coalesce("image_version"),
-        "vcs_ref":      coalesce("vcs_ref"),
-        "build_date":   coalesce("build_date"),
-        "tree_state":   coalesce("tree_state"),
-    }
-
-    env_out = {
-        "IMAGE_REPO": os.environ.get("IMAGE_REPO"),
-        "IMAGE_TAG": os.environ.get("IMAGE_TAG"),
-        "IMAGE_VERSION": os.environ.get("IMAGE_VERSION"),
-        "IMAGE_VCS_REF": os.environ.get("IMAGE_VCS_REF"),
-        "IMAGE_BUILD_DATE": os.environ.get("IMAGE_BUILD_DATE"),
-        "IMAGE_TREE_STATE": os.environ.get("IMAGE_TREE_STATE"),
-    }
-
-    return {
-        "meta_path": meta_path,
-        "meta": meta,
-        "env": env_out,
-        "summary": summary,
-    }
-
+    return out
+    
 # -------------------------------
