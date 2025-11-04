@@ -39,7 +39,7 @@ color_helper <- function(set.names, panel="Set1") {
 # ===================================
 # ===================================
 # Helper function to create the projection plot
-plot_projection <- function(df, x_col, y_col, feature, clr_map, geomLabelRepel = FALSE) {
+plot_projection <- function(df, x_col, y_col, feature, clr_map, geomLabelRepel = FALSE, plot_alpha = 0.7) {
 
 # Convert feature to a sorted factor (ensures ordering like 0,1,2, S1, S2, ...)
 df <- df %>%
@@ -48,6 +48,9 @@ df <- df %>%
     feature = factor(feature, levels = mixedsort(unique(feature)), ordered = TRUE)
   ) %>%
   dplyr::arrange(feature)  # Arrange data based on ordered feature
+
+  # Randomize row order to reduce overplotting bias
+  df <- df %>% dplyr::slice_sample(n = nrow(df))
 
   # Compute centroids AFTER ordering feature
   centroids <- df %>%
@@ -65,7 +68,7 @@ df <- df %>%
       axis.title = element_text(size = 12, face = "bold"),
       axis.text = element_text(size = 10, face = "bold")
     ) +
-    geom_point(size = 0.35, alpha = 1) +
+    geom_point(size = 0.35, alpha = plot_alpha) +
     scale_color_manual(values = clr_map) +
     guides(
       fill = guide_legend(override.aes = list(size = 4), ncol = 1),

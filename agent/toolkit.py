@@ -974,7 +974,9 @@ class CellExpressArgs(BaseModel):
 
     # Runtime/environment
     limit_threads: Optional[int] = Field(1, description="Apply thread limits to avoid OpenBLAS/OMP crashes (default: 1).")
-
+    # Plotting
+    plot_alpha: Optional[float] = Field(0.7, description="Opacity level for projection plots. Must be a float between 0.0 (transparent) and 1.0 (opaque) (default: 0.7)."
+    )
 # -------------------------------
 # Launches the CellExpress pipeline with current settings.
 # -------------------------------
