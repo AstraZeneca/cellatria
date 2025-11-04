@@ -533,7 +533,7 @@ ggplotly(Q[[3]], tooltip = c("sample_id", "feature"))
 The gray dashed line indicates the identity line (y = x)
 
 <center>
-```{r pqc, eval=FALSE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.75, 4.5), fig.align = 'center'}
+```{r pqc, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.75, 4.5), fig.align = 'center'}
 # plot(pqc)
 ggplotly(pqc, tooltip = c("sample_id", "nFeature_RNA", "nCount_RNA"))
 ```
