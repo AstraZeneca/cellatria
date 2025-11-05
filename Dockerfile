@@ -159,7 +159,7 @@ RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(c('p
 ARG R_DEPS="c('ggplot2', 'dplyr', 'gtools', 'grid', 'gridtext', \
                 'jsonlite', 'kableExtra', 'DT', 'scales','RColorBrewer', \
                 'plotly', 'visNetwork', 'ggrepel', 'gtools', 'viridis', \
-                'gridExtra', 'tidyr', 'DescTools')"	
+                'gridExtra', 'tidyr', 'DescTools', 'igraph')"	
 RUN Rscript -e "options(repos='http://cran.rstudio.com/'); install.packages(${R_DEPS}, clean=TRUE)"
 # -----------------------------------
 # Copy the CellAtria application files into the container
