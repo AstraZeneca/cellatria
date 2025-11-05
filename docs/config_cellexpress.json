@@ -1,5 +1,5 @@
 {
-    "input": "~/cellexpress_data/GSE204716",
+    "input": "/data/GSE204716",
     "project": "Newborn_PBMC_Immunization",
     "species": "hs",
     "tissue": "blood",
@@ -23,8 +23,8 @@
     "resolution": 0.6,
     "compute_tsne": "yes",
     "annotation_method": "scimilarity,celltypist",
-    "sci_model_path": "~/scimilarity/model_v1.1",
-    "cty_model_path": "~/celltypist/model_v1.6.3",
+    "sci_model_path": "/data/scimilarity/model_v1.1",
+    "cty_model_path": "/data/celltypist/model_v1.6.3",
     "cty_model_name": "Immune_All_Low",
     "pval_threshold": 0.05,
     "logfc_threshold": 0.25,

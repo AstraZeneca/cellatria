@@ -12,7 +12,6 @@ Place the downloaded files into a local directory, e.g.:
 
 ```bash
 mkdir -p ~/cellexpress_data/GSE204716
-# Move your downloaded files here
 ```
 
 --- 
@@ -29,16 +28,13 @@ Move it into your data directory (`~/cellexpress_data`)
 
 Before running CellExpress, make sure to download the required pre-trained models for annotation:
 
-**SCimilarity model (v1.1)**: Place it in: `~/scimilarity/model_v1.1`
+**SCimilarity model (v1.1)**: Place it in: `~/cellexpress_data/scimilarity/model_v1.1`
 
 > Read [SCimilarity Configuration](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/README.md#:~:text=SCimilarity%20Configuration)
 
-**CellTypist model (v1.6.3)**: Place it in: `~/celltypist/model_v1.6.3`
+**CellTypist model (v1.6.3)**: Place it in: `~/cellexpress_data/celltypist/model_v1.6.3`
 
 > Read [CellTypist Configuration](https://github.com/AstraZeneca/cellatria/blob/main/cellexpress/README.md#:~:text=CellTypist%20Configuration)
-
-**Note**: These paths must match the `input`, `sci_model_path`, and `cty_model_path` fields in your config file.
-If needed, modify the config to reflect your local download paths.
 
 --- 
 
@@ -54,7 +50,7 @@ Then, execute the CellExpress pipeline directly:
 
 ```bash
 docker run -it --rm \
-  -v ~/cellexpress_data/GSE204716:/data \
+  -v ~/cellexpress_data:/data \
   ghcr.io/astrazeneca/cellatria:v1.0.0 cellexpress \
-  --config ~/cellexpress_data/config_cellexpress.json
+  --config ~/data/config_cellexpress.json
 ```
