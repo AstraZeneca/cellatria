@@ -1165,7 +1165,8 @@ for (cltp in celtype_vec) {
       scale_y_continuous(trans = scales::log10_trans(),
                          breaks = scales::trans_breaks("log10", function(x) 10^x),
                          labels = scales::trans_format("log10", scales::math_format(10^.x)))
-    Q[[length(Q) + 1]] <- p
+    # Q[[length(Q) + 1]] <- p
+    Q[[cltp]] <- p
 }
 ```
 
@@ -1175,26 +1176,26 @@ for (cltp in celtype_vec) {
 
 `r if (keyval_scim) "### SCimilarity (cell type)"`
 
-```{r eval=keyval_scim, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center', results='asis'}
- plot(Q[[1]])
+```{r eval=keyval_scim && !is.null(Q[["celltype_scimilarity"]]), warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align='center', results='asis'}
+plot(Q[["celltype_scimilarity"]])
 ```
 
 `r if (keyval_scim) "### SCimilarity (cell state)"`
 
-```{r eval=keyval_scim, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center', results='asis'}
- plot(Q[[2]])
+```{r eval=keyval_scim && !is.null(Q[["cellstate_scimilarity"]]), warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align='center', results='asis'}
+plot(Q[["cellstate_scimilarity"]])
 ```
 
 `r if (keyval_cltpst) "### CellTypist (cell type)"`
 
-```{r eval=keyval_cltpst, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center', results='asis'}
- plot(Q[[3]])
+```{r eval=keyval_cltpst && !is.null(Q[["celltype_celltypist"]]), warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align='center', results='asis'}
+plot(Q[["celltype_celltypist"]])
 ```
 
 `r if (keyval_cltpst) "### CellTypist (cell state)"`
 
-```{r eval=keyval_cltpst, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center', results='asis'}
- plot(Q[[4]])
+```{r eval=keyval_cltpst && !is.null(Q[["cellstate_celltypist"]]), warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align='center', results='asis'}
+plot(Q[["cellstate_celltypist"]])
 ```
 
 `r if (keyval_scim || keyval_cltpst) "## {-}"`
