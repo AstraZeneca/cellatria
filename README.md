@@ -276,6 +276,16 @@ If you use this repository, please cite:
 
 ---
 
+## ⚖️ Ethical Use, Data Governance, and Compliance
+<details>
+<br>
+
+As automated frameworks increasingly interface with regulated data sources, ensuring ethical and compliant data handling becomes essential. When extracting metadata from scientific literature, CellAtria’s schema captures repository identifiers, publisher information, and author-reported conflicts of interest, providing legal and provenance context for each dataset. For proprietary or sensitive data, the Docker-based architecture of CellAtria enables reproducible execution within secure, auditable, and GxP-compliant environments, a critical requirement in clinical research. Nonetheless, data governance policies supersede automation, and it remains the user’s responsibility to verify licensing terms and consent scope. While agentic systems can augment user capabilities, they are not a substitute for ethical oversight, which is preserved through a maintained human-in-the-loop paradigm.
+
+</details>
+
+---
+
 ## 📬 Contact
 <details>
 <br>
