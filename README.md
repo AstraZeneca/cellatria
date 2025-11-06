@@ -247,7 +247,7 @@ While **CellAtria** supports flexible, user-driven interactions, its functionali
 
 > This modular, agent-guided framework allows users to begin at any point while preserving logical consistency across steps.
 
-> See the [CellAtria Walkthrough (PDF)](https://github.com/AstraZeneca/cellatria/blob/main/docs/cellatria_walkthrough_git.pdf)
+> See the [CellAtria Walkthrough](https://github.com/AstraZeneca/cellatria/blob/main/docs/cellatria_walkthrough_git.pdf)
  for a step-by-step visual tutorial.
 
 </details>
