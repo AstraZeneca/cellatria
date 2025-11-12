@@ -192,11 +192,11 @@ def graph_pipeline(adata, args, label=""):
 
     # Step 1: Build k-NN graph
     print(f"*** 🔄 Computing neighborhood graph{suffix}...")
-    sc.pp.neighbors(adata, n_neighbors=args.n_neighbors, n_pcs=args.n_pcs, use_rep=use_rep)
+    sc.pp.neighbors(adata, n_neighbors=args.n_neighbors, n_pcs=args.n_pcs, use_rep=use_rep, random_state=0)
 
     # Step 2: Perform Leiden clustering
     print(f"*** 🔄 Running Leiden clustering with resolution {args.resolution}{suffix} ...")
-    sc.tl.leiden(adata, resolution=args.resolution, flavor="igraph", n_iterations=2, directed=False)
+    sc.tl.leiden(adata, resolution=args.resolution, flavor="igraph", n_iterations=2, directed=False, random_state=0)
 
     # Step 3: Reorder clusters by size (optional utility function)
     print(f"*** 🔄 reordering clusters by size...")
@@ -214,17 +214,12 @@ def graph_pipeline(adata, args, label=""):
 
     # Step 6: Compute UMAP embedding
     print(f"*** 🔄 Computing UMAP{suffix}...")
-    sc.tl.umap(adata)   
+    sc.tl.umap(adata, random_state=0)   
 
     # Step 7: Optionally compute t-SNE
     if args.compute_tsne.lower() == "yes":
-        # Use same rep as neighbors when possible for consistency
-        if use_rep is not None:
-            print(f"*** 🔄 Computing t-SNE from `{use_rep}`{suffix}...")
-            sc.tl.tsne(adata, use_rep=use_rep, n_pcs=None)
-        else:
-            print(f"*** 🔄 Computing t-SNE from PCs (n_pcs={args.n_pcs}){suffix}...")
-            sc.tl.tsne(adata, n_pcs=args.n_pcs)
+        print(f"*** 🔄 Computing t-SNE from PCs (n_pcs={args.n_pcs}){suffix}...")
+        sc.tl.tsne(adata, use_rep=use_rep, n_pcs=args.n_pcs, random_state=0)
     else:
         print(f"*** 🚫 Skipping TSNE embedding (per user input){suffix}.")
 
