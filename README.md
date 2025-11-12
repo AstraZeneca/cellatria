@@ -93,11 +93,28 @@ The **CellAtria** repository includes a GitHub Actions workflow that builds and 
 Pull the latest **CellAtria** Docker image using:
 
 ```bash
-# Run this command in your terminal
 docker pull ghcr.io/astrazeneca/cellatria:v1.0.0
 ```
 
 > This image contains all dependencies needed to run  the **CellAtria** agent in a consistent environment.
+
+If you prefer to build the image locally instead of pulling from GHCR:
+
+**Clone the repository**
+```bash
+git clone https://github.com/AstraZeneca/cellatria.git
+cd cellatria
+```
+
+**Build the Docker image**
+```bash
+docker build -t ghcr.io/astrazeneca/cellatria:v1.0.0 .
+```
+
+**Verify the image**
+```bash
+docker images | grep cellatria
+```
 
 ---
 
