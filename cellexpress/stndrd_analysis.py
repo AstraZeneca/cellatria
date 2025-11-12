@@ -127,7 +127,7 @@ def run_analysis(adata, args):
         )
         # Latent → main AnnData (same cell order, since we didn’t drop cells)
         adata.obsm["X_scVI"] = model.get_latent_representation()
-        print("*** ✅ scVI correction complete. Using X_scVI for neighbors/UMAP.")
+        print("*** ✅ scVI correction complete.")
 
     else:
         print("*** 🚫 No batch correction applied (per user input).")
