@@ -24,7 +24,6 @@
 **/__pycache__/
 **/.gradio/
 
-
 # Ignore specific files in agent and cellexpress
 agent/sandbox.py
 agent/sandbox.txt
