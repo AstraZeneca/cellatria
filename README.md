@@ -271,6 +271,16 @@ While **CellAtria** supports flexible, user-driven interactions, its functionali
 
 ---
 
+## ⚖️ Ethical Use, Data Governance, and Compliance
+<details>
+<br>
+
+As automated frameworks increasingly interface with regulated data sources, ethical and compliant data handling is essential. During literature-driven ingestion, CellAtria records repository identifiers, publisher information, and author-reported conflicts of interest to preserve provenance. For proprietary or sensitive data, the Docker-based architecture enables reproducible execution within secure, auditable, and GxP-aligned environments. Nonetheless, institutional data-governance policies supersede automation: users are responsible for verifying licensing terms, data-use permissions, and consent scope. CellAtria does not confer licenses or bypass access controls; it operates under user-supplied credentials and institutional controls. Agentic automation augments, but does not replace, ethical oversight, maintained via a deliberate human-in-the-loop paradigm.
+
+</details>
+
+---
+
 ## 📖 Cite
 <details>
 <br>
@@ -291,16 +301,6 @@ If you use this repository, please cite:
 }
 
 ```
-
-</details>
-
----
-
-## ⚖️ Ethical Use, Data Governance, and Compliance
-<details>
-<br>
-
-As automated frameworks increasingly interface with regulated data sources, ethical and compliant data handling is essential. During literature-driven ingestion, CellAtria records repository identifiers, publisher information, and author-reported conflicts of interest to preserve provenance. For proprietary or sensitive data, the Docker-based architecture enables reproducible execution within secure, auditable, and GxP-aligned environments. Nonetheless, institutional data-governance policies supersede automation: users are responsible for verifying licensing terms, data-use permissions, and consent scope. CellAtria does not confer licenses or bypass access controls; it operates under user-supplied credentials and institutional controls. Agentic automation augments, but does not replace, ethical oversight, maintained via a deliberate human-in-the-loop paradigm.
 
 </details>
 
