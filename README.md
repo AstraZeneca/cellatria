@@ -271,22 +271,25 @@ While **CellAtria** supports flexible, user-driven interactions, its functionali
 
 ---
 
-## 📖 Related Publication
+## 📖 Cite
 <details>
 <br>
 
 If you use this repository, please cite:
 
-> Nima Nouri, et al. (2025). An Agentic AI Framework for Ingestion and Standardization of Single-Cell RNA-seq Data Analysis. *bioRxiv*. https://doi.org/10.1101/2025.07.31.667880
-
+> Nouri, N., Artzi, R. & Savova, V. An agentic AI framework for ingestion and standardization of single-cell RNA-seq data analysis. *npj Artif. Intell.* 2, 8 (2026). https://doi.org/10.1038/s44387-025-00064-0
 ```
-@article{nouri2025agentic,
-  title={An Agentic AI Framework for Ingestion and Standardization of Single-Cell RNA-seq Data Analysis},
+@article{nouri2026agentic,
+  title={An agentic AI framework for ingestion and standardization of single-cell RNA-seq data analysis},
   author={Nouri, Nima and Artzi, Ronen and Savova, Virginia},
-  journal={bioRxiv},
-  year={2025},
-  publisher={Cold Spring Harbor Laboratory}
+  journal={npj Artificial Intelligence},
+  volume={2},
+  number={1},
+  pages={8},
+  year={2026},
+  publisher={Nature Publishing Group UK London}
 }
+
 ```
 
 </details>
