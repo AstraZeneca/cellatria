@@ -1075,9 +1075,7 @@ When the user provides one or more **GEO accession IDs** and requests a **CellEx
 
 <details>
 
-- For help and questions about **cellAtria** agent, please contact Nima Nouri 
-- Email: nima.nouri@astrazeneca.com
-- Role: author (aut) and creator (cre)
+- For help and questions about **cellAtria** agent, please open a GitHub issue at https://github.com/AstraZeneca/cellatria/issues
 
 </details>
 
